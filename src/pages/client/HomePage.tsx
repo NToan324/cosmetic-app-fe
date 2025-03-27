@@ -1,5 +1,12 @@
+import Layout from '../../layout/layout'
+import Home from '../../components/client/Home/home'
+
 const HomePage = () => {
-  return <div className='font-bold text-4xl text-amber-500'>HomePage</div>
+  return (
+    <Layout>
+      <Home />
+    </Layout>
+  )
 }
 
 export default HomePage
