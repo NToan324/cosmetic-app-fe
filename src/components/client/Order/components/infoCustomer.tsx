@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 const InfoCustomer = () => {
+  const navigate = useNavigate()
   return (
     <div className='flex flex-col justify-start items-start gap-4 bg-white'>
       <h1 className='text-2xl font-bold'>Customer</h1>
@@ -12,7 +14,12 @@ const InfoCustomer = () => {
         <button className='px-4 py-2 border border-primary text-primary rounded-xl cursor-pointer'>Create</button>
         <button className='px-4 py-2 border border-primary text-primary rounded-xl cursor-pointer'>View History</button>
       </div>
-      <button className='px-4 py-2 bg-primary text-white rounded-xl w-full cursor-pointer'>Next Step</button>
+      <button
+        className='px-4 py-2 bg-primary text-white rounded-xl w-full cursor-pointer'
+        onClick={() => navigate('/order/payment')}
+      >
+        Next Step
+      </button>
     </div>
   )
 }

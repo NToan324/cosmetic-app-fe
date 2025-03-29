@@ -1,4 +1,4 @@
-import Filter from '../../filter'
+import Filter from '@/components/filter'
 import {
   Pagination,
   PaginationContent,
@@ -7,11 +7,11 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious
-} from '../../ui/pagination'
-import { productsDataMockup } from '../../../mockup/product'
-import Product from '../../product'
-import { filterDataMockupCategory } from '../../../mockup/filter'
-import OrderingFilter from './components/orderingFilter'
+} from '@/components/ui/pagination'
+import { productsDataMockup } from '@/mockup/product'
+import Product from '@/components/product'
+import { filterDataMockupCategory } from '@/mockup/filter'
+import OrderingFilter from '@/components/client/Category/components/orderingFilter'
 
 const Category = () => {
   return (

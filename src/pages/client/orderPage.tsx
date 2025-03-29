@@ -1,5 +1,5 @@
-import Order from '../../components/client/Order/order'
-import Layout from '../../layout/layout'
+import Order from '@/components/client/Order/order'
+import Layout from '@/layout/layout'
 const OrderPage = () => {
   return (
     <Layout>
