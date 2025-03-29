@@ -1,5 +1,5 @@
 import { IoSearch } from 'react-icons/io5'
-import Avatar from '../assets/images/avatar.png'
+import Avatar from '@/assets/images/avatar.png'
 const Search = () => {
   return (
     <div className='flex justify-between items-center bg-white w-full p-4 h-[80px] gap-2'>

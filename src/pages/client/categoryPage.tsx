@@ -1,5 +1,5 @@
-import Layout from '../../layout/layout'
-import Category from '../../components/client/Category/category'
+import Layout from '@/layout/layout'
+import Category from '@/components/client/Category/category'
 
 const CategoryPage = () => {
   return (

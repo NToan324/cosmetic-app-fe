@@ -1,5 +1,5 @@
-import Product from '../../product'
-import Filter from '../../filter'
+import Product from '@/components/product'
+import Filter from '@/components/filter'
 import {
   Pagination,
   PaginationContent,
@@ -8,10 +8,10 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious
-} from '../../ui/pagination'
-import Promotion from './components/promotion'
-import { productsDataMockup } from '../../../mockup/product'
-import { filterDataMockupHome } from '../../../mockup/filter'
+} from '@/components/ui/pagination'
+import Promotion from '@/components/client/Home/components/promotion'
+import { productsDataMockup } from '@/mockup/product'
+import { filterDataMockupHome } from '@/mockup/filter'
 
 const Home = () => {
   const promotionImages = ['src/assets/images/banner_1.png', 'src/assets/images/banner_2.png']
