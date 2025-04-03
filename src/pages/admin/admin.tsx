@@ -1,12 +1,12 @@
-import Dashboard from "../../components/admin/Dashboard/dashboard";
-import Layout from '../../layout/admin_layout'
+import Dashboard from '@/components/admin/Dashboard/dashboard'
+import Layout from '@/layout/admin_layout'
 
 const Admin = () => {
-    return (
+  return (
     <Layout>
       <Dashboard />
     </Layout>
-    );
+  )
 }
 
 export default Admin

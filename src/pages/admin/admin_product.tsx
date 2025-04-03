@@ -1,12 +1,12 @@
-import Product from "../../components/admin/Product/product";
-import Layout from '../../layout/admin_layout'
+import Product from '@/components/admin/Product/product'
+import Layout from '@/layout/admin_layout'
 
 const Admin_Product = () => {
-    return (
+  return (
     <Layout>
       <Product />
     </Layout>
-    );
+  )
 }
 
 export default Admin_Product

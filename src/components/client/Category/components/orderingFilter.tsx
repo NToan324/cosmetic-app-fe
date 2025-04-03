@@ -18,7 +18,7 @@ const OrderingFilter = () => {
           name='ordering'
           id='ordering'
         >
-          <option value='' selected>
+          <option value='' defaultValue={''}>
             Showing
           </option>
           <option value='10'>10</option>

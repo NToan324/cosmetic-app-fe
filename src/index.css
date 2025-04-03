@@ -3,16 +3,34 @@
 .bg-primary {
   background-color: #ff8108;
 }
+.bg-green {
+  background-color: #c9eec7;
+}
+.bg-red {
+  background-color: #fecbcb;
+}
 
 .text-primary {
   color: #ff8108;
+}
+.text-green {
+  color: #0d4715;
+}
+.text-red {
+  color: #bf0000;
 }
 
 .border-primary {
   border-color: #ff8108;
 }
+.border-green {
+  border-color: #0d4715;
+}
+.border-red {
+  border-color: #bf0000;
+}
 
-body {
+A0C878 body {
   margin: 0;
   display: flex;
   place-items: center;

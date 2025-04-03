@@ -2,7 +2,7 @@ import { HiOutlineHome } from 'react-icons/hi2'
 import { BiCategoryAlt } from 'react-icons/bi'
 import { HiOutlineArchiveBox } from 'react-icons/hi2'
 import { IoDocumentTextOutline } from 'react-icons/io5'
-import { BsPerson } from 'react-icons/bs'
+import { TbReportMedical } from 'react-icons/tb'
 import { FiSettings } from 'react-icons/fi'
 import { TbLogout } from 'react-icons/tb'
 import { NavLink, useLocation } from 'react-router-dom'
@@ -13,8 +13,8 @@ const SideBar = () => {
     { name: 'Home', icon: HiOutlineHome, link: '/home' },
     { name: 'Category', icon: BiCategoryAlt, link: '/category' },
     { name: 'Order', icon: IoDocumentTextOutline, link: '/order' },
-    { name: 'history', icon: HiOutlineArchiveBox, link: '/history' },
-    { name: 'User', icon: BsPerson, link: '/user' },
+    { name: 'History', icon: HiOutlineArchiveBox, link: '/history' },
+    { name: 'Consulting', icon: TbReportMedical, link: '/customer-consulting' },
     { name: 'Setting', icon: FiSettings, link: '/setting' },
     { name: 'Logout', icon: TbLogout, link: '/logout' }
   ]

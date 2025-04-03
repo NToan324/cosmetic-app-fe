@@ -1,10 +1,10 @@
-import { LuLayoutDashboard } from "react-icons/lu";
-import { BsBoxes } from "react-icons/bs";
-import { FiUsers } from "react-icons/fi";
-import { RiBillLine } from "react-icons/ri";
-import { FaRegUser } from "react-icons/fa";
-import { MdEvent } from "react-icons/md";
-import { FaRegChartBar } from "react-icons/fa";
+import { LuLayoutDashboard } from 'react-icons/lu'
+import { BsBoxes } from 'react-icons/bs'
+import { FiUsers } from 'react-icons/fi'
+import { RiBillLine } from 'react-icons/ri'
+import { FaRegUser } from 'react-icons/fa'
+import { MdEvent } from 'react-icons/md'
+import { FaRegChartBar } from 'react-icons/fa'
 import { TbLogout } from 'react-icons/tb'
 import { NavLink, useLocation } from 'react-router-dom'
 import Avatar from '@/assets/images/avatar.png'
@@ -32,7 +32,7 @@ const Admin_SideBar = () => {
       </div>
       <ul className='w-full'>
         {menu.map((item, index) => {
-          const isLogout = item.name === 'Logout';
+          const isLogout = item.name === 'Logout'
           return (
             <div key={index}>
               <NavLink
@@ -49,16 +49,13 @@ const Admin_SideBar = () => {
                 }
               >
                 <item.icon size={25} className={`${isLogout ? 'text-red-500' : ''}`} />
-                <span className={`text-base ${isLogout ? 'text-red-500' : ''}`}>
-                  {item.name}
-                </span>
+                <span className={`text-base ${isLogout ? 'text-red-500' : ''}`}>{item.name}</span>
               </NavLink>
               {index === 6 && <div className='border-t border-gray-300 w-full my-6'></div>}
             </div>
           )
         })}
       </ul>
-
     </div>
   )
 }

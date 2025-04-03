@@ -1,12 +1,12 @@
-import Employee from "../../components/admin/Employee/employee";
-import Layout from '../../layout/admin_layout'
+import Employee from '@/components/admin/Employee/employee'
+import Layout from '@/layout/admin_layout'
 
 const Admin_Employee = () => {
-    return (
+  return (
     <Layout>
       <Employee />
     </Layout>
-    );
+  )
 }
 
 export default Admin_Employee
