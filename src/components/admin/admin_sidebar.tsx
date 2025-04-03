@@ -7,6 +7,7 @@ import { MdEvent } from 'react-icons/md'
 import { FaRegChartBar } from 'react-icons/fa'
 import { TbLogout } from 'react-icons/tb'
 import { NavLink, useLocation } from 'react-router-dom'
+import Avatar from '@/assets/images/avatar.png'
 
 const Admin_SideBar = () => {
   const location = useLocation()
@@ -23,10 +24,11 @@ const Admin_SideBar = () => {
 
   return (
     <div className='w-[250px] flex flex-col items-center h-screen space-y-5 fixed top-0 left-0 z-50'>
-      <div className='p-6'>
-        <h1 className='text-xl font-bold text-center text-amber-500'>
-          ORR'<span className='text-black'> COSMETIC</span>
-        </h1>
+      <div className='text-center gap-2 pt-5'>
+        <img src={Avatar} alt='Avatar' width={45} height={45} />
+        <div className='flex flex-col justify-center items-start'>
+            <h1 className='text-base'>Alberts<br/><p className="text-gray-400 ">Admin</p></h1>
+        </div>
       </div>
       <ul className='w-full'>
         {menu.map((item, index) => {
@@ -36,7 +38,7 @@ const Admin_SideBar = () => {
               <NavLink
                 to={item.link}
                 className={({ isActive }) =>
-                  // Nếu là Logout thì không thay đổi màu nền và màu chữ của NavLink
+                  
                   isLogout
                     ? 'cursor-pointer ml-4 flex items-center rounded-bl-2xl rounded-tl-2xl py-4 px-8 h-[60px] gap-4'
                     : `cursor-pointer ml-4 flex items-center rounded-bl-2xl rounded-tl-2xl py-4 px-8 h-[60px] gap-4 ${
