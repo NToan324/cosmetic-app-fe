@@ -28,6 +28,7 @@ function App() {
         <Route path='/history' Component={HistoryPage}></Route>
         <Route path='/customer-consulting' Component={UserPage}></Route>
 
+        <Route path='/admin' Component={Dashboard}></Route>
         <Route path='/admin/dashboard' Component={Dashboard}></Route>
         <Route path='/admin/product' Component={Product}></Route>
         <Route path='/admin/employee' Component={Employee}></Route>

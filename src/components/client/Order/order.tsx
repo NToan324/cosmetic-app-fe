@@ -5,9 +5,9 @@ import BarCode from '@/components/client/Order/components/barcode'
 const Product = () => {
   return (
     <div className='p-4'>
-      <div className='flex justify-between items-start gap-4'>
+      <div className='flex flex-wrap justify-between items-start gap-4'>
         <div className='flex-1/2 flex flex-col justify-between items-start gap-4'>
-          <div className='flex flex-col justify-start items-start bg-white p-5 rounded-2xl w-full h-[220px]'>
+          <div className='flex flex-col justify-start items-start bg-white p-5 rounded-2xl w-full min-h-[220px]'>
             <h1 className='text-2xl font-bold'>Barcode</h1>
             <BarCode />
           </div>

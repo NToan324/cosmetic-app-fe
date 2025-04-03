@@ -1,14 +1,14 @@
 import ScanQRCodeDialog from '@/components/ui/dialogScanCode'
 const BarCode = () => {
   return (
-    <div className='w-full flex justify-between items-start gap-4'>
+    <div className='w-full flex-wrap flex justify-between items-start gap-4'>
       <div className='flex flex-col justify-between items-start gap-4'>
         <p className='text-black/40'>Scan QR Code</p>
         <ScanQRCodeDialog />
       </div>
       <div className='flex flex-col justify-between items-start gap-4'>
         <p className='text-black/40'>Or enter the barcode</p>
-        <div className='flex justify-between items-center gap-4'>
+        <div className='flex flex-wrap justify-between items-center gap-4'>
           <input
             type='text'
             placeholder='Product code'
