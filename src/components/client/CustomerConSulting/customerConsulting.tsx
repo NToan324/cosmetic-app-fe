@@ -11,9 +11,9 @@ const CustomerConsultation = () => {
       <div className='flex justify-start items-center gap-4 w-full'>
         <h1 className='text-2xl font-bold text-start'>Customer Consulting</h1>
       </div>
-      <div className='w-full flex justify-between items-start gap-4'>
-        <div className='flex-1/3 p-4 bg-white rounded-2xl flex flex-col justify-start items-start gap-4'>
-          <ul className='flex flex-col justify-start items-start gap-4 text-start'>
+      <div className='w-full flex flex-col justify-between items-start gap-4'>
+        <div className='p-4 bg-white rounded-2xl flex justify-start items-start gap-4'>
+          <ul className='flex justify-start items-start gap-4 text-start'>
             <li
               className={`${selectOptionMenu === CONSULTING_CUSTOMER_STATUS.CREATE ? 'bg-[#ffe3c9] text-primary' : 'bg-white'} py-2 px-4 bg-[#ffe3c9] rounded-2xl cursor-pointer`}
               onClick={() => {

@@ -18,7 +18,7 @@ const History = () => {
   return (
     <div className='p-4'>
       <div className='bg-white rounded-xl p-4 shadow-md'>
-        <h1 className='text-2xl font-bold text-start'>Order History</h1>
+        <h1 className='text-2xl font-bold text-start mb-4'>Order History</h1>
         <Table>
           <TableHeader>
             <TableRow>
