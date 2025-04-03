@@ -13,8 +13,10 @@ import Product from '@/pages/admin/admin_product'
 import Employee from '@/pages/admin/admin_employee'
 import Customer from '@/pages/admin/admin_customer'
 import Invoice from '@/pages/admin/admin_invoice'
-import Event from '@/pages/admin/admin_event'
 import Statistic from '@/pages/admin/admin_statistic'
+
+import Login from '@/pages/auth/login'
+import SignUp from '@/pages/auth/signup'
 
 function App() {
   return (
@@ -33,8 +35,10 @@ function App() {
         <Route path='/admin/employee' Component={Employee}></Route>
         <Route path='/admin/customer' Component={Customer}></Route>
         <Route path='/admin/invoice' Component={Invoice}></Route>
-        <Route path='/admin/event' Component={Event}></Route>
         <Route path='/admin/statistic' Component={Statistic}></Route>
+
+        <Route path='/login' Component={Login}></Route>
+        <Route path='/signup' Component={SignUp}></Route>
       </Routes>
     </Router>
   )

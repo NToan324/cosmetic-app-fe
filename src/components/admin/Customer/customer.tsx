@@ -216,19 +216,19 @@ const CustomerPage = () => {
                 Phone
                 <Button onClick={(e) => handleFilterClick(e, 'phone')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Date Joined
                 <Button onClick={(e) => handleFilterClick(e, 'dateJoined')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Transaction
                 <Button onClick={(e) => handleFilterClick(e, 'transaction')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Point
                 <Button onClick={(e) => handleFilterClick(e, 'point')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Rank
                 <Button onClick={(e) => handleFilterClick(e, 'rank')}>&gt;</Button>
               </TableCell>
@@ -246,12 +246,12 @@ const CustomerPage = () => {
                 <TableCell>{customer.id}</TableCell>
                 <TableCell>{customer.name}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                <TableCell>
                   {customer.dateJoined.toLocaleDateString()}
                 </TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{customer.transaction}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{customer.point}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                <TableCell>{customer.transaction}</TableCell>
+                <TableCell>{customer.point}</TableCell>
+                <TableCell>
                   <Chip
                     label={customer.rank}
                     sx={{

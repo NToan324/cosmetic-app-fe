@@ -196,15 +196,15 @@ const EmployeePage = () => {
                 Phone Number
                 <Button onClick={(e) => handleFilterClick(e, 'stock')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Email
                 <Button onClick={(e) => handleFilterClick(e, 'original')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Salary
                 <Button onClick={(e) => handleFilterClick(e, 'selling')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Status
                 <Button onClick={(e) => handleFilterClick(e, 'status')}>&gt;</Button>
               </TableCell>
@@ -230,9 +230,9 @@ const EmployeePage = () => {
                   </div>
                 </TableCell>
                 <TableCell>{employee.phone}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>${employee.email}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>${employee.salary}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                <TableCell>${employee.email}</TableCell>
+                <TableCell>${employee.salary}</TableCell>
+                <TableCell>
                   <span
                     style={{
                       color: employee.status === 'Working' ? 'green' : 'red',

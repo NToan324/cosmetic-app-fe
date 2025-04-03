@@ -184,15 +184,15 @@ const ProductPage = () => {
                 Stock
                 <Button onClick={(e) => handleFilterClick(e, 'stock')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Original Price
                 <Button onClick={(e) => handleFilterClick(e, 'original')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Selling Price
                 <Button onClick={(e) => handleFilterClick(e, 'selling')}>&gt;</Button>
               </TableCell>
-              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+              <TableCell>
                 Status
                 <Button onClick={(e) => handleFilterClick(e, 'status')}>&gt;</Button>
               </TableCell>
@@ -218,9 +218,9 @@ const ProductPage = () => {
                   </div>
                 </TableCell>
                 <TableCell>{product.stock}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>${product.original}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>${product.selling}</TableCell>
-                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                <TableCell>${product.original}</TableCell>
+                <TableCell>${product.selling}</TableCell>
+                <TableCell>
                   <span
                     style={{
                       color: product.status === 'On Sale' ? 'green' : 'red',
