@@ -1,9 +1,12 @@
 import '@/App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+
 import HomePage from '@/pages/client/homePage'
 import CategoryPage from '@/pages/client/categoryPage'
 import OrderPage from '@/pages/client/orderPage'
 import PaymentPage from '@/pages/client/paymentPage'
-import { BrowserRouter as Router, Routes, Route } from 'react-router'
+import HistoryPage from '@/pages/client/historyPage'
+import UserPage from '@/pages/client/userPage'
 
 import Dashboard from './pages/admin/admin'
 import Product from './pages/admin/admin_product'
@@ -20,6 +23,8 @@ function App() {
         <Route path='/category' Component={CategoryPage}></Route>
         <Route path='/order' Component={OrderPage}></Route>
         <Route path='/order/payment' Component={PaymentPage}></Route>
+        <Route path='/history' Component={HistoryPage}></Route>
+        <Route path='/customer-consulting' Component={UserPage}></Route>
 
         <Route path='/admin/dashboard' Component={Dashboard}></Route>
         <Route path='/admin/product' Component={Product}></Route>

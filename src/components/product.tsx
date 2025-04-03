@@ -1,3 +1,5 @@
+import { formatCurrency } from '@/helpers'
+
 interface ProductProps {
   name: string
   price: number
@@ -13,7 +15,7 @@ const Product = ({ name, price, quantity, image }: ProductProps) => {
         </div>
         <div className='flex-1 flex flex-col justify-between items-start'>
           <p className='text-black text-base text-start text-ellipsis'>{name}</p>
-          <span className='text-primary text-base'>{price}đ</span>
+          <span className='text-primary text-base'>{formatCurrency(price)}</span>
         </div>
       </div>
       <div className='flex justify-between items-center w-full'>

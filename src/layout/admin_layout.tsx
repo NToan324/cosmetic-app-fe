@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import SideBar from '../components/admin/admin_sidebar'
-import Header from '../components/header'
+import SideBar from '@/components/admin/admin_sidebar'
+import Header from '@/components/header'
 
 interface LayoutProps {
   children: ReactElement | ReactElement[]
