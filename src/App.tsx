@@ -5,11 +5,13 @@ import OrderPage from '@/pages/client/orderPage'
 import PaymentPage from '@/pages/client/paymentPage'
 import { BrowserRouter as Router, Routes, Route } from 'react-router'
 
-import Dashboard from './pages/admin/admin'
-import Product from './pages/admin/admin_product'
-import Employee from './pages/admin/admin_employee'
-import Customer from './pages/admin/admin_customer'
-import Invoice from './pages/admin/admin_invoice'
+import Dashboard from '@/pages/admin/admin'
+import Product from '@/pages/admin/admin_product'
+import Employee from '@/pages/admin/admin_employee'
+import Customer from '@/pages/admin/admin_customer'
+import Invoice from '@/pages/admin/admin_invoice'
+import Event from '@/pages/admin/admin_event'
+import Statistic from '@/pages/admin/admin_statistic'
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
         <Route path='/admin/employee' Component={Employee}></Route>
         <Route path='/admin/customer' Component={Customer}></Route>
         <Route path='/admin/invoice' Component={Invoice}></Route>
+        <Route path='/admin/event' Component={Event}></Route>
+        <Route path='/admin/statistic' Component={Statistic}></Route>
       </Routes>
     </Router>
   )
