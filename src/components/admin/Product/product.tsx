@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, ChangeEvent } from 'react'
 import {
   Table,
   TableBody,
@@ -18,7 +18,8 @@ import {
   Chip
 } from '@mui/material'
 import { CiCirclePlus } from 'react-icons/ci'
-import ProductDialog from './components/dialog' // Thêm import của ProductDialog
+import { IoSearch } from 'react-icons/io5'
+import ProductDialog from '@/components/admin/Product/components/dialog' // Thêm import của ProductDialog
 
 // Thay thế bằng đường dẫn ảnh thực tế
 import Stuff from '@/assets/images/product.png'
@@ -35,26 +36,32 @@ interface Product {
   stock: number
   image: string
   des: string
+  date: Date
 }
 
 // Dữ liệu mẫu
 const products = Array(10)
   .fill(null)
-  .map((_, index) => ({
-    id: index + 1,
-    image: Stuff,
-    name: 'Kẹo kera',
-    code: 'SP001',
-    category: 'A',
-    original: 1 + index,
-    selling: 300 + index * 2,
-    stock: 10 + index,
-    status: ['On Sale', 'Stop Selling'][index % 2],
-    des: 'UIIAIUUIIAI'
-  }))
+  .map((_, index) => {
+    const stock = Math.floor(Math.random() * 15) // random từ 0 đến 14
+    return {
+      id: index + 1,
+      image: Stuff,
+      name: 'Kẹo kera',
+      code: 'SP001',
+      category: 'A',
+      original: 1 + index,
+      selling: 300 + index * 2,
+      stock: stock,
+      status: stock === 0 ? 'Stop Selling' : 'On Sale',
+      des: 'UIIAIUUIIAI',
+      date: new Date(2025, index % 12, index + 1)
+    }
+  })
 
 const ProductPage = () => {
   const [filters, setFilters] = useState<Record<string, string[]>>({})
+  const [searchTerm, setSearchTerm] = useState('')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [selectedColumn, setSelectedColumn] = useState<string | null>(null)
 
@@ -95,16 +102,31 @@ const ProductPage = () => {
       return newFilters
     })
   }
-
-  // Lọc sản phẩm dựa trên tất cả các bộ lọc (cơ chế AND)
-  const filteredProducts = products.filter((product) =>
-    Object.keys(filters).every((col) => {
+  // Handle search input change
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value)
+  }
+  // Lọc nhân viên dựa trên search và các bộ lọc (cơ chế AND)
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      searchTerm === '' ||
+      Object.values(product).some((value) =>
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
+  
+    const matchesFilters = Object.keys(filters).every((col) => {
       if (filters[col].length === 0) return true
+  
+      // Nếu đang lọc cột Name, sử dụng định dạng "name - code"
       const productValue =
-        col === 'name' ? `${product.name} - ${product.code}` : product[col as keyof Product]?.toString()
+        col === 'name'
+          ? `${product.name} - ${product.code}`
+          : product[col as keyof Product]?.toString()
       return filters[col].includes(productValue)
     })
-  )
+  
+    return matchesSearch && matchesFilters
+  })
 
   // Mở Dialog Thêm Sản Phẩm
   const openDialogForAdd = () => {
@@ -128,29 +150,24 @@ const ProductPage = () => {
     console.log('Save product', product)
   }
 
-  // Lấy các giá trị duy nhất của cột (dựa trên dữ liệu đã áp dụng lọc ở cột khác)
-  const getUniqueOptions = (column: string): string[] => {
-    const filteredByOtherColumns = products.filter((product) =>
-      Object.keys(filters).every((col) => {
-        if (col === column) return true
-        const productValue =
-          col === 'name' ? `${product.name} - ${product.code}` : product[col as keyof Product]?.toString()
-        return filters[col].length === 0 || filters[col].includes(productValue)
-      })
-    )
-    const options = filteredByOtherColumns.map((product) =>
-      column === 'name' ? `${product.name} - ${product.code}` : product[column as keyof Product]?.toString()
-    )
-    return Array.from(new Set(options))
-  }
+// Lấy các giá trị duy nhất của cột dựa trên danh sách đã được lọc (bao gồm cả search và các bộ lọc khác)
+const getUniqueOptions = (column: string): string[] => {
+  const options = filteredProducts.map((product) =>
+    column === 'name'
+      ? `${product.name} - ${product.code}`
+      : product[column as keyof Product]?.toString()
+  )
+  return Array.from(new Set(options))
+}
 
   return (
     <div className='p-4 pt-8'>
       {/* Header */}
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-        <Button variant='contained' startIcon={<CiCirclePlus />} onClick={openDialogForAdd}>
-          ADD
+        <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={openDialogForAdd}>
+          ADD PRODUCT
         </Button>
+
         {/* Hiển thị danh sách bộ lọc đang được chọn */}
         <Box>
           {Object.entries(filters).map(([column, values]) =>
@@ -166,7 +183,21 @@ const ProductPage = () => {
         </Box>
       </Box>
       <div className='border-t border-gray-300 w-full'></div>
-      <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Products</h2>
+      <Box display='flex' justifyContent='space-between' alignItems='center' my={1}>
+        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Products</h2>
+        <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
+                <IoSearch size={25} color='black' />
+                <input
+                  type='text'
+                  placeholder='Search'
+                  className='text-black border-none outline-none w-full hidden md:block'
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+          </div>
+      </Box>
+      
+
 
       {/* Bảng */}
       <TableContainer component={Paper}>
@@ -217,16 +248,28 @@ const ProductPage = () => {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{product.stock}</TableCell>
+                <TableCell>
+                <span
+                  className='rounded-xl py-2 px-4'
+                  style={{
+                    color: product.stock === 0 ? '#808080' : 'inherit',
+                    backgroundColor: product.stock === 0 ? '#D3D3D3' : 'inherit',
+                    padding: '4px 8px', // Thêm padding cho đẹp
+                  }}
+                >
+                  {product.stock === 0 ? 'Out of Stock' : product.stock}
+                </span>
+                  
+
+                </TableCell>
                 <TableCell>${product.original}</TableCell>
                 <TableCell>${product.selling}</TableCell>
                 <TableCell>
                   <span
+                    className='rounded-xl py-2 px-4'
                     style={{
                       color: product.status === 'On Sale' ? 'green' : 'red',
                       backgroundColor: product.status === 'On Sale' ? '#c8e6c9' : '#ffcdd2',
-                      borderRadius: '4px',
-                      padding: '4px 8px'
                     }}
                   >
                     {product.status}

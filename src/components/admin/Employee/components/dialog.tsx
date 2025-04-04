@@ -9,12 +9,12 @@ import {
   MenuItem,
   Button,
   Grid,
-  Box
+  Box,
 } from '@mui/material'
-import { MdOutlineCancel } from 'react-icons/md'
+import { RadioGroup, FormControlLabel, Radio, FormLabel } from '@mui/material';
+import { MdHistory, MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus } from 'react-icons/ci'
-import { CiImport } from 'react-icons/ci'
 import { CiCircleMinus } from 'react-icons/ci'
 import DEFAULT from '@/assets/images/default_avatar.jpg'
 
@@ -58,7 +58,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
     phone: employee?.phone || '',
     idpp: employee?.idpp || '',
     addr: employee?.addr || '',
-    role: employee?.role || '',
+    role: employee?.role || 'admin',
     user: employee?.user || '',
     salary: employee ? Number(employee.salary) : 0,
     datejoined: employee ? employee.datejoined.toISOString().slice(0, 10) : '',
@@ -98,12 +98,12 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
         phone: '',
         idpp: '',
         addr: '',
-        role: '',
+        role: 'admin',
         user: '',
         salary: 0,
         datejoined: '',
         status: 'Working',
-        active: 'Active'
+        active: 'notactive'
       })
     }
   }, [employee])
@@ -153,198 +153,209 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
       </DialogTitle>
       <Box className='border-t border-gray-300 w-full' />
       <DialogContent>
-        <Grid container spacing={2}>
           {/* Hình ảnh nhân viên */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Box display='flex' justifyContent='center'>
-              <Box
-                component='img'
-                src={formData.image || DEFAULT}
-                alt='Employee Image'
-                sx={{ width: '20rem', height: '20rem', borderRadius: '8px', objectFit: 'cover' }}
+          <Grid container spacing={2}>
+            <Grid size={{xs:12, md:4}} className='flex justify-center'>
+              <Box display='flex'>
+                <Box
+                  component='img'
+                  src={formData.image || DEFAULT}
+                  alt='Employee Image'
+                  sx={{ width: '12rem', height: '12rem', borderRadius: '8px', objectFit: 'cover' }}
+                />
+              </Box>
+            </Grid>
+            <Grid size={{xs:12, md:8}}>
+              <TextField
+                fullWidth
+                margin='dense'
+                label='Name'
+                name='name'
+                value={formData.name}
+                onChange={handleChange}
+                sx={{ mt: 4 }}
               />
-            </Box>
-            <Box sx={{ textAlign: 'center', mt: 1 }}>
-              <Button variant='contained' startIcon={<CiImport />} onClick={onClose} className='!bg-gray-400'>
-                Import
-              </Button>
-            </Box>
-          </Grid>
-
-          {/* Thông tin nhân viên */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Grid container spacing={2}>
-              {/* Row 1: Name - Code */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Name'
-                  name='name'
-                  value={formData.name}
-                  onChange={handleChange}
-                />
+              <Grid container spacing={2}>
+                <Grid size={{xs:12, md:6}}>
+                  <TextField                  
+                    fullWidth
+                    margin='dense'
+                    label='Birth'
+                    name='Birth'
+                    type='date'
+                    value={formData.Birth}
+                    onChange={handleChange}
+                    sx={{ mt: 4}}
+                  />
+                </Grid>
+                <Grid size={{xs:12, md:6}}>
+                  <FormLabel component="legend" sx={{ mt: 4 }}>Gender</FormLabel>
+                    <RadioGroup
+                      row
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                    >
+                      <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                      <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                      </RadioGroup>
+                </Grid>
+                
+              
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Code'
-                  name='code'
-                  value={formData.code}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              {/* Row 2: Birth - Gender */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Birth'
-                  name='Birth'
-                  type='date'
-                  InputLabelProps={{ shrink: true }}
-                  value={formData.Birth}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Select
-                  fullWidth
-                  margin='dense'
-                  label='Gender'
-                  name='gender'
-                  value={formData.gender}
-                  onChange={() => handleChange}
-                >
-                  <MenuItem value='Male'>Male</MenuItem>
-                  <MenuItem value='Female'>Female</MenuItem>
-                  <MenuItem value='Other'>Other</MenuItem>
-                </Select>
-              </Grid>
-
-              {/* Row 3: Email - Phone */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Email'
-                  name='email'
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Phone'
-                  name='phone'
-                  value={formData.phone}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              {/* Row 4: IDPP - Address */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='IDPP'
-                  name='idpp'
-                  value={formData.idpp}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Address'
-                  name='addr'
-                  value={formData.addr}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              {/* Row 5: Role - Username */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Role'
-                  name='role'
-                  value={formData.role}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Username'
-                  name='user'
-                  value={formData.user}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              {/* Row 6: Salary - Date Joined */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Salary'
-                  name='salary'
-                  type='number'
-                  value={formData.salary}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Date Joined'
-                  name='datejoined'
-                  type='date'
-                  InputLabelProps={{ shrink: true }}
-                  value={formData.datejoined}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              {/* Row 7: Status - Active */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Status'
-                  name='status'
-                  value={formData.status}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Active'
-                  name='active'
-                  value={formData.active}
-                  onChange={handleChange}
-                />
-              </Grid>
+              
             </Grid>
           </Grid>
+        {/* Row 2: Birth - Gender */}
+        <Grid container columnSpacing={2}>
+          <Grid size={{xs: 12, md: 8}}>
+
+          </Grid>
+          <Grid size={{xs: 12, md: 4}}>
+
+          </Grid>
         </Grid>
+
+        {/* Row 3: Email - Phone */}
+        <Grid container columnSpacing={2}>
+          <Grid size={{xs: 12, md: 8}}>
+            <TextField
+              fullWidth
+              margin='dense'
+              label='Email'
+              name='email'
+              value={formData.email}
+              onChange={handleChange}
+              sx={{ mt: 4 }}
+            />
+          </Grid>
+          <Grid size={{xs: 12, md: 4}}>
+            <TextField
+              fullWidth
+              margin='dense'
+              label='Phone'
+              name='phone'
+              value={formData.phone}
+              onChange={handleChange}
+              sx={{ mt: 4 }}
+            />
+          </Grid>
+        </Grid>
+
+        {/* Row 4: IDPP - Address */}
+        <TextField
+          fullWidth
+          margin='dense'
+          label='IDPP'
+          name='idpp'
+          value={formData.idpp}
+          onChange={handleChange}
+          sx={{ mt: 4 }}
+        />
+
+        <TextField
+          fullWidth
+          margin='dense'
+          label='Address'
+          name='addr'
+          value={formData.addr}
+          onChange={handleChange}
+          sx={{ mt: 4 }}
+        />
+        <Box className='border-t border-gray-300 w-full mt-4' />
+        <p className='font-bold text-2xl pt-2'>Company</p>
+        {/* Row 5: Role - Username */}
+        <Select
+          fullWidth
+          margin='dense'
+          label='Role'
+          name='role'
+          value={formData.role}
+          onChange={(event) => setFormData((prev) => ({ ...prev, role: event.target.value }))}
+          sx={{ mt: 4 }}
+        >
+          <MenuItem value='admin'>Admin</MenuItem>
+          <MenuItem value='staff'>Staff</MenuItem>
+        </Select>
+
+{employee? (<>
+  <Grid container columnSpacing={2}>
+            <Grid size={{xs: 12, md: 8}}>
+              <TextField
+                fullWidth
+                margin='dense'
+                label='Username'
+                name='user'
+                value={formData.user}
+                onChange={handleChange}
+                sx={{ mt: 4 }}
+              />
+            </Grid>
+            <Grid size={{xs: 12, md: 4}}>
+              <FormLabel component="legend" sx={{ mt: 4 }}>Status</FormLabel>
+              <RadioGroup
+                row
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <FormControlLabel value="Working" control={<Radio />} label="Working" />
+                <FormControlLabel value="Disable" control={<Radio />} label="Disable" />
+              </RadioGroup>
+            </Grid>
+          </Grid>
+        </>):('')}
+        
+
+        <TextField
+          fullWidth
+          margin='dense'
+          label='Salary'
+          name='salary'
+          type='number'
+          value={formData.salary}
+          onChange={handleChange}
+          sx={{ mt: 4 }}
+        />
+  {employee? (<>
+  <Grid container columnSpacing={2}>
+          <Grid size={{xs: 12, md: 8}}>
+            <TextField
+              fullWidth
+              margin='dense'
+              label='Date Joined'
+              name='datejoined'
+              value={formData.datejoined}
+              onChange={handleChange}
+              sx={{ mt: 4 }}
+            />
+          </Grid>
+          <Grid size={{xs: 12, md: 4}}>
+            <FormLabel component="legend" sx={{ mt: 4 }}>Activation Status</FormLabel>
+            <RadioGroup
+              row
+              name="active"
+              value={formData.active}
+              onChange={handleChange}
+            >
+              <FormControlLabel value="active" control={<Radio />} label="Active" />
+              <FormControlLabel value="notactive" control={<Radio />} label="Not active" />
+            </RadioGroup>
+          </Grid>
+        </Grid>
+  </>):('')}
+        
+        
       </DialogContent>
       <Box className='border-t border-gray-300 w-full' />
-      <DialogActions>
+      <DialogActions className='flex !justify-between'>
         {employee ? (
           <>
-            <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={handleDelete}>
+          <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
+              Edit History
+             </Button>
+             <div className='flex gap-2'>
+              <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={handleDelete}>
               Disable
             </Button>
             <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose} className='text-white'>
@@ -358,6 +369,8 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
             >
               Save
             </Button>
+             </div>
+            
           </>
         ) : (
           <>

@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, ChangeEvent } from 'react'
 import {
   Table,
   TableBody,
@@ -18,7 +18,8 @@ import {
   Chip
 } from '@mui/material'
 import { CiCirclePlus } from 'react-icons/ci'
-import CustomerDialog from './components/dialog' // Dialog cho Customer
+import { IoSearch } from 'react-icons/io5'
+import CustomerDialog from '@/components/admin/Customer/components/dialog' // Dialog cho Customer
 
 // Định nghĩa kiểu dữ liệu cho Customer
 interface Customer {
@@ -51,20 +52,21 @@ const customers: Customer[] = Array(10)
 const getRankColor = (rank: Customer['rank']) => {
   switch (rank) {
     case 'Bronze':
-      return '#cd7f32'
+      return { textColor: 'brown', bgColor: 'rgba(216, 155, 99, 0.8)' }
     case 'Silver':
-      return '#C0C0C0'
+      return { textColor: 'gray', bgColor: 'rgba(211, 211, 211, 0.8)' }
     case 'Gold':
-      return '#FFD700'
+      return { textColor: '#FF8000', bgColor: 'rgba(245, 224, 110, 0.8)' }
     case 'Diamond':
-      return '#b9f2ff'
+      return { textColor: '#0080FF', bgColor: 'rgba(224, 247, 255, 0.8)' }
     default:
-      return 'default'
+      return { textColor: '#000', bgColor: 'rgba(204, 204, 204, 0.8)' }
   }
 }
 
 const CustomerPage = () => {
   const [filters, setFilters] = useState<Record<string, string[]>>({})
+  const [searchTerm, setSearchTerm] = useState('')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [selectedColumn, setSelectedColumn] = useState<string | null>(null)
 
@@ -87,7 +89,9 @@ const CustomerPage = () => {
     if (!selectedColumn) return
     setFilters((prev) => {
       const current = prev[selectedColumn] || []
-      const newValues = current.includes(value) ? current.filter((v) => v !== value) : [...current, value]
+      const newValues = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value]
       return {
         ...prev,
         [selectedColumn]: newValues
@@ -103,15 +107,26 @@ const CustomerPage = () => {
     })
   }
 
-  // Lọc Customer theo tất cả các bộ lọc (AND)
-  const filteredCustomers = customers.filter((customer) =>
-    Object.keys(filters).every((col) => {
+  // Handle search input change
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value)
+  }
+
+  // Lọc Customer theo search và các bộ lọc (cơ chế AND)
+  const filteredCustomers = customers.filter((customer) => {
+    const matchesSearch =
+      searchTerm === '' ||
+      Object.values(customer).some((value) =>
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
+
+    const matchesFilters = Object.keys(filters).every((col) => {
       if (filters[col].length === 0) return true
       let customerValue: string
       if (col === 'name') {
         customerValue = customer.name
       } else if (col === 'phone') {
-        customerValue = customer[col as keyof Customer] as string
+        customerValue = customer.phone
       } else if (col === 'dateJoined') {
         customerValue = customer.dateJoined.toDateString()
       } else if (col === 'transaction' || col === 'point' || col === 'id') {
@@ -123,7 +138,23 @@ const CustomerPage = () => {
       }
       return filters[col].includes(customerValue)
     })
-  )
+
+    return matchesSearch && matchesFilters
+  })
+
+  // Lấy các giá trị duy nhất của một cột cho bộ lọc dựa trên danh sách đã được lọc (bao gồm cả search)
+  const getUniqueOptions = (column: string): string[] => {
+    const options = filteredCustomers.map((customer) => {
+      if (column === 'name') return customer.name
+      else if (column === 'phone') return customer.phone
+      else if (column === 'dateJoined') return customer.dateJoined.toDateString()
+      else if (column === 'transaction' || column === 'point' || column === 'id')
+        return customer[column as keyof Customer].toString()
+      else if (column === 'rank') return customer.rank
+      return ''
+    })
+    return Array.from(new Set(options))
+  }
 
   const openDialogForAdd = () => {
     setSelectedCustomer(null)
@@ -143,51 +174,18 @@ const CustomerPage = () => {
     console.log('Save customer', customer)
   }
 
-  // Lấy các giá trị duy nhất của một cột cho bộ lọc
-  const getUniqueOptions = (column: string): string[] => {
-    const filteredByOtherColumns = customers.filter((customer) =>
-      Object.keys(filters).every((col) => {
-        if (col === column) return true
-        let customerValue: string
-        if (col === 'name') {
-          customerValue = customer.name
-        } else if (col === 'phone') {
-          customerValue = customer[col as keyof Customer] as string
-        } else if (col === 'dateJoined') {
-          customerValue = customer.dateJoined.toDateString()
-        } else if (col === 'transaction' || col === 'point' || col === 'id') {
-          customerValue = customer[col as keyof Customer].toString()
-        } else if (col === 'rank') {
-          customerValue = customer.rank
-        } else {
-          customerValue = ''
-        }
-        return filters[col].length === 0 || filters[col].includes(customerValue)
-      })
-    )
-    const options = filteredByOtherColumns.map((customer) => {
-      if (column === 'name') return customer.name
-      else if (column === 'phone') return customer[column as keyof Customer] as string
-      else if (column === 'dateJoined') return customer.dateJoined.toDateString()
-      else if (column === 'transaction' || column === 'point' || column === 'id')
-        return customer[column as keyof Customer].toString()
-      else if (column === 'rank') return customer.rank
-      return ''
-    })
-    return Array.from(new Set(options))
-  }
-
   return (
     <div className='p-4 pt-8'>
       {/* Header */}
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-        <Button variant='contained' startIcon={<CiCirclePlus />} onClick={openDialogForAdd}>
+        <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={openDialogForAdd}>
           ADD CUSTOMER
         </Button>
         <Box>
           {Object.entries(filters).map(([column, values]) =>
             values.length > 0 ? (
               <Chip
+                className='rounded-xl'
                 key={column}
                 label={`${values.join(', ')}`}
                 onDelete={() => clearFilter(column)}
@@ -198,7 +196,19 @@ const CustomerPage = () => {
         </Box>
       </Box>
       <div className='border-t border-gray-300 w-full'></div>
-      <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Customers</h2>
+      <Box display='flex' justifyContent='space-between' alignItems='center' my={1}>
+        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Customers</h2>
+        <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
+          <IoSearch size={25} color='black' />
+          <input
+            type='text'
+            placeholder='Search'
+            className='text-black border-none outline-none w-full hidden md:block'
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
+      </Box>
 
       {/* Bảng hiển thị Customer */}
       <TableContainer component={Paper}>
@@ -238,17 +248,13 @@ const CustomerPage = () => {
             {filteredCustomers.map((customer, index) => (
               <TableRow
                 key={customer.id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit'
-                }}
+                sx={{ backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit' }}
                 onClick={() => openDialogForEdit(customer)}
               >
                 <TableCell>{customer.id}</TableCell>
                 <TableCell>{customer.name}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
-                <TableCell>
-                  {customer.dateJoined.toLocaleDateString()}
-                </TableCell>
+                <TableCell>{customer.dateJoined.toLocaleDateString()}</TableCell>
                 <TableCell>{customer.transaction}</TableCell>
                 <TableCell>{customer.point}</TableCell>
                 <TableCell>
@@ -256,8 +262,8 @@ const CustomerPage = () => {
                     label={customer.rank}
                     sx={{
                       borderRadius: '4px',
-                      backgroundColor: getRankColor(customer.rank),
-                      color: '#fff',
+                      backgroundColor: getRankColor(customer.rank).bgColor,
+                      color: getRankColor(customer.rank).textColor,
                       display: { xs: 'none', md: 'table-cell' }
                     }}
                   />

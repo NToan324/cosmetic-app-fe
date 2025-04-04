@@ -17,6 +17,7 @@ import Statistic from '@/pages/admin/admin_statistic'
 
 import Login from '@/pages/auth/login'
 import SignUp from '@/pages/auth/signup'
+import Verify from '@/pages/auth/verify'
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
 
         <Route path='/login' Component={Login}></Route>
         <Route path='/signup' Component={SignUp}></Route>
+        <Route path='/verify' Component={Verify}></Route>
       </Routes>
     </Router>
   )
