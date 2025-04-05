@@ -14,6 +14,7 @@ import {
 import { MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus } from 'react-icons/ci'
+import { CiImport } from 'react-icons/ci'
 import { CiCircleMinus } from 'react-icons/ci'
 import { MdHistory } from "react-icons/md";
 import DEFAULT from '@/assets/images/default_product.png'
