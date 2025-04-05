@@ -18,6 +18,8 @@ import Statistic from '@/pages/admin/admin_statistic'
 import Login from '@/pages/auth/login'
 import SignUp from '@/pages/auth/signup'
 import Verify from '@/pages/auth/verify'
+import Password_Setting from '@/pages/auth/passwordsetting'
+import Forgot_Password from '@/pages/auth/forgotpassword'
 
 function App() {
   return (
@@ -39,9 +41,11 @@ function App() {
         <Route path='/admin/invoice' Component={Invoice}></Route>
         <Route path='/admin/statistic' Component={Statistic}></Route>
 
-        <Route path='/login' Component={Login}></Route>
-        <Route path='/signup' Component={SignUp}></Route>
+        <Route path='/auth/login' Component={Login}></Route>
+        <Route path='/auth/signup' Component={SignUp}></Route>
         <Route path='/verify' Component={Verify}></Route>
+        <Route path='/auth/passwordsetting' Component={Password_Setting}></Route>
+        <Route path='/auth/forgotpassword' Component={Forgot_Password}></Route>      
       </Routes>
     </Router>
   )
