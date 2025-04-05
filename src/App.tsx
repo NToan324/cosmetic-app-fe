@@ -38,11 +38,13 @@ function App() {
         <Route path='/admin/product' Component={Product}></Route>
         <Route path='/admin/employee' Component={Employee}></Route>
         <Route path='/admin/customer' Component={Customer}></Route>
-        <Route path='/admin/invoice' Component={Invoice}></Route>
+        <Route path='/admin/invoice' Component={Invoice}></Route>z
         <Route path='/admin/statistic' Component={Statistic}></Route>
 
-        <Route path='/auth/login' Component={Login}></Route>
-        <Route path='/auth/signup' Component={SignUp}></Route>
+        <Route path='/auth/client/login' Component={Login}></Route>
+        <Route path='/auth/employee/login' Component={Login}></Route>
+        <Route path='/auth/client/signup' Component={SignUp}></Route>
+
         <Route path='/verify' Component={Verify}></Route>
         <Route path='/auth/passwordsetting' Component={Password_Setting}></Route>
         <Route path='/auth/forgotpassword' Component={Forgot_Password}></Route>      
