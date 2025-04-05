@@ -39,8 +39,10 @@ function App() {
         <Route path='/admin/invoice' Component={Invoice}></Route>
         <Route path='/admin/statistic' Component={Statistic}></Route>
 
-        <Route path='/login' Component={Login}></Route>
-        <Route path='/signup' Component={SignUp}></Route>
+        <Route path='/auth/client/login' Component={Login}></Route>
+        <Route path='/auth/employee/login' Component={Login}></Route>
+        <Route path='/auth/client/signup' Component={SignUp}></Route>
+
         <Route path='/verify' Component={Verify}></Route>
       </Routes>
     </Router>

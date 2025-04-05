@@ -4,12 +4,11 @@ import { HiOutlineArchiveBox } from 'react-icons/hi2'
 import { IoDocumentTextOutline } from 'react-icons/io5'
 import { TbReportMedical } from 'react-icons/tb'
 import { FiSettings } from 'react-icons/fi'
-import { TbLogout } from 'react-icons/tb'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
 import { IoIosArrowBack } from 'react-icons/io'
-
+import DialogSignout from '@/components/ui/dialogSignout'
 const SideBar = () => {
   const location = useLocation()
   const { isOpen, setIsOpen } = useContext(AppContext)
@@ -19,8 +18,7 @@ const SideBar = () => {
     { name: 'Order', icon: IoDocumentTextOutline, link: '/order' },
     { name: 'History', icon: HiOutlineArchiveBox, link: '/history' },
     { name: 'Consulting', icon: TbReportMedical, link: '/customer-consulting' },
-    { name: 'Setting', icon: FiSettings, link: '/setting' },
-    { name: 'Logout', icon: TbLogout, link: '/logout' }
+    { name: 'Setting', icon: FiSettings, link: '/setting' }
   ]
   return (
     <div
@@ -60,6 +58,7 @@ const SideBar = () => {
             {index === 3 && <div className='border-t border-gray-300 w-full my-6'></div>}
           </div>
         ))}
+        <DialogSignout />
       </ul>
     </div>
   )
