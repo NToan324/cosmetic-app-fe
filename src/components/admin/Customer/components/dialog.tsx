@@ -5,16 +5,14 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Select,
-  MenuItem,
   Button,
   Grid,
-  Box,
 } from "@mui/material";
-import { MdOutlineCancel } from "react-icons/md";
+import { MdHistory, MdOutlineCancel } from "react-icons/md";
 import { LuRecycle } from "react-icons/lu";
 import { CiCirclePlus } from "react-icons/ci";
 import { CiCircleMinus } from "react-icons/ci";
+
 
 // Định nghĩa kiểu dữ liệu cho Customer
 interface Customer {
@@ -126,19 +124,24 @@ const CustomerDialog: React.FC<CustomerDialogProps> = ({
         </Grid>
         <Grid container columnSpacing={2}>
             <Grid size={{xs: 12, md:4}}>
-                <TextField fullWidth margin="dense" label="Transaction" name="transaction" value={formData.transaction} onChange={handleChange}/>
+                <TextField fullWidth margin="dense" label="Transaction" name="transaction" value={formData.transaction} onChange={handleChange} disabled/>
             </Grid>
             <Grid size={{xs: 12, md:4}}>
-                <TextField fullWidth margin="dense" label="Point" name="point" value={formData.point} onChange={handleChange}/>
+                <TextField fullWidth margin="dense" label="Point" name="point" value={formData.point} onChange={handleChange} disabled/>
             </Grid>
             <Grid size={{xs: 12, md:4}}>
-                <TextField fullWidth margin="dense" label="Rank" name="rank" value={formData.rank} onChange={handleChange}/>
+                <TextField fullWidth margin="dense" label="Rank" name="rank" value={formData.rank} onChange={handleChange} disabled/>
             </Grid>
         </Grid>
         <Grid container columnSpacing={2}>
-            <Grid size={{xs: 12, md:8}}></Grid>
             <Grid size={{xs: 12, md:4}}>
-                <TextField fullWidth margin="dense" label="Date Joined" name="dateJoined" value={formData.dateJoined} onChange={handleChange}/>
+                <TextField fullWidth margin="dense" label="Date Joined" name="dateJoined" value={formData.dateJoined} onChange={handleChange} disabled/>
+            </Grid>
+            <Grid size={{xs: 12, md:4}} className='flex justify-center my-2'>
+              <Button variant="contained" fullWidth className="!bg-gray-400">Transaction History</Button>
+            </Grid>
+            <Grid size={{xs: 12, md:4}} className='flex justify-center my-2'>
+              <Button variant="contained" fullWidth>Reset Password</Button>
             </Grid>
         </Grid>
         </>):(<>
@@ -155,10 +158,15 @@ const CustomerDialog: React.FC<CustomerDialogProps> = ({
       </DialogContent>
       <div className="border-t border-gray-300 w-full "></div>
 
-      <DialogActions>
+      <DialogActions className="flex !justify-between">
         {customer ? (
           <>
-            <Button
+          <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
+            Edit History
+          </Button>
+          
+          <div className="flex gap-2">
+          <Button
               variant="contained"
               color="error"
               startIcon={<CiCircleMinus />}
@@ -166,25 +174,30 @@ const CustomerDialog: React.FC<CustomerDialogProps> = ({
             >
               Delete
             </Button>
-            <Button
-              variant="contained"
-              startIcon={<MdOutlineCancel />}
-              onClick={onClose}
-              className="text-white"
-            >
-              Close
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "#4caf50" }}
-              startIcon={<LuRecycle />}
-              onClick={handleSave}
-            >
-              Save
-            </Button>
+              <Button
+                variant="contained"
+                startIcon={<MdOutlineCancel />}
+                onClick={onClose}
+                className="text-white"
+              >
+                Close
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "#4caf50" }}
+                startIcon={<LuRecycle />}
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+          </div>
+            
+            
           </>
         ) : (
           <>
+          <div></div>
+          <div className="flex gap-2">
             <Button
               variant="contained"
               startIcon={<MdOutlineCancel />}
@@ -200,6 +213,8 @@ const CustomerDialog: React.FC<CustomerDialogProps> = ({
             >
               Add
             </Button>
+          </div>
+            
           </>
         )}
       </DialogActions>

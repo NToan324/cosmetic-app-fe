@@ -16,6 +16,7 @@ import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus } from 'react-icons/ci'
 import { CiImport } from 'react-icons/ci'
 import { CiCircleMinus } from 'react-icons/ci'
+import { MdHistory } from "react-icons/md";
 import DEFAULT from '@/assets/images/default_product.png'
 
 // Định nghĩa kiểu dữ liệu cho sản phẩm
@@ -30,6 +31,7 @@ interface Product {
   status: string
   image: string
   des: string
+  date: Date
 }
 
 // Props cho dialog
@@ -56,7 +58,8 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
     category: product?.category || 'default',
     status: product?.status || 'On Sale',
     image: product?.image || DEFAULT,
-    des: product?.image || ''
+    des: product?.image || '',
+    date: product?.date || new Date()
   })
 
   useEffect(() => {
@@ -73,7 +76,8 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         category: 'default',
         status: 'On Sale',
         image: DEFAULT,
-        des: ''
+        des: '',
+        date: new Date()
       })
     }
   }, [product])
@@ -102,7 +106,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
       {' '}
       {/* Tăng kích thước dialog */}
       <DialogTitle sx={{ textAlign: 'center' }}>
-        {product ? `Detail Product ${formData.code}` : 'Add Product'}
+        {product ? `Detail Product: ${formData.code}` : 'Add Product'}
       </DialogTitle>
       <div className='border-t border-gray-300 w-full'></div>
       <DialogContent>
@@ -117,10 +121,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 sx={{ width: '20rem', height: '20rem', borderRadius: '8px', objectFit: 'contain' }}
               />
             </div>
-            <div style={{ textAlign: 'center', marginTop: '8px' }}>
-              <Button variant='contained' startIcon={<CiImport />} onClick={onClose} className='!bg-gray-400'>
-                Import
-              </Button>
+            <div className='text-gray-400 mt-4'> {product ? `Last Updated: ${formData.date.toLocaleDateString()}` : ' '}             
             </div>
           </Grid>
 
@@ -135,7 +136,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               onChange={handleChange}
             />
 
-            <Select fullWidth margin='dense' name='category' value={formData.category} onChange={() => handleChange}>
+            <Select fullWidth margin='dense' name='category' value={formData.category} onChange={(event) => setFormData((prev) => ({...prev, category: event.target.value}))}>
               <MenuItem value='default'>Category</MenuItem>
               <MenuItem value='A'>A</MenuItem>
               <MenuItem value='B'>B</MenuItem>
@@ -187,21 +188,29 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
         </Grid>
       </DialogContent>
       <div className='border-t border-gray-300 w-full '></div>
-      <DialogActions>
+      <DialogActions className='flex !justify-between'>
         {product ? (
           <>
+            <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
+              Edit History
+            </Button>
+            <div className='flex gap-2'>
             <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={onClose}>
               Delete
             </Button>
             <Button variant='contained' className='text-white' startIcon={<MdOutlineCancel />} onClick={onClose}>
               Close
             </Button>
-            <Button variant='contained' className='!bg-green-500' startIcon={<LuRecycle />} onClick={onClose}>
+            <Button variant='contained' color='success' startIcon={<LuRecycle />} onClick={onClose}>
               Save
             </Button>
+          </div>
+            
           </>
         ) : (
           <>
+          <div></div>
+          <div className='flex gap-2'>
             <Button
               variant='contained'
               className='!bg-red-500 text-white'
@@ -210,9 +219,11 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
             >
               Close
             </Button>
-            <Button variant='contained' startIcon={<CiCirclePlus />} onClick={onClose}>
+            <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={onClose}>
               Add
             </Button>
+          </div>
+            
           </>
         )}
       </DialogActions>
