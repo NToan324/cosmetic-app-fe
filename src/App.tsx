@@ -38,7 +38,7 @@ function App() {
         <Route path='/admin/product' Component={Product}></Route>
         <Route path='/admin/employee' Component={Employee}></Route>
         <Route path='/admin/customer' Component={Customer}></Route>
-        <Route path='/admin/invoice' Component={Invoice}></Route>z
+        <Route path='/admin/invoice' Component={Invoice}></Route>
         <Route path='/admin/statistic' Component={Statistic}></Route>
 
         <Route path='/auth/client/login' Component={Login}></Route>
