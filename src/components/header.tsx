@@ -3,8 +3,9 @@ import Avatar from '@/assets/images/avatar.png'
 import { IoMenu } from 'react-icons/io5'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
+import DialogLoginChoice from './ui/dialogOptionLogin'
 
-const Search = () => {
+const Header = () => {
   const { isOpen, setIsOpen } = useContext(AppContext)
   return (
     <div className='flex justify-between items-center bg-white w-full p-4 h-[80px] gap-4'>
@@ -19,6 +20,8 @@ const Search = () => {
           />
         </div>
         <div className='flex justify-between items-center gap-2'>
+          <DialogLoginChoice />
+
           <img src={Avatar} alt='Avatar' width={45} height={45} />
           <div className='hidden flex-col justify-center items-start md:flex'>
             <h1 className='text-base'>Alberts</h1>
@@ -30,4 +33,4 @@ const Search = () => {
   )
 }
 
-export default Search
+export default Header

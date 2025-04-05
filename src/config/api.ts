@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 20000
 })
 
@@ -18,12 +18,16 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
-    // Handle response data
     return response
   },
   (error) => {
-    // Handle response error
-    return Promise.reject(error)
+    if (error.response && error.response.data) {
+      const data = error.response.data
+      const errorMessage = data.error?.message || 'An error occurred'
+      return Promise.reject(new Error(errorMessage))
+    } else {
+      return Promise.reject(new Error('Network error'))
+    }
   }
 )
 
