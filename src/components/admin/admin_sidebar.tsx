@@ -1,10 +1,9 @@
-import { LuLayoutDashboard } from 'react-icons/lu'
-import { BsBoxes } from 'react-icons/bs'
-import { FiUsers } from 'react-icons/fi'
-import { RiBillLine } from 'react-icons/ri'
-import { FaRegUser } from 'react-icons/fa'
-import { MdEvent } from 'react-icons/md'
-import { FaRegChartBar } from 'react-icons/fa'
+import { VscDashboard } from "react-icons/vsc";
+import { GoInbox } from "react-icons/go";
+import { HiOutlineUsers } from "react-icons/hi2";
+import { PiInvoice } from "react-icons/pi";
+import { HiOutlineUserGroup } from "react-icons/hi2";
+import { IoPieChartOutline } from "react-icons/io5";
 import { TbLogout } from 'react-icons/tb'
 import { NavLink, useLocation } from 'react-router-dom'
 import Avatar from '@/assets/images/avatar.png'
@@ -12,13 +11,12 @@ import Avatar from '@/assets/images/avatar.png'
 const Admin_SideBar = () => {
   const location = useLocation()
   const menu = [
-    { name: 'Dashboard', icon: LuLayoutDashboard, link: '/admin/dashboard' },
-    { name: 'Product', icon: BsBoxes, link: '/admin/product' },
-    { name: 'Employee', icon: FiUsers, link: '/admin/employee' },
-    { name: 'Customer', icon: FaRegUser, link: '/admin/customer' },
-    { name: 'Invoice', icon: RiBillLine, link: '/admin/invoice' },
-    { name: 'Event', icon: MdEvent, link: '/admin/event' },
-    { name: 'Statistic', icon: FaRegChartBar, link: '/admin/statistic' },
+    { name: 'Dashboard', icon: VscDashboard, link: '/admin/dashboard' },
+    { name: 'Product', icon: GoInbox, link: '/admin/product' },
+    { name: 'Employee', icon: HiOutlineUserGroup, link: '/admin/employee' },
+    { name: 'Customer', icon: HiOutlineUsers, link: '/admin/customer' },
+    { name: 'Invoice', icon: PiInvoice, link: '/admin/invoice' },
+    { name: 'Statistic', icon: IoPieChartOutline, link: '/admin/statistic' },
     { name: 'Logout', icon: TbLogout, link: '/logout' }
   ]
 
@@ -51,7 +49,7 @@ const Admin_SideBar = () => {
                 <item.icon size={25} className={`${isLogout ? 'text-red-500' : ''}`} />
                 <span className={`text-base ${isLogout ? 'text-red-500' : ''}`}>{item.name}</span>
               </NavLink>
-              {index === 6 && <div className='border-t border-gray-300 w-full my-6'></div>}
+              {index === 5 && <div className='border-t border-gray-300 w-full my-6'></div>}
             </div>
           )
         })}

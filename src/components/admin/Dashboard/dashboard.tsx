@@ -3,6 +3,8 @@ import { FaMoneyBillWaveAlt } from 'react-icons/fa'
 import { FaBox } from 'react-icons/fa'
 import { FaFileInvoice } from 'react-icons/fa6'
 import { FaUser } from 'react-icons/fa'
+import BarChart from '@/components/admin/Dashboard/components/barchart'
+import NewCustomer from '@/components/admin/Dashboard/components/new_customer'
 const Dashboard = () => {
   return (
     <div className='p-4 pt-8'>
@@ -12,9 +14,8 @@ const Dashboard = () => {
           <Box className='bg-white p-4 rounded-lg shadow-lg h-full'>
             <p className='font-bold'>Overview</p>
             <p className='text-red-500 font-semibold'>-99% from 2019</p>
-            <div className='mt-4'>
-              {/* Giả sử đây là biểu đồ (thay bằng thư viện Chart.js hoặc tương tự) */}
-              <img src='/your-chart-image.png' alt='Chart' className='w-full' />
+            <div className='mt-4 flex justify-center'>
+              <BarChart/>
             </div>
           </Box>
         </Grid>
@@ -93,6 +94,8 @@ const Dashboard = () => {
           </Grid>
         </Grid>
       </Grid>
+      <div className='border-t border-gray-300 w-full mt-12'></div>
+      <NewCustomer/>
     </div>
   )
 }

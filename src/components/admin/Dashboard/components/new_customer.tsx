@@ -17,56 +17,53 @@ import {
   Box,
   Chip
 } from '@mui/material'
-import { CiCirclePlus } from 'react-icons/ci'
 import { IoSearch } from 'react-icons/io5'
-import EmployeeDialog from '@/components/admin/Employee/components/dialog' // Thêm import của EmployeeDialog
+import CustomerDialog from '@/components/admin/Customer/components/dialog' // Dialog cho Customer
 
-// Thay thế bằng đường dẫn ảnh thực tế
-import Avatar from '@/assets/images/avatar.png'
-
-// Định nghĩa kiểu dữ liệu
-interface Employee {
+// Định nghĩa kiểu dữ liệu cho Customer
+interface Customer {
   id: number
-  image: string
   name: string
-  code: string
-  Birth: Date
-  gender: string
-  email: string
   phone: string
-  idpp: string
-  addr: string
-  role: string
-  user: string
-  salary: number
-  datejoined: Date
-  status: string
-  active: string
+  dateJoined: Date
+  transaction: number
+  point: number
+  rank: 'Bronze' | 'Silver' | 'Gold' | 'Diamond'
 }
 
 // Dữ liệu mẫu
-const employees = Array(10)
+const customers: Customer[] = Array(10)
   .fill(null)
-  .map((_, index) => ({
-    id: index + 1,
-    image: Avatar,
-    name: 'Mirai Emula',
-    code: 'NV001',
-    Birth: new Date(2022, index % 12, index + 1),
-    gender: 'Male',
-    email: 'Exam@gmail.com',
-    phone: '090927883920',
-    idpp: '0863828723472',
-    addr: 'Sugar Town',
-    role: 'admin',
-    user: 'user123',
-    salary: 3950000,
-    datejoined: new Date(2022, index % 12, index + 1),
-    status: 'Working',
-    active: 'active'
-  }))
+  .map((_, index) => {
+    const ranks: Customer['rank'][] = ['Bronze', 'Silver', 'Gold', 'Diamond']
+    return {
+      id: index + 1,
+      name: `Customer ${index + 1}`,
+      phone: `012345678${index}`,
+      dateJoined: new Date(2022, index % 12, index + 1),
+      transaction: 5 + index,
+      point: 100 + index * 10,
+      rank: ranks[index % ranks.length]
+    }
+  })
 
-const EmployeePage = () => {
+// Hàm trả về màu cho từng rank
+const getRankColor = (rank: Customer['rank']) => {
+  switch (rank) {
+    case 'Bronze':
+      return { textColor: 'brown', bgColor: 'rgba(216, 155, 99, 0.8)' }
+    case 'Silver':
+      return { textColor: 'gray', bgColor: 'rgba(211, 211, 211, 0.8)' }
+    case 'Gold':
+      return { textColor: '#FF8000', bgColor: 'rgba(245, 224, 110, 0.8)' }
+    case 'Diamond':
+      return { textColor: '#0080FF', bgColor: 'rgba(224, 247, 255, 0.8)' }
+    default:
+      return { textColor: '#000', bgColor: 'rgba(204, 204, 204, 0.8)' }
+  }
+}
+
+const CustomerPage = () => {
   const [filters, setFilters] = useState<Record<string, string[]>>({})
   const [searchTerm, setSearchTerm] = useState('')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -74,21 +71,19 @@ const EmployeePage = () => {
 
   // Dialog State
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
 
-  // Mở Menu khi bấm nút ">"
+  // Mở Menu lọc
   const handleFilterClick = (event: MouseEvent<HTMLButtonElement>, column: string) => {
     setAnchorEl(event.currentTarget)
     setSelectedColumn(column)
   }
 
-  // Đóng Menu
   const handleMenuClose = () => {
     setAnchorEl(null)
     setSelectedColumn(null)
   }
 
-  // Khi toggle một option trong checkbox
   const handleCheckboxToggle = (value: string) => {
     if (!selectedColumn) return
     setFilters((prev) => {
@@ -103,7 +98,6 @@ const EmployeePage = () => {
     })
   }
 
-  // Xóa lọc cho một cột (clear toàn bộ giá trị đã chọn của cột đó)
   const clearFilter = (column: string) => {
     setFilters((prev) => {
       const newFilters = { ...prev }
@@ -117,72 +111,77 @@ const EmployeePage = () => {
     setSearchTerm(event.target.value)
   }
 
-  // Lọc nhân viên dựa trên search và các bộ lọc (cơ chế AND)
-  const filteredEmployees = employees.filter((employee) => {
+  // Lọc Customer theo search và các bộ lọc (cơ chế AND)
+  const filteredCustomers = customers.filter((customer) => {
     const matchesSearch =
       searchTerm === '' ||
-      Object.values(employee).some((value) =>
+      Object.values(customer).some((value) =>
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
-  
+
     const matchesFilters = Object.keys(filters).every((col) => {
       if (filters[col].length === 0) return true
-  
-      // Nếu đang lọc cột Name, sử dụng định dạng "name - code"
-      const employeeValue =
-        col === 'name'
-          ? `${employee.name} - ${employee.code}`
-          : employee[col as keyof Employee]?.toString()
-      return filters[col].includes(employeeValue)
+      let customerValue: string
+      if (col === 'name') {
+        customerValue = customer.name
+      } else if (col === 'phone') {
+        customerValue = customer.phone
+      } else if (col === 'dateJoined') {
+        customerValue = customer.dateJoined.toDateString()
+      } else if (col === 'transaction' || col === 'point' || col === 'id') {
+        customerValue = customer[col as keyof Customer].toString()
+      } else if (col === 'rank') {
+        customerValue = customer.rank
+      } else {
+        customerValue = ''
+      }
+      return filters[col].includes(customerValue)
     })
-  
+
     return matchesSearch && matchesFilters
   })
 
-  // Lấy các giá trị duy nhất của cột dựa trên danh sách đã được lọc (bao gồm cả search và các bộ lọc khác)
+  // Lấy các giá trị duy nhất của một cột cho bộ lọc dựa trên danh sách đã được lọc (bao gồm cả search)
   const getUniqueOptions = (column: string): string[] => {
-    const options = filteredEmployees.map((employee) =>
-      column === 'name'
-        ? `${employee.name} - ${employee.code}`
-        : employee[column as keyof Employee]?.toString()
-    )
+    const options = filteredCustomers.map((customer) => {
+      if (column === 'name') return customer.name
+      else if (column === 'phone') return customer.phone
+      else if (column === 'dateJoined') return customer.dateJoined.toDateString()
+      else if (column === 'transaction' || column === 'point' || column === 'id')
+        return customer[column as keyof Customer].toString()
+      else if (column === 'rank') return customer.rank
+      return ''
+    })
     return Array.from(new Set(options))
   }
 
-  // Mở Dialog Thêm Nhân viên
   const openDialogForAdd = () => {
-    setSelectedEmployee(null)
+    setSelectedCustomer(null)
     setDialogOpen(true)
   }
 
-  // Mở Dialog Chỉnh Sửa Nhân viên
-  const openDialogForEdit = (employee: Employee) => {
-    setSelectedEmployee(employee)
+  const openDialogForEdit = (customer: Customer) => {
+    setSelectedCustomer(customer)
     setDialogOpen(true)
   }
 
-  // Đóng Dialog
   const handleDialogClose = () => {
     setDialogOpen(false)
   }
 
-  // Lưu nhân viên
-  const handleSaveEmployee = (employee: Employee) => {
-    console.log('Save employee', employee)
+  const handleSaveCustomer = (customer: Customer) => {
+    console.log('Save customer', customer)
   }
 
   return (
-    <div className='p-4 pt-8'>
+    <div className='p-4'>
       {/* Header */}
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-        <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={openDialogForAdd}>
-          ADD EMPLOYEE
-        </Button>
-        {/* Hiển thị danh sách bộ lọc đang được chọn */}
         <Box>
           {Object.entries(filters).map(([column, values]) =>
             values.length > 0 ? (
               <Chip
+                className='rounded-xl'
                 key={column}
                 label={`${values.join(', ')}`}
                 onDelete={() => clearFilter(column)}
@@ -192,9 +191,8 @@ const EmployeePage = () => {
           )}
         </Box>
       </Box>
-      <div className='border-t border-gray-300 w-full'></div>
       <Box display='flex' justifyContent='space-between' alignItems='center' my={1}>
-        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Employees</h2>
+        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Today's Customer</h2>
         <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
           <IoSearch size={25} color='black' />
           <input
@@ -206,9 +204,10 @@ const EmployeePage = () => {
           />
         </div>
       </Box>
-      {/* Bảng */}
+
+      {/* Bảng hiển thị Customer */}
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label='employee table'>
+        <Table sx={{ minWidth: 650 }} aria-label='customer table'>
           <TableHead>
             <TableRow>
               <TableCell>#</TableCell>
@@ -219,56 +218,50 @@ const EmployeePage = () => {
                 </Button>
               </TableCell>
               <TableCell>
-                Phone Number
+                Phone
                 <Button onClick={(e) => handleFilterClick(e, 'phone')}>&gt;</Button>
               </TableCell>
               <TableCell>
-                Email
-                <Button onClick={(e) => handleFilterClick(e, 'email')}>&gt;</Button>
+                Date Joined
+                <Button onClick={(e) => handleFilterClick(e, 'dateJoined')}>&gt;</Button>
               </TableCell>
               <TableCell>
-                Salary
-                <Button onClick={(e) => handleFilterClick(e, 'salary')}>&gt;</Button>
+                Transaction
+                <Button onClick={(e) => handleFilterClick(e, 'transaction')}>&gt;</Button>
               </TableCell>
               <TableCell>
-                Status
-                <Button onClick={(e) => handleFilterClick(e, 'status')}>&gt;</Button>
+                Point
+                <Button onClick={(e) => handleFilterClick(e, 'point')}>&gt;</Button>
+              </TableCell>
+              <TableCell>
+                Rank
+                <Button onClick={(e) => handleFilterClick(e, 'rank')}>&gt;</Button>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredEmployees.map((employee, index) => (
+            {filteredCustomers.map((customer, index) => (
               <TableRow
-                key={employee.id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit'
-                }}
-                onClick={() => openDialogForEdit(employee)}
+                key={customer.id}
+                sx={{ backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit' }}
+                onClick={() => openDialogForEdit(customer)}
               >
-                <TableCell>{employee.id}</TableCell>
+                <TableCell>{customer.id}</TableCell>
+                <TableCell>{customer.name}</TableCell>
+                <TableCell>{customer.phone}</TableCell>
+                <TableCell>{customer.dateJoined.toLocaleDateString()}</TableCell>
+                <TableCell>{customer.transaction}</TableCell>
+                <TableCell>{customer.point}</TableCell>
                 <TableCell>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={employee.image} alt='employee' style={{ width: 24, height: 24 }} />
-                    <div>
-                      {employee.name} <br />
-                      <span style={{ color: 'gray', fontSize: '0.875rem' }}>{employee.code}</span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>{employee.phone}</TableCell>
-                <TableCell>{employee.email}</TableCell>
-                <TableCell>${employee.salary}</TableCell>
-                <TableCell>
-                  <span
-                    style={{
-                      color: employee.status === 'Working' ? 'green' : 'red',
-                      backgroundColor: employee.status === 'Working' ? '#c8e6c9' : '#ffcdd2',
+                  <Chip
+                    label={customer.rank}
+                    sx={{
                       borderRadius: '4px',
-                      padding: '4px 8px'
+                      backgroundColor: getRankColor(customer.rank).bgColor,
+                      color: getRankColor(customer.rank).textColor,
+                      display: { xs: 'none', md: 'table-cell' }
                     }}
-                  >
-                    {employee.status}
-                  </span>
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -276,7 +269,7 @@ const EmployeePage = () => {
         </Table>
       </TableContainer>
 
-      {/* Menu lọc với checkbox */}
+      {/* Menu lọc */}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         {selectedColumn &&
           getUniqueOptions(selectedColumn).map((option, idx) => {
@@ -302,20 +295,20 @@ const EmployeePage = () => {
         )}
       </Menu>
 
-      {/* Phân trang (chỉ là demo) */}
+      {/* Phân trang */}
       <Stack spacing={2} sx={{ marginTop: 2, alignItems: 'center' }}>
         <Pagination count={5} variant='outlined' shape='rounded' />
       </Stack>
 
-      {/* Dialog Thêm/Sửa nhân viên */}
-      <EmployeeDialog
+      {/* Dialog thêm/chỉnh sửa Customer */}
+      <CustomerDialog
         open={dialogOpen}
         onClose={handleDialogClose}
-        onSave={handleSaveEmployee}
-        employee={selectedEmployee}
+        onSave={handleSaveCustomer}
+        customer={selectedCustomer}
       />
     </div>
   )
 }
 
-export default EmployeePage
+export default CustomerPage
