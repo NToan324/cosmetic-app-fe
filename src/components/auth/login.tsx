@@ -1,17 +1,103 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Grid, Typography, TextField, Button, IconButton, InputAdornment } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Banner from '@/assets/images/login_banner.jpg'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import authService from '@/services/auth'
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
+import { Role } from '@/consts'
+
+interface LoginForm {
+  phone?: string
+  email?: string
+  password: string
+}
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
   const isClient = location.pathname.includes('client')
+  const { setUser, user } = useContext(AppContext)
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken')
+    if (accessToken && user && user?.role) {
+      const role = user.role
+
+      if (Array.isArray(role) && role.includes(Role.CUSTOMER)) {
+        navigate('/home', {
+          replace: true,
+          state: {
+            role: [Role.CUSTOMER]
+          }
+        })
+      } else if (role.length > 0) {
+        navigate('/admin/dashboard', { replace: true, state: { role: [role] } })
+      }
+    }
+  }, [user, navigate])
 
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev)
+  }
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError
+  } = useForm<LoginForm>()
+
+  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+    try {
+      const response = await authService.login({
+        phone: data.phone || '',
+        password: data.password
+      })
+      if (response.status === 200) {
+        localStorage.setItem('accessToken', response.data.accessToken)
+        setUser({
+          id: response.data.user.id,
+          phone: response.data.user.phone,
+          name: response.data.user.name,
+          email: response.data.user.email,
+          role: response.data.user.role,
+          rank: response.data.user.rank,
+          point: response.data.user.point,
+          type: response.data.user.type
+        })
+        const roles = response.data.user.role
+        if (roles.includes(Role.CUSTOMER)) {
+          navigate('/home', {
+            state: {
+              role: [Role.CUSTOMER]
+            }
+          })
+        } else if (!roles.includes(Role.CUSTOMER)) {
+          navigate('/admin/dashboard', {
+            state: {
+              role: [roles]
+            }
+          })
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError('root', {
+          type: 'manual',
+          message: error.message
+        })
+      } else {
+        setError('root', {
+          type: 'manual',
+          message: 'Login failed'
+        })
+      }
+    }
   }
 
   return (
@@ -48,8 +134,23 @@ const Login = () => {
             Access your account by signing in below
           </Typography>
 
-          <Box component='form' noValidate sx={{ width: '100%', maxWidth: 400 }}>
+          <Box component='form' noValidate sx={{ width: '100%', maxWidth: 400 }} onSubmit={handleSubmit(onSubmit)}>
             <TextField
+              {...register(isClient ? 'phone' : 'email', {
+                required: isClient ? 'Phone number is required' : 'Email is required',
+                minLength: isClient
+                  ? {
+                      value: 10,
+                      message: 'Phone number must be at least 10 characters'
+                    }
+                  : undefined,
+                validate: !isClient
+                  ? (value) => {
+                      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                      return regex.test(value || '') || 'Invalid email address'
+                    }
+                  : undefined
+              })}
               fullWidth
               label={`${isClient ? 'Phone Number' : 'Email'}`}
               variant='standard'
@@ -63,7 +164,15 @@ const Login = () => {
                 }
               }}
             />
+            {errors.phone && (
+              <Typography variant='body2' color='error' textAlign={'start'}>
+                {errors.phone.message}
+              </Typography>
+            )}
             <TextField
+              {...register('password', {
+                required: 'Password is required'
+              })}
               fullWidth
               label='Password'
               variant='standard'
@@ -89,6 +198,16 @@ const Login = () => {
                 }
               }}
             />
+            {errors.password && (
+              <Typography variant='body2' color='error' textAlign={'start'}>
+                {errors.password.message}
+              </Typography>
+            )}
+            {errors.root?.message && (
+              <Typography variant='body2' color='error' textAlign={'start'}>
+                {errors.root.message.toString()}
+              </Typography>
+            )}
             <div className='w-full flex justify-end'>
               <Link
                 to={'/auth/forgot-password'}
@@ -102,7 +221,7 @@ const Login = () => {
             </div>
 
             <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-              <Button variant='contained' sx={{ mt: 2, px: 4, backgroundColor: 'orange' }}>
+              <Button type='submit' variant='contained' sx={{ mt: 2, px: 4, backgroundColor: 'orange' }}>
                 Login
               </Button>
               {isClient && (

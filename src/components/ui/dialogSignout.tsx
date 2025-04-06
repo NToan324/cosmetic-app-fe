@@ -7,10 +7,13 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import { useNavigate } from 'react-router-dom'
 import { TbLogout } from 'react-icons/tb'
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
 
 export default function DialogSignout() {
   const [open, setOpen] = React.useState(false)
   const navigate = useNavigate()
+  const { setUser } = useContext(AppContext)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -21,8 +24,22 @@ export default function DialogSignout() {
   }
 
   const handleLogout = () => {
-    navigate('/')
     setOpen(false)
+    try {
+      const user = localStorage.getItem('user')
+      const parsedUser = user ? JSON.parse(user) : null
+      const role = Array.isArray(parsedUser?.role) ? parsedUser.role : []
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('user')
+      setUser(null)
+      if (role.includes('CUSTOMER')) {
+        navigate('/auth/client/login')
+      } else if (role.length > 0) {
+        navigate('/auth/employee/login')
+      }
+    } catch (error) {
+      console.error('Error during logout:', error)
+    }
   }
   return (
     <React.Fragment>
@@ -54,7 +71,6 @@ export default function DialogSignout() {
           </Button>
           <Button
             onClick={handleLogout}
-            autoFocus
             sx={{
               color: '#ff8108'
             }}

@@ -6,7 +6,7 @@ import { AppContext } from '@/provider/appContext'
 import DialogLoginChoice from './ui/dialogOptionLogin'
 
 const Header = () => {
-  const { isOpen, setIsOpen } = useContext(AppContext)
+  const { isOpen, setIsOpen, user } = useContext(AppContext)
   return (
     <div className='flex justify-between items-center bg-white w-full p-4 h-[80px] gap-4'>
       <IoMenu size={35} className='cursor-pointer md:hidden' onClick={() => setIsOpen(!isOpen)} />
@@ -20,13 +20,17 @@ const Header = () => {
           />
         </div>
         <div className='flex justify-between items-center gap-2'>
-          <DialogLoginChoice />
-
-          <img src={Avatar} alt='Avatar' width={45} height={45} />
-          <div className='hidden flex-col justify-center items-start md:flex'>
-            <h1 className='text-base'>Alberts</h1>
-            <p className='text-sm text-black/40'>Description</p>
-          </div>
+          {user ? (
+            <>
+              <img src={Avatar} alt='Avatar' width={45} height={45} />
+              <div className='hidden flex-col justify-center items-start md:flex'>
+                <h1 className='text-base'>{user.name}</h1>
+                <p className='text-sm text-black/40'>{user.role}</p>
+              </div>
+            </>
+          ) : (
+            <DialogLoginChoice />
+          )}
         </div>
       </div>
     </div>

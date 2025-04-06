@@ -23,7 +23,7 @@ const PasswordReset = () => {
       <div className='bg-white rounded-lg shadow p-8 w-full max-w-sm'>
         {/* Header */}
         <div className='flex flex-col items-center mb-6'>
-          <Avatar sx={{ width: 80, height: 80, mt: 4, mb: 6 }} style={{ backgroundColor: 'orange' }}>
+          <Avatar sx={{ width: 80, height: 80, mt: 4, mb: 6 }} style={{ backgroundColor: '#ff8108' }}>
             <TbLockPassword style={{ fontSize: 46 }} />
           </Avatar>
           <h1 className='text-2xl font-bold'>{`${active === 'reset' ? 'Reset Your Password' : 'Change Your Password'}`}</h1>

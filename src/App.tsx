@@ -18,36 +18,44 @@ import StatisticPage from '@/pages/admin/adminStatisticPage'
 import LoginPage from '@/pages/auth/loginPage'
 import SignUpPage from '@/pages/auth/signupPage'
 import VerifyPage from '@/pages/auth/verifyCodePage'
-import PasswordSettingPage from '@/pages/auth/passwordResetPage'
+import PasswordResetPage from '@/pages/auth/passwordResetPage'
 import ForgotPasswordPage from '@/pages/auth/forgotPasswordPage'
+import ProtectedRoute from './components/protectedRoute'
+import { Role } from './consts'
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' Component={HomePage}></Route>
-        <Route path='/home' Component={HomePage}></Route>
-        <Route path='/category' Component={CategoryPage}></Route>
-        <Route path='/order' Component={OrderPage}></Route>
-        <Route path='/order/payment' Component={PaymentPage}></Route>
-        <Route path='/history' Component={HistoryPage}></Route>
-        <Route path='/customer-consulting' Component={UserPage}></Route>
-
-        <Route path='/admin' Component={DashboardPage}></Route>
-        <Route path='/admin/dashboard' Component={DashboardPage}></Route>
-        <Route path='/admin/product' Component={ProductPage}></Route>
-        <Route path='/admin/employee' Component={EmployeePage}></Route>
-        <Route path='/admin/customer' Component={CustomerPage}></Route>
-        <Route path='/admin/invoice' Component={InvoicePage}></Route>
-        <Route path='/admin/statistic' Component={StatisticPage}></Route>
-
-        <Route path='/auth/client/login' Component={LoginPage}></Route>
-        <Route path='/auth/employee/login' Component={LoginPage}></Route>
-        <Route path='/auth/client/signup' Component={SignUpPage}></Route>
-
+        {/* Các route public */}
+        <Route path='/auth/client/login' Component={LoginPage} />
+        <Route path='/auth/employee/login' Component={LoginPage} />
+        <Route path='/auth/client/signup' Component={SignUpPage} />
+        <Route path='/auth/forgot-password' Component={ForgotPasswordPage} />
         <Route path='/auth/verify' Component={VerifyPage}></Route>
-        <Route path='/auth/password-reset' Component={PasswordSettingPage}></Route>
-        <Route path='/auth/forgot-password' Component={ForgotPasswordPage}></Route>
+        <Route path='/auth/password-reset' Component={PasswordResetPage}></Route>
+        <Route path='/unauthorized' element={<div>Unauthorized</div>} />
+        <Route path='/home' Component={HomePage} />
+        <Route path='/category' Component={CategoryPage} />
+        <Route path='/order' Component={OrderPage} />
+        <Route path='/' Component={HomePage} />
+
+        {/* Route của khách hàng */}
+        <Route element={<ProtectedRoute allowedRoles={[Role.CUSTOMER]} />}>
+          <Route path='/order/payment' Component={PaymentPage} />
+          <Route path='/history' Component={HistoryPage} />
+          <Route path='/customer-consulting' Component={UserPage} />
+        </Route>
+
+        {/* Route của nhân viên/admin */}
+        <Route element={<ProtectedRoute allowedRoles={[Role.MANAGER, Role.SALESTAFF, Role.CONSULTANT]} />}>
+          <Route path='/admin/dashboard' Component={DashboardPage} />
+          <Route path='/admin/product' Component={ProductPage} />
+          <Route path='/admin/employee' Component={EmployeePage} />
+          <Route path='/admin/customer' Component={CustomerPage} />
+          <Route path='/admin/invoice' Component={InvoicePage} />
+          <Route path='/admin/statistic' Component={StatisticPage} />
+        </Route>
       </Routes>
     </Router>
   )

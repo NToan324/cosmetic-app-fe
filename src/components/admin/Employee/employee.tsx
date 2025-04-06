@@ -93,7 +93,6 @@ const EmployeePage = () => {
     });
     setPage(1);
   };
-
   const clearFilter = (column: string) => {
     setFilters((prev) => {
       const newFilters = { ...prev };
