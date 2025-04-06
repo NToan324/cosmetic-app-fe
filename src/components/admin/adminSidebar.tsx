@@ -1,9 +1,9 @@
-import { VscDashboard } from "react-icons/vsc";
-import { GoInbox } from "react-icons/go";
-import { HiOutlineUsers } from "react-icons/hi2";
-import { PiInvoice } from "react-icons/pi";
-import { HiOutlineUserGroup } from "react-icons/hi2";
-import { IoPieChartOutline } from "react-icons/io5";
+import { VscDashboard } from 'react-icons/vsc'
+import { GoInbox } from 'react-icons/go'
+import { HiOutlineUsers } from 'react-icons/hi2'
+import { PiInvoice } from 'react-icons/pi'
+import { HiOutlineUserGroup } from 'react-icons/hi2'
+import { IoPieChartOutline } from 'react-icons/io5'
 import { TbLogout } from 'react-icons/tb'
 import { NavLink, useLocation } from 'react-router-dom'
 import Avatar from '@/assets/images/avatar.png'
@@ -25,7 +25,11 @@ const Admin_SideBar = () => {
       <div className='text-center gap-2 pt-5'>
         <img src={Avatar} alt='Avatar' width={45} height={45} />
         <div className='flex flex-col justify-center items-start'>
-            <h1 className='text-base'>Alberts<br/><p className="text-gray-400 ">Admin</p></h1>
+          <h1 className='text-base'>
+            Alberts
+            <br />
+            <p className='text-gray-400 '>Admin</p>
+          </h1>
         </div>
       </div>
       <ul className='w-full'>
@@ -36,7 +40,6 @@ const Admin_SideBar = () => {
               <NavLink
                 to={item.link}
                 className={({ isActive }) =>
-                  
                   isLogout
                     ? 'cursor-pointer ml-4 flex items-center rounded-bl-2xl rounded-tl-2xl py-4 px-8 h-[60px] gap-4'
                     : `cursor-pointer ml-4 flex items-center rounded-bl-2xl rounded-tl-2xl py-4 px-8 h-[60px] gap-4 ${

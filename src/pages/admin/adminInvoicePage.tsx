@@ -1,7 +1,7 @@
 import Invoice from '@/components/admin/Invoice/invoice'
 import Layout from '@/layout/admin_layout'
 
-const Admin_Invoice = () => {
+const AdminInvoicePage = () => {
   return (
     <Layout>
       <Invoice />
@@ -9,4 +9,4 @@ const Admin_Invoice = () => {
   )
 }
 
-export default Admin_Invoice
+export default AdminInvoicePage

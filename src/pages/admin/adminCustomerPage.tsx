@@ -1,7 +1,7 @@
 import Customer from '@/components/admin/Customer/customer'
 import Layout from '@/layout/admin_layout'
 
-const Admin_Customer = () => {
+const AdminCustomerPage = () => {
   return (
     <Layout>
       <Customer />
@@ -9,4 +9,4 @@ const Admin_Customer = () => {
   )
 }
 
-export default Admin_Customer
+export default AdminCustomerPage

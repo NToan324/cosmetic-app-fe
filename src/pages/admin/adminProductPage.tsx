@@ -1,7 +1,7 @@
 import Product from '@/components/admin/Product/product'
 import Layout from '@/layout/admin_layout'
 
-const Admin_Product = () => {
+const AdminProductPage = () => {
   return (
     <Layout>
       <Product />
@@ -9,4 +9,4 @@ const Admin_Product = () => {
   )
 }
 
-export default Admin_Product
+export default AdminProductPage

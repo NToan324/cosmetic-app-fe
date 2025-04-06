@@ -3,11 +3,12 @@ import { Box, Grid, Typography, TextField, Button, IconButton, InputAdornment } 
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Banner from '@/assets/images/login_banner.jpg'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const location = useLocation()
+  const isClient = location.pathname.includes('client')
 
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev)
@@ -44,13 +45,13 @@ const Login = () => {
               textAlign: { xs: 'center', md: 'left' }
             }}
           >
-            Please! Fill your account to continue
+            Access your account by signing in below
           </Typography>
 
           <Box component='form' noValidate sx={{ width: '100%', maxWidth: 400 }}>
             <TextField
               fullWidth
-              label='Phone Number'
+              label={`${isClient ? 'Phone Number' : 'Email'}`}
               variant='standard'
               margin='normal'
               sx={{
@@ -88,17 +89,28 @@ const Login = () => {
                 }
               }}
             />
-            <p className='text-right text-gray-400'>Forgot password?</p>
+            <div className='w-full flex justify-end'>
+              <Link
+                to={'/auth/forgot-password'}
+                state={{
+                  role: isClient ? 'client' : 'employee'
+                }}
+                className='text-gray-400 text-right'
+              >
+                Forgot password?
+              </Link>
+            </div>
+
             <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
               <Button variant='contained' sx={{ mt: 2, px: 4, backgroundColor: 'orange' }}>
                 Login
               </Button>
-              {location.pathname === '/auth/client/login' && (
+              {isClient && (
                 <div className='flex justify-start items-center gap-2 mt-4'>
                   <span>Don't have an account?</span>
-                  <NavLink to='/auth/client/signup' className='text-primary'>
+                  <Link to='/auth/client/signup' className='text-primary'>
                     Sign up
-                  </NavLink>
+                  </Link>
                 </div>
               )}
             </Box>
