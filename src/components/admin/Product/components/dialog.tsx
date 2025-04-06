@@ -15,7 +15,7 @@ import { MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus } from 'react-icons/ci'
 import { CiCircleMinus } from 'react-icons/ci'
-import { MdHistory } from "react-icons/md";
+import { MdHistory } from 'react-icons/md'
 import DEFAULT from '@/assets/images/default_product.png'
 
 // Định nghĩa kiểu dữ liệu cho sản phẩm
@@ -120,7 +120,9 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 sx={{ width: '20rem', height: '20rem', borderRadius: '8px', objectFit: 'contain' }}
               />
             </div>
-            <div className='text-gray-400 mt-4'> {product ? `Last Updated: ${formData.date.toLocaleDateString()}` : ' '}             
+            <div className='text-gray-400 mt-4'>
+              {' '}
+              {product ? `Last Updated: ${formData.date.toLocaleDateString()}` : ' '}
             </div>
           </Grid>
 
@@ -135,7 +137,13 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               onChange={handleChange}
             />
 
-            <Select fullWidth margin='dense' name='category' value={formData.category} onChange={(event) => setFormData((prev) => ({...prev, category: event.target.value}))}>
+            <Select
+              fullWidth
+              margin='dense'
+              name='category'
+              value={formData.category}
+              onChange={(event) => setFormData((prev) => ({ ...prev, category: event.target.value }))}
+            >
               <MenuItem value='default'>Category</MenuItem>
               <MenuItem value='A'>A</MenuItem>
               <MenuItem value='B'>B</MenuItem>
@@ -194,35 +202,33 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               Edit History
             </Button>
             <div className='flex gap-2'>
-            <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={onClose}>
-              Delete
-            </Button>
-            <Button variant='contained' className='text-white' startIcon={<MdOutlineCancel />} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant='contained' color='success' startIcon={<LuRecycle />} onClick={onClose}>
-              Save
-            </Button>
-          </div>
-            
+              <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={onClose}>
+                Delete
+              </Button>
+              <Button variant='contained' className='text-white' startIcon={<MdOutlineCancel />} onClick={onClose}>
+                Close
+              </Button>
+              <Button variant='contained' color='success' startIcon={<LuRecycle />} onClick={onClose}>
+                Save
+              </Button>
+            </div>
           </>
         ) : (
           <>
-          <div></div>
-          <div className='flex gap-2'>
-            <Button
-              variant='contained'
-              className='!bg-red-500 text-white'
-              startIcon={<MdOutlineCancel />}
-              onClick={onClose}
-            >
-              Close
-            </Button>
-            <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={onClose}>
-              Add
-            </Button>
-          </div>
-            
+            <div></div>
+            <div className='flex gap-2'>
+              <Button
+                variant='contained'
+                className='!bg-red-500 text-white'
+                startIcon={<MdOutlineCancel />}
+                onClick={onClose}
+              >
+                Close
+              </Button>
+              <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={onClose}>
+                Add
+              </Button>
+            </div>
           </>
         )}
       </DialogActions>

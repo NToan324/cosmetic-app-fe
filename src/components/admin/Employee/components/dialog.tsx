@@ -9,9 +9,9 @@ import {
   MenuItem,
   Button,
   Grid,
-  Box,
+  Box
 } from '@mui/material'
-import { RadioGroup, FormControlLabel, Radio, FormLabel } from '@mui/material';
+import { RadioGroup, FormControlLabel, Radio, FormLabel } from '@mui/material'
 import { MdHistory, MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus } from 'react-icons/ci'
@@ -153,72 +153,62 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
       </DialogTitle>
       <Box className='border-t border-gray-300 w-full' />
       <DialogContent>
-          {/* Hình ảnh nhân viên */}
-          <Grid container spacing={2}>
-            <Grid size={{xs:12, md:4}} className='flex justify-center'>
-              <Box display='flex'>
-                <Box
-                  component='img'
-                  src={formData.image || DEFAULT}
-                  alt='Employee Image'
-                  sx={{ width: '12rem', height: '12rem', borderRadius: '8px', objectFit: 'cover' }}
-                />
-              </Box>
-            </Grid>
-            <Grid size={{xs:12, md:8}}>
-              <TextField
-                fullWidth
-                margin='dense'
-                label='Name'
-                name='name'
-                value={formData.name}
-                onChange={handleChange}
-                sx={{ mt: 4 }}
+        {/* Hình ảnh nhân viên */}
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 4 }} className='flex justify-center'>
+            <Box display='flex'>
+              <Box
+                component='img'
+                src={formData.image || DEFAULT}
+                alt='Employee Image'
+                sx={{ width: '12rem', height: '12rem', borderRadius: '8px', objectFit: 'cover' }}
               />
-              <Grid container spacing={2}>
-                <Grid size={{xs:12, md:6}}>
-                  <TextField                  
-                    fullWidth
-                    margin='dense'
-                    label='Birth'
-                    name='Birth'
-                    type='date'
-                    value={formData.Birth}
-                    onChange={handleChange}
-                    sx={{ mt: 4}}
-                  />
-                </Grid>
-                <Grid size={{xs:12, md:6}}>
-                  <FormLabel component="legend" sx={{ mt: 4 }}>Gender</FormLabel>
-                    <RadioGroup
-                      row
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                    >
-                      <FormControlLabel value="Male" control={<Radio />} label="Male" />
-                      <FormControlLabel value="Female" control={<Radio />} label="Female" />
-                      </RadioGroup>
-                </Grid>
-                
-              
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 12, md: 8 }}>
+            <TextField
+              fullWidth
+              margin='dense'
+              label='Name'
+              name='name'
+              value={formData.name}
+              onChange={handleChange}
+              sx={{ mt: 4 }}
+            />
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  margin='dense'
+                  label='Birth'
+                  name='Birth'
+                  type='date'
+                  value={formData.Birth}
+                  onChange={handleChange}
+                  sx={{ mt: 4 }}
+                />
               </Grid>
-              
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormLabel component='legend' sx={{ mt: 4 }}>
+                  Gender
+                </FormLabel>
+                <RadioGroup row name='gender' value={formData.gender} onChange={handleChange}>
+                  <FormControlLabel value='Male' control={<Radio />} label='Male' />
+                  <FormControlLabel value='Female' control={<Radio />} label='Female' />
+                </RadioGroup>
+              </Grid>
             </Grid>
           </Grid>
+        </Grid>
         {/* Row 2: Birth - Gender */}
         <Grid container columnSpacing={2}>
-          <Grid size={{xs: 12, md: 8}}>
-
-          </Grid>
-          <Grid size={{xs: 12, md: 4}}>
-
-          </Grid>
+          <Grid size={{ xs: 12, md: 8 }}></Grid>
+          <Grid size={{ xs: 12, md: 4 }}></Grid>
         </Grid>
 
         {/* Row 3: Email - Phone */}
         <Grid container columnSpacing={2}>
-          <Grid size={{xs: 12, md: 8}}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <TextField
               fullWidth
               margin='dense'
@@ -229,7 +219,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
               sx={{ mt: 4 }}
             />
           </Grid>
-          <Grid size={{xs: 12, md: 4}}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
               margin='dense'
@@ -278,34 +268,34 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
           <MenuItem value='staff'>Staff</MenuItem>
         </Select>
 
-{employee? (<>
-  <Grid container columnSpacing={2}>
-            <Grid size={{xs: 12, md: 8}}>
-              <TextField
-                fullWidth
-                margin='dense'
-                label='Username'
-                name='user'
-                value={formData.user}
-                onChange={handleChange}
-                sx={{ mt: 4 }}
-              />
+        {employee ? (
+          <>
+            <Grid container columnSpacing={2}>
+              <Grid size={{ xs: 12, md: 8 }}>
+                <TextField
+                  fullWidth
+                  margin='dense'
+                  label='Username'
+                  name='user'
+                  value={formData.user}
+                  onChange={handleChange}
+                  sx={{ mt: 4 }}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormLabel component='legend' sx={{ mt: 4 }}>
+                  Status
+                </FormLabel>
+                <RadioGroup row name='status' value={formData.status} onChange={handleChange}>
+                  <FormControlLabel value='Working' control={<Radio />} label='Working' />
+                  <FormControlLabel value='Disable' control={<Radio />} label='Disable' />
+                </RadioGroup>
+              </Grid>
             </Grid>
-            <Grid size={{xs: 12, md: 4}}>
-              <FormLabel component="legend" sx={{ mt: 4 }}>Status</FormLabel>
-              <RadioGroup
-                row
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-              >
-                <FormControlLabel value="Working" control={<Radio />} label="Working" />
-                <FormControlLabel value="Disable" control={<Radio />} label="Disable" />
-              </RadioGroup>
-            </Grid>
-          </Grid>
-        </>):('')}
-        
+          </>
+        ) : (
+          ''
+        )}
 
         <TextField
           fullWidth
@@ -317,60 +307,58 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
           onChange={handleChange}
           sx={{ mt: 4 }}
         />
-  {employee? (<>
-  <Grid container columnSpacing={2}>
-          <Grid size={{xs: 12, md: 8}}>
-            <TextField
-              fullWidth
-              margin='dense'
-              label='Date Joined'
-              name='datejoined'
-              value={formData.datejoined}
-              onChange={handleChange}
-              sx={{ mt: 4 }}
-            />
-          </Grid>
-          <Grid size={{xs: 12, md: 4}}>
-            <FormLabel component="legend" sx={{ mt: 4 }}>Activation Status</FormLabel>
-            <RadioGroup
-              row
-              name="active"
-              value={formData.active}
-              onChange={handleChange}
-            >
-              <FormControlLabel value="active" control={<Radio />} label="Active" />
-              <FormControlLabel value="notactive" control={<Radio />} label="Not active" />
-            </RadioGroup>
-          </Grid>
-        </Grid>
-  </>):('')}
-        
-        
+        {employee ? (
+          <>
+            <Grid container columnSpacing={2}>
+              <Grid size={{ xs: 12, md: 8 }}>
+                <TextField
+                  fullWidth
+                  margin='dense'
+                  label='Date Joined'
+                  name='datejoined'
+                  value={formData.datejoined}
+                  onChange={handleChange}
+                  sx={{ mt: 4 }}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormLabel component='legend' sx={{ mt: 4 }}>
+                  Activation Status
+                </FormLabel>
+                <RadioGroup row name='active' value={formData.active} onChange={handleChange}>
+                  <FormControlLabel value='active' control={<Radio />} label='Active' />
+                  <FormControlLabel value='notactive' control={<Radio />} label='Not active' />
+                </RadioGroup>
+              </Grid>
+            </Grid>
+          </>
+        ) : (
+          ''
+        )}
       </DialogContent>
       <Box className='border-t border-gray-300 w-full' />
       <DialogActions className='flex !justify-between'>
         {employee ? (
           <>
-          <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
+            <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
               Edit History
-             </Button>
-             <div className='flex gap-2'>
+            </Button>
+            <div className='flex gap-2'>
               <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={handleDelete}>
-              Disable
-            </Button>
-            <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose} className='text-white'>
-              Close
-            </Button>
-            <Button
-              variant='contained'
-              sx={{ backgroundColor: '#4caf50' }}
-              startIcon={<LuRecycle />}
-              onClick={handleSave}
-            >
-              Save
-            </Button>
-             </div>
-            
+                Disable
+              </Button>
+              <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose} className='text-white'>
+                Close
+              </Button>
+              <Button
+                variant='contained'
+                sx={{ backgroundColor: '#4caf50' }}
+                startIcon={<LuRecycle />}
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+            </div>
           </>
         ) : (
           <>

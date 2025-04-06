@@ -73,9 +73,7 @@ const InvoicePage = () => {
     if (!selectedColumn) return
     setFilters((prev) => {
       const current = prev[selectedColumn] || []
-      const newValues = current.includes(value)
-        ? current.filter((v) => v !== value)
-        : [...current, value]
+      const newValues = current.includes(value) ? current.filter((v) => v !== value) : [...current, value]
       return {
         ...prev,
         [selectedColumn]: newValues
@@ -100,9 +98,7 @@ const InvoicePage = () => {
   const filteredInvoices = invoices.filter((invoice) => {
     const matchesSearch =
       searchTerm === '' ||
-      Object.values(invoice).some((value) =>
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      Object.values(invoice).some((value) => value.toString().toLowerCase().includes(searchTerm.toLowerCase()))
 
     const matchesFilters = Object.keys(filters).every((col) => {
       if (filters[col].length === 0) return true

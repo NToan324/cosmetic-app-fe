@@ -15,7 +15,7 @@ const Dashboard = () => {
             <p className='font-bold'>Overview</p>
             <p className='text-red-500 font-semibold'>-99% from 2019</p>
             <div className='mt-4 flex justify-center'>
-              <BarChart/>
+              <BarChart />
             </div>
           </Box>
         </Grid>
@@ -95,7 +95,7 @@ const Dashboard = () => {
         </Grid>
       </Grid>
       <div className='border-t border-gray-300 w-full mt-12'></div>
-      <NewCustomer/>
+      <NewCustomer />
     </div>
   )
 }

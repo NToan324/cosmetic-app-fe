@@ -93,9 +93,7 @@ const EmployeePage = () => {
     if (!selectedColumn) return
     setFilters((prev) => {
       const current = prev[selectedColumn] || []
-      const newValues = current.includes(value)
-        ? current.filter((v) => v !== value)
-        : [...current, value]
+      const newValues = current.includes(value) ? current.filter((v) => v !== value) : [...current, value]
       return {
         ...prev,
         [selectedColumn]: newValues
@@ -121,30 +119,24 @@ const EmployeePage = () => {
   const filteredEmployees = employees.filter((employee) => {
     const matchesSearch =
       searchTerm === '' ||
-      Object.values(employee).some((value) =>
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
-  
+      Object.values(employee).some((value) => value.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+
     const matchesFilters = Object.keys(filters).every((col) => {
       if (filters[col].length === 0) return true
-  
+
       // Nếu đang lọc cột Name, sử dụng định dạng "name - code"
       const employeeValue =
-        col === 'name'
-          ? `${employee.name} - ${employee.code}`
-          : employee[col as keyof Employee]?.toString()
+        col === 'name' ? `${employee.name} - ${employee.code}` : employee[col as keyof Employee]?.toString()
       return filters[col].includes(employeeValue)
     })
-  
+
     return matchesSearch && matchesFilters
   })
 
   // Lấy các giá trị duy nhất của cột dựa trên danh sách đã được lọc (bao gồm cả search và các bộ lọc khác)
   const getUniqueOptions = (column: string): string[] => {
     const options = filteredEmployees.map((employee) =>
-      column === 'name'
-        ? `${employee.name} - ${employee.code}`
-        : employee[column as keyof Employee]?.toString()
+      column === 'name' ? `${employee.name} - ${employee.code}` : employee[column as keyof Employee]?.toString()
     )
     return Array.from(new Set(options))
   }

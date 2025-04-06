@@ -15,7 +15,6 @@ import { filterDataMockupHome } from '@/mockup/filter'
 
 const Home = () => {
   const promotionImages = ['src/assets/images/banner_1.png', 'src/assets/images/banner_2.png']
-
   return (
     <div className='p-4'>
       <Filter filterData={filterDataMockupHome} />

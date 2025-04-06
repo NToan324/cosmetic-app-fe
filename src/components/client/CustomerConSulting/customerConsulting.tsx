@@ -4,6 +4,7 @@ import { IoSearch } from 'react-icons/io5'
 import ConsultingCreate from '@/components/client/CustomerConSulting/components/consultingCreate'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 import consultations from '@/mockup/ConsultingCustomer'
+
 const CustomerConsultation = () => {
   const [selectOptionMenu, setSelectOptionMenu] = useState(CONSULTING_CUSTOMER_STATUS.CREATE)
   return (

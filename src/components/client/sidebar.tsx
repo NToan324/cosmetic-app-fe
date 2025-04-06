@@ -11,7 +11,7 @@ import { IoIosArrowBack } from 'react-icons/io'
 import DialogSignout from '@/components/ui/dialogSignout'
 const SideBar = () => {
   const location = useLocation()
-  const { isOpen, setIsOpen } = useContext(AppContext)
+  const { isOpen, setIsOpen, user } = useContext(AppContext)
   const menu = [
     { name: 'Home', icon: HiOutlineHome, link: '/home' },
     { name: 'Category', icon: BiCategoryAlt, link: '/category' },
@@ -58,7 +58,7 @@ const SideBar = () => {
             {index === 3 && <div className='border-t border-gray-300 w-full my-6'></div>}
           </div>
         ))}
-        <DialogSignout />
+        {user && <DialogSignout />}
       </ul>
     </div>
   )

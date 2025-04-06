@@ -4,7 +4,7 @@ import { NumericFormat } from 'react-number-format'
 
 const Cash = () => {
   const [amount, setAmount] = useState('')
-  const [change, setChange] = useState('')
+  // const [change, setChange] = useState('')
   const listMoney = [
     { id: 1, amount: 100000 },
     { id: 2, amount: 200000 },
@@ -43,7 +43,7 @@ const Cash = () => {
         <label htmlFor='change'>Change</label>
         <NumericFormat
           id='change'
-          value={change}
+          // value={change}
           thousandSeparator='.'
           decimalSeparator=','
           placeholder='100.000'
