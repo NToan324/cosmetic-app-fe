@@ -16,6 +16,11 @@ interface AuthLogin {
   user: User
 }
 
+export interface UserResponse {
+  message: string
+  data: User
+}
+
 export interface AuthSignUp {
   phone: string
   name: string
@@ -31,7 +36,7 @@ class AuthService {
     return response
   }
   async getUser(accessToken: string) {
-    const response = await axios.get<User>('/auth/me', {
+    const response = await axios.get<UserResponse>('/auth/me', {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

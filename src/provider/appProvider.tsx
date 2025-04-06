@@ -20,7 +20,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       const userStorage = localStorage.getItem('accessToken')
       if (userStorage) {
         try {
-          const data = await authService.getUser(userStorage)
+          const { data } = await authService.getUser(userStorage)
           if (data) {
             setUser(data)
           }
