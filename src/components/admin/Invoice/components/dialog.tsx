@@ -15,13 +15,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
+  Paper
 } from '@mui/material'
 import { MdOutlineCancel } from 'react-icons/md'
 import { CiCircleMinus } from 'react-icons/ci'
 import { CiImport } from 'react-icons/ci'
-import { BiRecycle } from "react-icons/bi";
-import { MdHistory } from "react-icons/md";
+import { BiRecycle } from 'react-icons/bi'
+import { MdHistory } from 'react-icons/md'
 
 // Định nghĩa kiểu dữ liệu cho hóa đơn
 interface Invoice {
@@ -83,18 +83,13 @@ const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
     // Nếu là các trường số, chuyển đổi giá trị thành number
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === 'total' || name === 'received' || name === 'change'
-          ? parseFloat(value)
-          : value
+      [name]: name === 'total' || name === 'received' || name === 'change' ? parseFloat(value) : value
     }))
   }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
-      <DialogTitle sx={{ textAlign: 'center' }}>
-        {invoice ? `Invoice: ${formData.code}` : 'Add Invoice'}
-      </DialogTitle>
+      <DialogTitle sx={{ textAlign: 'center' }}>{invoice ? `Invoice: ${formData.code}` : 'Add Invoice'}</DialogTitle>
       <div className='border-t border-gray-300 w-full'></div>
       <DialogContent>
         <Grid container spacing={2} className='max-w-full'>
@@ -114,9 +109,7 @@ const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
               margin='dense'
               name='payment'
               value={formData.payment}
-              onChange={(event) =>
-                setFormData((prev) => ({ ...prev, payment: event.target.value }))
-              }
+              onChange={(event) => setFormData((prev) => ({ ...prev, payment: event.target.value }))}
             >
               <MenuItem value='cash'>Cash</MenuItem>
               <MenuItem value='card'>Card</MenuItem>
@@ -152,74 +145,72 @@ const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
               onChange={handleChange}
               disabled
             />
-            </Grid>
-            <Grid size={{xs:12, md:12}}>
-      <TableContainer component={Paper} className='my-4'>
-        <Table sx={{ minWidth: 650 }} aria-label='product table'>
-          <TableHead>
-            <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>
-                Product
-              </TableCell>
-              <TableCell>
-                Price
-              </TableCell>
-              <TableCell>
-                Total
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>Kera<br/>
-                <TextField value='SP001'/>
-                </TableCell>
-                <TableCell>300.000<br/>
-                <TextField value='3'/>
-                </TableCell>
-                <TableCell>900.000</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell>-0</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell>900.000</TableCell>
-              </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <p className='text-gray-400'>Data Exported: {formData.dateExport.toISOString().split('T')[0]}</p>
+          </Grid>
+          <Grid size={{ xs: 12, md: 12 }}>
+            <TableContainer component={Paper} className='my-4'>
+              <Table sx={{ minWidth: 650 }} aria-label='product table'>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>#</TableCell>
+                    <TableCell>Product</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell>Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>1</TableCell>
+                    <TableCell>
+                      Kera
+                      <br />
+                      <TextField value='SP001' />
+                    </TableCell>
+                    <TableCell>
+                      300.000
+                      <br />
+                      <TextField value='3' />
+                    </TableCell>
+                    <TableCell>900.000</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell>-0</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell>900.000</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <p className='text-gray-400'>Data Exported: {formData.dateExport.toISOString().split('T')[0]}</p>
           </Grid>
         </Grid>
       </DialogContent>
       <div className='border-t border-gray-300 w-full'></div>
       <DialogActions className='flex !justify-between'>
         <div className='flex gap-2'>
-            <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
-              Edit History
-            </Button>
-            <Button variant='contained' color='success'  startIcon={<CiImport />} onClick={onClose}>
-              Download
-            </Button>         
+          <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
+            Edit History
+          </Button>
+          <Button variant='contained' color='success' startIcon={<CiImport />} onClick={onClose}>
+            Download
+          </Button>
         </div>
         <div className='flex gap-2'>
-            <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={onClose}>
-              Disable
-            </Button>
-            <Button variant='contained'  startIcon={<MdOutlineCancel />} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant='contained' color='success' startIcon={<BiRecycle />} onClick={onClose}>
-              Save
-            </Button>
+          <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={onClose}>
+            Disable
+          </Button>
+          <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose}>
+            Close
+          </Button>
+          <Button variant='contained' color='success' startIcon={<BiRecycle />} onClick={onClose}>
+            Save
+          </Button>
         </div>
       </DialogActions>
     </Dialog>

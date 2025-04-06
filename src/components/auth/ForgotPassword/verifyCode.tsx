@@ -40,7 +40,6 @@ const VerifyCode = () => {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-blue-50'>
       <div className='bg-white rounded-lg shadow p-8 w-full max-w-sm'>
-        {/* Phần Header + Icon */}
         <div className='flex flex-col items-center mb-6'>
           <Avatar sx={{ backgroundColor: '#ff8108', width: 100, height: 100, mb: 4 }}>
             <CiLock style={{ fontSize: 46 }} />
@@ -49,7 +48,6 @@ const VerifyCode = () => {
           <p className='text-gray-600 mt-2 text-center'>Enter 6 characters to verify your account.</p>
         </div>
 
-        {/* Các ô nhập mã OTP */}
         <div className='flex justify-center gap-2 mb-4'>
           {otp.map((value, index) => (
             <input
