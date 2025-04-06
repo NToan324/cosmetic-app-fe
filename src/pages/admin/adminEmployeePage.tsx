@@ -1,7 +1,7 @@
 import Employee from '@/components/admin/Employee/employee'
 import Layout from '@/layout/admin_layout'
 
-const Admin_Employee = () => {
+const AdminEmployeePage = () => {
   return (
     <Layout>
       <Employee />
@@ -9,4 +9,4 @@ const Admin_Employee = () => {
   )
 }
 
-export default Admin_Employee
+export default AdminEmployeePage

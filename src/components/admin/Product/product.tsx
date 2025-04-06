@@ -110,21 +110,17 @@ const ProductPage = () => {
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
       searchTerm === '' ||
-      Object.values(product).some((value) =>
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
-  
+      Object.values(product).some((value) => value.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+
     const matchesFilters = Object.keys(filters).every((col) => {
       if (filters[col].length === 0) return true
-  
+
       // Nếu đang lọc cột Name, sử dụng định dạng "name - code"
       const productValue =
-        col === 'name'
-          ? `${product.name} - ${product.code}`
-          : product[col as keyof Product]?.toString()
+        col === 'name' ? `${product.name} - ${product.code}` : product[col as keyof Product]?.toString()
       return filters[col].includes(productValue)
     })
-  
+
     return matchesSearch && matchesFilters
   })
 
@@ -150,15 +146,13 @@ const ProductPage = () => {
     console.log('Save product', product)
   }
 
-// Lấy các giá trị duy nhất của cột dựa trên danh sách đã được lọc (bao gồm cả search và các bộ lọc khác)
-const getUniqueOptions = (column: string): string[] => {
-  const options = filteredProducts.map((product) =>
-    column === 'name'
-      ? `${product.name} - ${product.code}`
-      : product[column as keyof Product]?.toString()
-  )
-  return Array.from(new Set(options))
-}
+  // Lấy các giá trị duy nhất của cột dựa trên danh sách đã được lọc (bao gồm cả search và các bộ lọc khác)
+  const getUniqueOptions = (column: string): string[] => {
+    const options = filteredProducts.map((product) =>
+      column === 'name' ? `${product.name} - ${product.code}` : product[column as keyof Product]?.toString()
+    )
+    return Array.from(new Set(options))
+  }
 
   return (
     <div className='p-4 pt-8'>
@@ -186,18 +180,16 @@ const getUniqueOptions = (column: string): string[] => {
       <Box display='flex' justifyContent='space-between' alignItems='center' my={1}>
         <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Products</h2>
         <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
-                <IoSearch size={25} color='black' />
-                <input
-                  type='text'
-                  placeholder='Search'
-                  className='text-black border-none outline-none w-full hidden md:block'
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                />
-          </div>
+          <IoSearch size={25} color='black' />
+          <input
+            type='text'
+            placeholder='Search'
+            className='text-black border-none outline-none w-full hidden md:block'
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
       </Box>
-      
-
 
       {/* Bảng */}
       <TableContainer component={Paper}>
@@ -249,18 +241,16 @@ const getUniqueOptions = (column: string): string[] => {
                   </div>
                 </TableCell>
                 <TableCell>
-                <span
-                  className='rounded-xl py-2 px-4'
-                  style={{
-                    color: product.stock === 0 ? '#808080' : 'inherit',
-                    backgroundColor: product.stock === 0 ? '#D3D3D3' : 'inherit',
-                    padding: '4px 8px', // Thêm padding cho đẹp
-                  }}
-                >
-                  {product.stock === 0 ? 'Out of Stock' : product.stock}
-                </span>
-                  
-
+                  <span
+                    className='rounded-xl py-2 px-4'
+                    style={{
+                      color: product.stock === 0 ? '#808080' : 'inherit',
+                      backgroundColor: product.stock === 0 ? '#D3D3D3' : 'inherit',
+                      padding: '4px 8px' // Thêm padding cho đẹp
+                    }}
+                  >
+                    {product.stock === 0 ? 'Out of Stock' : product.stock}
+                  </span>
                 </TableCell>
                 <TableCell>${product.original}</TableCell>
                 <TableCell>${product.selling}</TableCell>
@@ -269,7 +259,7 @@ const getUniqueOptions = (column: string): string[] => {
                     className='rounded-xl py-2 px-4'
                     style={{
                       color: product.status === 'On Sale' ? 'green' : 'red',
-                      backgroundColor: product.status === 'On Sale' ? '#c8e6c9' : '#ffcdd2',
+                      backgroundColor: product.status === 'On Sale' ? '#c8e6c9' : '#ffcdd2'
                     }}
                   >
                     {product.status}

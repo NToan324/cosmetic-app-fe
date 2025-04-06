@@ -1,25 +1,25 @@
 import '@/App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-import HomePage from '@/pages/client/homePage'
+import HomePage from '@/pages/client/HomePage'
 import CategoryPage from '@/pages/client/categoryPage'
 import OrderPage from '@/pages/client/orderPage'
 import PaymentPage from '@/pages/client/paymentPage'
 import HistoryPage from '@/pages/client/historyPage'
 import UserPage from '@/pages/client/userPage'
 
-import Dashboard from '@/pages/admin/admin'
-import Product from '@/pages/admin/admin_product'
-import Employee from '@/pages/admin/admin_employee'
-import Customer from '@/pages/admin/admin_customer'
-import Invoice from '@/pages/admin/admin_invoice'
-import Statistic from '@/pages/admin/admin_statistic'
+import DashboardPage from '@/pages/admin/admin'
+import ProductPage from '@/pages/admin/adminProductPage'
+import EmployeePage from '@/pages/admin/adminEmployeePage'
+import CustomerPage from '@/pages/admin/adminCustomerPage'
+import InvoicePage from '@/pages/admin/adminInvoicePage'
+import StatisticPage from '@/pages/admin/adminStatisticPage'
 
-import Login from '@/pages/auth/login'
-import SignUp from '@/pages/auth/signup'
-import Verify from '@/pages/auth/verify'
-import Password_Setting from '@/pages/auth/passwordsetting'
-import Forgot_Password from '@/pages/auth/forgotpassword'
+import LoginPage from '@/pages/auth/loginPage'
+import SignUpPage from '@/pages/auth/signupPage'
+import VerifyPage from '@/pages/auth/verifyCodePage'
+import PasswordSettingPage from '@/pages/auth/passwordResetPage'
+import ForgotPasswordPage from '@/pages/auth/forgotPasswordPage'
 
 function App() {
   return (
@@ -33,21 +33,21 @@ function App() {
         <Route path='/history' Component={HistoryPage}></Route>
         <Route path='/customer-consulting' Component={UserPage}></Route>
 
-        <Route path='/admin' Component={Dashboard}></Route>
-        <Route path='/admin/dashboard' Component={Dashboard}></Route>
-        <Route path='/admin/product' Component={Product}></Route>
-        <Route path='/admin/employee' Component={Employee}></Route>
-        <Route path='/admin/customer' Component={Customer}></Route>
-        <Route path='/admin/invoice' Component={Invoice}></Route>
-        <Route path='/admin/statistic' Component={Statistic}></Route>
+        <Route path='/admin' Component={DashboardPage}></Route>
+        <Route path='/admin/dashboard' Component={DashboardPage}></Route>
+        <Route path='/admin/product' Component={ProductPage}></Route>
+        <Route path='/admin/employee' Component={EmployeePage}></Route>
+        <Route path='/admin/customer' Component={CustomerPage}></Route>
+        <Route path='/admin/invoice' Component={InvoicePage}></Route>
+        <Route path='/admin/statistic' Component={StatisticPage}></Route>
 
-        <Route path='/auth/client/login' Component={Login}></Route>
-        <Route path='/auth/employee/login' Component={Login}></Route>
-        <Route path='/auth/client/signup' Component={SignUp}></Route>
+        <Route path='/auth/client/login' Component={LoginPage}></Route>
+        <Route path='/auth/employee/login' Component={LoginPage}></Route>
+        <Route path='/auth/client/signup' Component={SignUpPage}></Route>
 
-        <Route path='/verify' Component={Verify}></Route>
-        <Route path='/auth/passwordsetting' Component={Password_Setting}></Route>
-        <Route path='/auth/forgotpassword' Component={Forgot_Password}></Route>      
+        <Route path='/auth/verify' Component={VerifyPage}></Route>
+        <Route path='/auth/password-reset' Component={PasswordSettingPage}></Route>
+        <Route path='/auth/forgot-password' Component={ForgotPasswordPage}></Route>
       </Routes>
     </Router>
   )
