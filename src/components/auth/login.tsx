@@ -25,9 +25,10 @@ const Login = () => {
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken')
-    if (accessToken && user && user) {
+    if (accessToken && user && user?.role) {
       const role = user.role
-      if (role.includes(Role.CUSTOMER)) {
+
+      if (Array.isArray(role) && role.includes(Role.CUSTOMER)) {
         navigate('/home', {
           replace: true,
           state: {
