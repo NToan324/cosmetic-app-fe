@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -16,22 +16,9 @@ import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus } from 'react-icons/ci'
 import { CiCircleMinus } from 'react-icons/ci'
 import { MdHistory } from 'react-icons/md'
-import DEFAULT from '@/assets/images/default_product.png'
-
-// Định nghĩa kiểu dữ liệu cho sản phẩm
-interface Product {
-  id: number
-  name: string
-  code: string
-  original: number
-  selling: number
-  stock: number
-  category: string
-  status: string
-  image: string
-  des: string
-  date: Date
-}
+import { Product } from '@/services/product'
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
 
 // Props cho dialog
 interface ProductDialogProps {
@@ -41,88 +28,38 @@ interface ProductDialogProps {
   product?: Product | null
 }
 
-const ProductDialog: React.FC<ProductDialogProps> = ({
-  open,
-  onClose,
-  //onSave,
-  product
-}) => {
-  const [formData, setFormData] = useState<Product>({
-    id: product ? product.id : 0,
-    name: product?.name || '',
-    code: product?.code || '',
-    original: product?.original || 0,
-    selling: product?.selling || 0,
-    stock: product?.stock || 0,
-    category: product?.category || 'default',
-    status: product?.status || 'On Sale',
-    image: product?.image || DEFAULT,
-    des: product?.image || '',
-    date: product?.date || new Date()
-  })
+const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
+  const [formData, setFormData] = useState<Product>()
+  const { categories } = useContext(AppContext)
 
-  useEffect(() => {
-    if (product) {
-      setFormData(product)
-    } else {
-      setFormData({
-        id: 0,
-        name: '',
-        code: '',
-        original: 0,
-        selling: 0,
-        stock: 0,
-        category: 'default',
-        status: 'On Sale',
-        image: DEFAULT,
-        des: '',
-        date: new Date()
-      })
-    }
-  }, [product])
-
-  // Cập nhật dữ liệu nhập vào
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }))
+  const handleOnClose = () => {
+    setFormData({} as Product)
+    onClose()
   }
 
-  // Lưu sản phẩm
-  //   const handleSave = () => {
-  //     if (!formData.name || !formData.code || !formData.original || !formData.selling) {
-  //       alert("Vui lòng nhập đầy đủ thông tin!");
-  //       return;
-  //     }
-  //     onSave(formData);
-  //     onClose();
-  //   };
+  // Cập nhật dữ liệu nhập vào
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = event.target
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value
+  //   }))
+  // }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
-      {' '}
-      {/* Tăng kích thước dialog */}
-      <DialogTitle sx={{ textAlign: 'center' }}>
-        {product ? `Detail Product: ${formData.code}` : 'Add Product'}
-      </DialogTitle>
+    <Dialog open={open} maxWidth='md' fullWidth>
+      <DialogTitle sx={{ textAlign: 'center' }}>{product ? product.name : 'Add Product'}</DialogTitle>
       <div className='border-t border-gray-300 w-full'></div>
       <DialogContent>
         <Grid container spacing={2} className='max-w-full'>
-          {/* Phần hình ảnh (1/3 chiều rộng) */}
           <Grid size={{ xs: 12, md: 5 }}>
             <div className='flex justify-center'>
               <Box
                 component='img'
-                src={formData.image || '/default-image.png'}
+                src={product?.image_url}
                 alt='Product Image'
                 sx={{ width: '20rem', height: '20rem', borderRadius: '8px', objectFit: 'contain' }}
               />
-            </div>
-            <div className='text-gray-400 mt-4'>
-              {' '}
-              {product ? `Last Updated: ${formData.date.toLocaleDateString()}` : ' '}
             </div>
           </Grid>
 
@@ -133,28 +70,36 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               margin='dense'
               label='Name'
               name='name'
-              value={formData.name}
-              onChange={handleChange}
+              value={product?.name}
+              // onChange={handleChange}
             />
 
             <Select
               fullWidth
               margin='dense'
               name='category'
-              value={formData.category}
-              onChange={(event) => setFormData((prev) => ({ ...prev, category: event.target.value }))}
+              value={
+                (categories &&
+                  categories.length > 0 &&
+                  categories.find((item) => item._id === product?.category_id)?.name) ||
+                'default'
+              }
+              // onChange={(event) => setFormData((prev) => ({ ...prev, category: event.target.value }))}
             >
               <MenuItem value='default'>Category</MenuItem>
-              <MenuItem value='A'>A</MenuItem>
-              <MenuItem value='B'>B</MenuItem>
+              {categories &&
+                categories.length > 0 &&
+                categories.map((categories) => {
+                  return <MenuItem value={categories.name}>{categories.name}</MenuItem>
+                })}
             </Select>
             <TextField
               fullWidth
               margin='dense'
               label='Stock'
               name='stock'
-              value={formData.stock}
-              onChange={handleChange}
+              value={product?.stock_quantity}
+              // onChange={handleChange}
             />
             {/* Original, Selling, Status (cùng hàng khi rộng, xuống hàng khi hẹp) */}
             <Grid container spacing={2}>
@@ -164,8 +109,8 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                   margin='dense'
                   label='Original'
                   name='original'
-                  value={formData.original}
-                  onChange={handleChange}
+                  value={formData?.price}
+                  // onChange={handleChange}
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
@@ -174,8 +119,8 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                   margin='dense'
                   label='Selling'
                   name='selling'
-                  value={formData.selling}
-                  onChange={handleChange}
+                  value={product?.price}
+                  // onChange={handleChange}
                 />
               </Grid>
             </Grid>
@@ -185,8 +130,8 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               margin='dense'
               label='Description'
               name='des'
-              value={formData.des}
-              onChange={handleChange}
+              value={product?.description}
+              // onChange={handleChange}
               multiline
               rows={4}
               variant='outlined'
@@ -205,7 +150,12 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
               <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={onClose}>
                 Delete
               </Button>
-              <Button variant='contained' className='text-white' startIcon={<MdOutlineCancel />} onClick={onClose}>
+              <Button
+                variant='contained'
+                className='text-white'
+                startIcon={<MdOutlineCancel />}
+                onClick={handleOnClose}
+              >
                 Close
               </Button>
               <Button variant='contained' color='success' startIcon={<LuRecycle />} onClick={onClose}>
@@ -221,7 +171,7 @@ const ProductDialog: React.FC<ProductDialogProps> = ({
                 variant='contained'
                 className='!bg-red-500 text-white'
                 startIcon={<MdOutlineCancel />}
-                onClick={onClose}
+                onClick={handleOnClose}
               >
                 Close
               </Button>

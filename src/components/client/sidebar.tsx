@@ -3,7 +3,7 @@ import { BiCategoryAlt } from 'react-icons/bi'
 import { HiOutlineArchiveBox } from 'react-icons/hi2'
 import { IoDocumentTextOutline } from 'react-icons/io5'
 import { TbReportMedical } from 'react-icons/tb'
-import { FiSettings } from 'react-icons/fi'
+import { CgProfile } from 'react-icons/cg'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
@@ -18,7 +18,7 @@ const SideBar = () => {
     { name: 'Order', icon: IoDocumentTextOutline, link: '/order' },
     { name: 'History', icon: HiOutlineArchiveBox, link: '/history' },
     { name: 'Consulting', icon: TbReportMedical, link: '/customer-consulting' },
-    { name: 'Setting', icon: FiSettings, link: '/setting' }
+    { name: 'Profile', icon: CgProfile, link: '/profile' }
   ]
   return (
     <div
