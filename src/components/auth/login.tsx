@@ -35,8 +35,10 @@ const Login = () => {
             role: [Role.CUSTOMER]
           }
         })
-      } else if (role.length > 0) {
+      } else if (role.includes(Role.MANAGER)) {
         navigate('/admin/dashboard', { replace: true, state: { role: [role] } })
+      } else {
+        navigate('/home', { replace: true, state: { role: [role] } })
       }
     }
   }, [user, navigate])
@@ -54,35 +56,60 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     try {
-      const response = await authService.login({
-        phone: data.phone || '',
-        password: data.password
-      })
-      if (response.status === 200) {
-        localStorage.setItem('accessToken', response.data.accessToken)
-        setUser({
-          id: response.data.user.id,
-          phone: response.data.user.phone,
-          name: response.data.user.name,
-          email: response.data.user.email,
-          role: response.data.user.role,
-          rank: response.data.user.rank,
-          point: response.data.user.point,
-          type: response.data.user.type
+      if (data.phone) {
+        const response = await authService.login({
+          phone: data.phone,
+          password: data.password
         })
-        const roles = response.data.user.role
-        if (roles.includes(Role.CUSTOMER)) {
-          navigate('/home', {
-            state: {
-              role: [Role.CUSTOMER]
-            }
+        if (response.status === 200) {
+          localStorage.setItem('accessToken', response.data.accessToken)
+          setUser({
+            id: response.data.user.id,
+            phone: response.data.user.phone,
+            name: response.data.user.name,
+            email: response.data.user.email,
+            role: response.data.user.role,
+            rank: response.data.user.rank,
+            point: response.data.user.point
           })
-        } else if (!roles.includes(Role.CUSTOMER)) {
-          navigate('/admin/dashboard', {
-            state: {
-              role: [roles]
-            }
+          const roles = response.data.user.role
+          if (roles.includes(Role.CUSTOMER)) {
+            navigate('/home', {
+              state: {
+                role: [Role.CUSTOMER]
+              }
+            })
+          }
+        }
+      } else if (data.email) {
+        const response = await authService.loginWithEmail({
+          email: data.email,
+          password: data.password
+        })
+        if (response.status === 200) {
+          localStorage.setItem('accessToken', response.data.accessToken)
+          setUser({
+            id: response.data.user.id,
+            phone: response.data.user.phone,
+            name: response.data.user.name,
+            email: response.data.user.email,
+            role: response.data.user.role,
+            type: response.data.user.type
           })
+          const roles = response.data.user.role
+          if (roles.includes(Role.MANAGER)) {
+            navigate('/admin/dashboard', {
+              state: {
+                role: roles
+              }
+            })
+          } else {
+            navigate('/home', {
+              state: {
+                role: roles
+              }
+            })
+          }
         }
       }
     } catch (error) {
@@ -114,13 +141,28 @@ const Login = () => {
             p: { xs: 4, md: 12 }
           }}
         >
-          <Typography
-            variant='h4'
-            gutterBottom
-            sx={{ width: '100%', textAlign: { xs: 'center', md: 'left' }, fontWeight: 600 }}
-          >
-            Login
-          </Typography>
+          <div className='flex justify-start items-start gap-2 mb-4 w-full'>
+            <Typography variant='h4' gutterBottom sx={{ fontWeight: 600 }}>
+              Login
+            </Typography>
+            <Link to={isClient ? '/auth/employee/login' : '/auth/client/login'}>
+              <Button
+                variant='outlined'
+                color='primary'
+                sx={{
+                  width: '200px',
+                  borderRadius: 2,
+                  color: '#ff8108',
+                  borderColor: '#ff8108',
+                  ':hover': {
+                    backgroundColor: '#ffe6ce'
+                  }
+                }}
+              >
+                {isClient ? 'Login as Employee' : 'Login as Customer'}
+              </Button>
+            </Link>
+          </div>
 
           <Typography
             variant='body1'
@@ -133,21 +175,20 @@ const Login = () => {
           >
             Access your account by signing in below
           </Typography>
-
           <Box component='form' noValidate sx={{ width: '100%', maxWidth: 400 }} onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register(isClient ? 'phone' : 'email', {
                 required: isClient ? 'Phone number is required' : 'Email is required',
-                minLength: isClient
-                  ? {
-                      value: 10,
-                      message: 'Phone number must be at least 10 characters'
-                    }
-                  : undefined,
                 validate: !isClient
                   ? (value) => {
                       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
                       return regex.test(value || '') || 'Invalid email address'
+                    }
+                  : undefined,
+                minLength: isClient
+                  ? {
+                      value: 10,
+                      message: 'Phone number must be at least 10 characters'
                     }
                   : undefined
               })}
@@ -164,9 +205,9 @@ const Login = () => {
                 }
               }}
             />
-            {errors.phone && (
+            {(errors.phone || errors.email) && (
               <Typography variant='body2' color='error' textAlign={'start'}>
-                {errors.phone.message}
+                {errors.phone?.message || errors.email?.message}
               </Typography>
             )}
             <TextField

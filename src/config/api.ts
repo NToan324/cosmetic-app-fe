@@ -20,12 +20,11 @@ instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.data) {
-      const errorMessage = error.response.data.error?.message || 'An error occurred';
-      console.log('BE error:', error.response.data); // Log chi tiết lỗi từ BE
-      return Promise.reject(new Error(errorMessage));
+      const errorMessage = error.response.data.error?.message || 'An error occurred'
+      return Promise.reject(new Error(errorMessage))
     }
-    return Promise.reject(new Error('Network error'));
+    return Promise.reject(new Error('Network error'))
   }
-);
+)
 
 export default instance

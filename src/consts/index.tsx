@@ -33,7 +33,7 @@ export enum Rank {
 
 export enum Role {
   MANAGER = 'MANAGER',
-  SALESTAFF = 'SALE_STAFF',
+  SALESTAFF = 'SALESTAFF',
   CONSULTANT = 'CONSULTANT',
   CUSTOMER = 'CUSTOMER'
 }
