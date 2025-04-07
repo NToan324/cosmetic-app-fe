@@ -307,7 +307,7 @@ const EmployeePage = () => {
         onClose={handleDialogClose}
         onSave={handleSaveEmployee}
         employee={selectedEmployee}
-        user={user}
+        userId={user?.id}
         accessToken={accessToken}
       />
     </div>

@@ -10,8 +10,8 @@ const Product = ({ name, price, quantity, image }: ProductProps) => {
   return (
     <div className='flex flex-col justify-between items-center h-[250px] bg-white rounded-xl p-4'>
       <div className='flex justify-between items-start w-full gap-4 h-[160px]'>
-        <div className='flex-1 w-[130px] h-full bg-gray-200 rounded-xl flex justify-center items-center'>
-          <img src={image} alt='product' className='object-cover w-[80px]' />
+        <div className='flex-1 w-[130px] h-full bg-white rounded-xl flex justify-center items-center'>
+          <img src={image} alt='product' className='object-cover ' />
         </div>
         <div className='flex-1 flex flex-col justify-between items-start'>
           <p className='text-black text-base text-start text-ellipsis'>{name}</p>

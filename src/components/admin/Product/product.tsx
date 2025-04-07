@@ -1,4 +1,4 @@
-import { useState, MouseEvent, ChangeEvent } from 'react'
+import { useState, ChangeEvent } from 'react'
 import {
   Table,
   TableBody,
@@ -8,10 +8,6 @@ import {
   TableRow,
   Paper,
   Button,
-  Menu,
-  MenuItem,
-  Checkbox,
-  FormControlLabel,
   Pagination,
   Stack,
   Box,
@@ -19,82 +15,21 @@ import {
 } from '@mui/material'
 import { CiCirclePlus } from 'react-icons/ci'
 import { IoSearch } from 'react-icons/io5'
-import ProductDialog from '@/components/admin/Product/components/dialog' // Thêm import của ProductDialog
-
-// Thay thế bằng đường dẫn ảnh thực tế
-import Stuff from '@/assets/images/product.png'
-
-// Định nghĩa kiểu dữ liệu cho sản phẩm
-interface Product {
-  id: number
-  name: string
-  code: string
-  category: string
-  original: number
-  selling: number
-  status: string
-  stock: number
-  image: string
-  des: string
-  date: Date
-}
-
-// Dữ liệu mẫu
-const products = Array(10)
-  .fill(null)
-  .map((_, index) => {
-    const stock = Math.floor(Math.random() * 15) // random từ 0 đến 14
-    return {
-      id: index + 1,
-      image: Stuff,
-      name: 'Kẹo kera',
-      code: 'SP001',
-      category: 'A',
-      original: 1 + index,
-      selling: 300 + index * 2,
-      stock: stock,
-      status: stock === 0 ? 'Stop Selling' : 'On Sale',
-      des: 'UIIAIUUIIAI',
-      date: new Date(2025, index % 12, index + 1)
-    }
-  })
+import ProductDialog from '@/components/admin/Product/components/dialog'
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
+import { Product } from '@/services/product'
+import { formatCurrency } from '@/helpers'
 
 const ProductPage = () => {
   const [filters, setFilters] = useState<Record<string, string[]>>({})
   const [searchTerm, setSearchTerm] = useState('')
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [selectedColumn, setSelectedColumn] = useState<string | null>(null)
+  const { products } = useContext(AppContext)
 
   // Dialog State
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
-  // Mở Menu khi bấm nút ">"
-  const handleFilterClick = (event: MouseEvent<HTMLButtonElement>, column: string) => {
-    setAnchorEl(event.currentTarget)
-    setSelectedColumn(column)
-  }
-
-  // Đóng Menu
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-    setSelectedColumn(null)
-  }
-
-  // Khi toggle một option trong checkbox
-  const handleCheckboxToggle = (value: string) => {
-    if (!selectedColumn) return
-    setFilters((prev) => {
-      const current = prev[selectedColumn] || []
-      const newValues = current.includes(value) ? current.filter((v) => v !== value) : [...current, value]
-      return {
-        ...prev,
-        [selectedColumn]: newValues
-      }
-    })
-  }
-
-  // Xóa lọc cho một cột (clear toàn bộ giá trị đã chọn của cột đó)
   const clearFilter = (column: string) => {
     setFilters((prev) => {
       const newFilters = { ...prev }
@@ -106,23 +41,6 @@ const ProductPage = () => {
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
   }
-  // Lọc nhân viên dựa trên search và các bộ lọc (cơ chế AND)
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      searchTerm === '' ||
-      Object.values(product).some((value) => value.toString().toLowerCase().includes(searchTerm.toLowerCase()))
-
-    const matchesFilters = Object.keys(filters).every((col) => {
-      if (filters[col].length === 0) return true
-
-      // Nếu đang lọc cột Name, sử dụng định dạng "name - code"
-      const productValue =
-        col === 'name' ? `${product.name} - ${product.code}` : product[col as keyof Product]?.toString()
-      return filters[col].includes(productValue)
-    })
-
-    return matchesSearch && matchesFilters
-  })
 
   // Mở Dialog Thêm Sản Phẩm
   const openDialogForAdd = () => {
@@ -144,14 +62,6 @@ const ProductPage = () => {
   // Lưu sản phẩm
   const handleSaveProduct = (product: Product) => {
     console.log('Save product', product)
-  }
-
-  // Lấy các giá trị duy nhất của cột dựa trên danh sách đã được lọc (bao gồm cả search và các bộ lọc khác)
-  const getUniqueOptions = (column: string): string[] => {
-    const options = filteredProducts.map((product) =>
-      column === 'name' ? `${product.name} - ${product.code}` : product[column as keyof Product]?.toString()
-    )
-    return Array.from(new Set(options))
   }
 
   return (
@@ -197,46 +107,29 @@ const ProductPage = () => {
           <TableHead>
             <TableRow>
               <TableCell>#</TableCell>
-              <TableCell>
-                Product
-                <Button className='w-[0.5rem]' onClick={(e) => handleFilterClick(e, 'name')}>
-                  &gt;
-                </Button>
-              </TableCell>
-              <TableCell>
-                Stock
-                <Button onClick={(e) => handleFilterClick(e, 'stock')}>&gt;</Button>
-              </TableCell>
-              <TableCell>
-                Original Price
-                <Button onClick={(e) => handleFilterClick(e, 'original')}>&gt;</Button>
-              </TableCell>
-              <TableCell>
-                Selling Price
-                <Button onClick={(e) => handleFilterClick(e, 'selling')}>&gt;</Button>
-              </TableCell>
-              <TableCell>
-                Status
-                <Button onClick={(e) => handleFilterClick(e, 'status')}>&gt;</Button>
-              </TableCell>
+              <TableCell>Product</TableCell>
+              <TableCell>Stock</TableCell>
+              <TableCell>Original Price</TableCell>
+              <TableCell>Selling Price</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredProducts.map((product, index) => (
+            {products.map((product, index) => (
               <TableRow
-                key={product.id}
+                key={product._id}
                 sx={{
                   backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit'
                 }}
-                onClick={() => openDialogForEdit(product)} // Mở dialog khi nhấn vào dòng
+                onClick={() => openDialogForEdit(product)}
               >
-                <TableCell>{product.id}</TableCell>
+                <TableCell>{index}</TableCell>
                 <TableCell>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={product.image} alt='product' style={{ width: 24, height: 24 }} />
+                    <img src={product.image_url} alt='product' style={{ width: 24, height: 24 }} />
                     <div>
                       {product.name} <br />
-                      <span style={{ color: 'gray', fontSize: '0.875rem' }}>{product.code}</span>
+                      <span style={{ color: 'gray', fontSize: '0.875rem' }}>{product._id}</span>
                     </div>
                   </div>
                 </TableCell>
@@ -244,25 +137,25 @@ const ProductPage = () => {
                   <span
                     className='rounded-xl py-2 px-4'
                     style={{
-                      color: product.stock === 0 ? '#808080' : 'inherit',
-                      backgroundColor: product.stock === 0 ? '#D3D3D3' : 'inherit',
-                      padding: '4px 8px' // Thêm padding cho đẹp
+                      color: product.stock_quantity === 0 ? '#808080' : 'inherit',
+                      backgroundColor: product.stock_quantity === 0 ? '#D3D3D3' : 'inherit',
+                      padding: '4px 8px'
                     }}
                   >
-                    {product.stock === 0 ? 'Out of Stock' : product.stock}
+                    {product.stock_quantity === 0 ? 'Out of Stock' : product.stock_quantity}
                   </span>
                 </TableCell>
-                <TableCell>${product.original}</TableCell>
-                <TableCell>${product.selling}</TableCell>
+                <TableCell>{formatCurrency(product.price)}</TableCell>
+                <TableCell>{formatCurrency(product.price)}</TableCell>
                 <TableCell>
                   <span
                     className='rounded-xl py-2 px-4'
                     style={{
-                      color: product.status === 'On Sale' ? 'green' : 'red',
-                      backgroundColor: product.status === 'On Sale' ? '#c8e6c9' : '#ffcdd2'
+                      color: 'red',
+                      backgroundColor: '#ffcdd2'
                     }}
                   >
-                    {product.status}
+                    Stop Selling
                   </span>
                 </TableCell>
               </TableRow>
@@ -272,30 +165,6 @@ const ProductPage = () => {
       </TableContainer>
 
       {/* Menu lọc với checkbox */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        {selectedColumn &&
-          getUniqueOptions(selectedColumn).map((option, idx) => {
-            const checked = filters[selectedColumn]?.includes(option) || false
-            return (
-              <MenuItem key={idx}>
-                <FormControlLabel
-                  control={<Checkbox checked={checked} onChange={() => handleCheckboxToggle(option)} />}
-                  label={option}
-                />
-              </MenuItem>
-            )
-          })}
-        {selectedColumn && (
-          <MenuItem
-            onClick={() => {
-              clearFilter(selectedColumn)
-              handleMenuClose()
-            }}
-          >
-            Clear Filter
-          </MenuItem>
-        )}
-      </Menu>
 
       {/* Phân trang (chỉ là demo) */}
       <Stack spacing={2} sx={{ marginTop: 2, alignItems: 'center' }}>

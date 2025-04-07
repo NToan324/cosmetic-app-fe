@@ -1,22 +1,25 @@
+import { User } from '@/services/auth'
+import { Product } from '@/services/product'
+import { Category } from '@/services/category'
 import { createContext } from 'react'
 interface AppContextType {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
-  user: {
-    id: string
-    phone: string
-    name: string
-    email?: string
-    role: string[]
-    rank?: string
-    point?: number
-    type?: string
-  } | null
+  user: User
   setUser: (user: AppContextType['user']) => void
+  products: Array<Product>
+  setProducts: (products: Array<Product>) => void
+  categories: Array<Category>
+  setCategories: (categories: Array<Category>) => void
 }
+
 export const AppContext = createContext<AppContextType>({
   isOpen: false,
   setIsOpen: () => {},
-  user: null,
-  setUser: () => {}
+  user: {} as User,
+  setUser: () => {},
+  products: [],
+  setProducts: () => {},
+  categories: [],
+  setCategories: () => {}
 })

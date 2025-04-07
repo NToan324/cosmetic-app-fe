@@ -1,13 +1,24 @@
 import { IoArrowDownOutline } from 'react-icons/io5'
-const OrderingFilter = () => {
+
+interface OrderingFilterProps {
+  filterPrice: string
+  setFilterPrice: (price: string) => void
+}
+const OrderingFilter = ({ setFilterPrice, filterPrice }: OrderingFilterProps) => {
   return (
     <div className='flex flex-wrap justify-between items-center gap-4'>
       <div className='flex flex-wrap justify-between items-center gap-4'>
-        <button className='flex justify-center items-center gap-2 border border-primary text-primary text-base p-2 rounded-2xl cursor-pointer'>
+        <button
+          className={`${filterPrice === 'low' ? 'bg-primary text-white' : 'border border-primary text-primary'} flex justify-center items-center gap-2 text-base p-2 rounded-2xl cursor-pointer`}
+          onClick={() => setFilterPrice('low')}
+        >
           <span>The price is low to high</span>
           <IoArrowDownOutline className='inline-block rotate-180' />
         </button>
-        <button className='flex justify-center items-center gap-2 border border-primary text-primary text-base p-2 rounded-2xl cursor-pointer'>
+        <button
+          className={`${filterPrice === 'high' ? 'bg-primary text-white' : 'border border-primary text-primary'} flex justify-center items-center gap-2 text-base p-2 rounded-2xl cursor-pointer`}
+          onClick={() => setFilterPrice('high')}
+        >
           <span>The price is high to low</span>
           <IoArrowDownOutline className='inline-block' />
         </button>
