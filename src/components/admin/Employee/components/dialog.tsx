@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -9,375 +9,365 @@ import {
   MenuItem,
   Button,
   Grid,
-  Box
-} from '@mui/material'
-import { RadioGroup, FormControlLabel, Radio, FormLabel } from '@mui/material'
-import { MdHistory, MdOutlineCancel } from 'react-icons/md'
-import { LuRecycle } from 'react-icons/lu'
-import { CiCirclePlus } from 'react-icons/ci'
-import { CiCircleMinus } from 'react-icons/ci'
-import DEFAULT from '@/assets/images/default_avatar.jpg'
+  Box,
+  Typography,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormLabel,
+} from '@mui/material';
+import { MdOutlineCancel } from 'react-icons/md';
+import { LuRecycle } from 'react-icons/lu';
+import { CiCirclePlus } from 'react-icons/ci';
+import { CiCircleMinus } from 'react-icons/ci';
+import DEFAULT from '@/assets/images/default_avatar.jpg';
+import employeeService from '@/services/employeeAPI';
 
 interface Employee {
-  id: number
-  image: string
-  name: string
-  code: string
-  Birth: Date
-  gender: string
-  email: string
-  phone: string
-  idpp: string
-  addr: string
-  role: string
-  user: string
-  salary: number
-  datejoined: Date
-  status: string
-  active: string
+  _id: string;
+  userId: {
+    name: string;
+    email: string;
+    phone: string;
+    active: boolean;
+  };
+  role: string[];
+  type: string;
+  disable: boolean;
+  image_url?: string;
+  edit_history: {
+    edited_at: string;
+    edited_by: { _id: string; name: string };
+    reason: string;
+    changes: {
+      before: any;
+      after: any;
+    };
+  }[];
 }
 
 interface EmployeeDialogProps {
-  open: boolean
-  onClose: () => void
-  onSave: (employee: Employee) => void
-  onDelete?: (employee: Employee) => void
-  employee?: Employee | null
+  open: boolean;
+  onClose: () => void;
+  onSave: (employee: any) => void;
+  employee?: Employee | null;
 }
 
-const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, onDelete, employee }) => {
-  // Sử dụng chuỗi cho date để dễ hiển thị trong input type="date"
+const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, employee }) => {
   const [formData, setFormData] = useState({
-    id: employee?.id || 0,
-    image: employee?.image || DEFAULT,
-    name: employee?.name || '',
-    code: employee?.code || '',
-    Birth: employee ? employee.Birth.toISOString().slice(0, 10) : '',
-    gender: employee?.gender || 'Male',
-    email: employee?.email || '',
-    phone: employee?.phone || '',
-    idpp: employee?.idpp || '',
-    addr: employee?.addr || '',
-    role: employee?.role || 'admin',
-    user: employee?.user || '',
-    salary: employee ? Number(employee.salary) : 0,
-    datejoined: employee ? employee.datejoined.toISOString().slice(0, 10) : '',
-    status: employee?.status || 'Working',
-    active: employee?.active || 'Active'
-  })
+    name: '',
+    email: '',
+    phone: '',
+    role: ['SALESTAFF'],
+    type: 'FULLTIME',
+    active: true,
+    disable: false,
+    image_url: DEFAULT,
+    created_by: employee ? undefined : '67f2d1bcbbc14768a52717df', // Sửa thành _id của Admin
+    edited_by: employee ? '67f2d1bcbbc14768a52717df' : undefined, // Sửa thành _id của Admin
+    reason: '',
+  });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [editHistory, setEditHistory] = useState<any[]>([]);
 
   useEffect(() => {
     if (employee) {
       setFormData({
-        id: employee.id,
-        image: employee.image,
-        name: employee.name,
-        code: employee.code,
-        Birth: employee.Birth.toISOString().slice(0, 10),
-        gender: employee.gender,
-        email: employee.email,
-        phone: employee.phone,
-        idpp: employee.idpp,
-        addr: employee.addr,
-        role: employee.role,
-        user: employee.user,
-        salary: Number(employee.salary),
-        datejoined: employee.datejoined.toISOString().slice(0, 10),
-        status: employee.status,
-        active: employee.active
-      })
+        name: employee.userId?.name || '',
+        email: employee.userId?.email || '',
+        phone: employee.userId?.phone || '',
+        role: employee.role || ['SALESTAFF'],
+        type: employee.type || 'FULLTIME',
+        active: employee.userId?.active ?? true,
+        disable: employee.disable ?? false,
+        image_url: employee.image_url || DEFAULT,
+        created_by: undefined,
+        edited_by: '67f2d1bcbbc14768a52717df', // Sửa thành _id của Admin
+        reason: '',
+      });
+      setEditHistory(employee.edit_history || []);
     } else {
       setFormData({
-        id: 0,
-        image: DEFAULT,
         name: '',
-        code: '',
-        Birth: '',
-        gender: 'Male',
         email: '',
         phone: '',
-        idpp: '',
-        addr: '',
-        role: 'admin',
-        user: '',
-        salary: 0,
-        datejoined: '',
-        status: 'Working',
-        active: 'notactive'
-      })
+        role: ['SALESTAFF'],
+        type: 'FULLTIME',
+        active: true,
+        disable: false,
+        image_url: DEFAULT,
+        created_by: '67f2d1bcbbc14768a52717df', // Sửa thành _id của Admin
+        edited_by: undefined,
+        reason: '',
+      });
+      setEditHistory([]);
     }
-  }, [employee])
+    setErrors({});
+  }, [employee]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value
-    }))
-  }
+      [name]: name === 'active' || name === 'disable' ? value === 'true' : value,
+    }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
 
-  const handleSave = () => {
-    const employeeData: Employee = {
-      id: formData.id,
-      image: formData.image,
+  const handleSelectChange = (event: any) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({ ...prev, image_url: imageUrl }));
+    }
+  };
+
+  const validateForm = async () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.name) newErrors.name = 'Tên không được để trống';
+    if (!formData.email) newErrors.email = 'Email không được để trống';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email không hợp lệ';
+    if (!formData.phone) newErrors.phone = 'Số điện thoại không được để trống';
+    if (!formData.reason) newErrors.reason = 'Lý do không được để trống';
+    if (formData.role.length === 0) newErrors.role = 'Vai trò không được để trống';
+    if (!formData.type) newErrors.type = 'Loại không được để trống';
+
+    try {
+      const response = await employeeService.getEmployees();
+      const employees = response.data;
+      const existingEmail = employees.find((emp: Employee) => emp.userId.email === formData.email && emp._id !== employee?._id);
+      const existingPhone = employees.find((emp: Employee) => emp.userId.phone === formData.phone && emp._id !== employee?._id);
+      if (existingEmail) newErrors.email = 'Email đã tồn tại';
+      if (existingPhone) newErrors.phone = 'Số điện thoại đã tồn tại';
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra trùng lặp:', error);
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSave = async () => {
+    if (!(await validateForm())) return;
+    const employeeData = {
       name: formData.name,
-      code: formData.code,
-      Birth: new Date(formData.Birth),
-      gender: formData.gender,
       email: formData.email,
       phone: formData.phone,
-      idpp: formData.idpp,
-      addr: formData.addr,
       role: formData.role,
-      user: formData.user,
-      salary: Number(formData.salary),
-      datejoined: new Date(formData.datejoined),
-      status: formData.status,
-      active: formData.active
-    }
-    onSave(employeeData)
-    onClose()
-  }
+      type: formData.type,
+      image_url: formData.image_url,
+      reason: formData.reason,
+      ...(employee ? { edited_by: formData.edited_by } : { created_by: formData.created_by }),
+    };
+    console.log('Employee data before sending:', employeeData);
+    onSave(employeeData);
+    onClose();
+  };
 
   const handleDelete = () => {
-    if (onDelete && employee) {
-      onDelete(employee)
-      onClose()
-    }
-  }
+    if (!employee) return;
+    const deleteData = {
+      deleted_by: '67f2d1bcbbc14768a52717df', // Sửa thành _id của Admin
+      reason: formData.reason || 'Xóa bởi admin',
+    };
+    onSave({ ...employee, ...deleteData });
+    onClose();
+  };
 
+  // Giữ nguyên phần giao diện render
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{ textAlign: 'center' }}>
-        {employee ? `Detail Employee: ${formData.code}` : 'Add Employee'}
+        {employee ? `Chi tiết nhân viên: ${employee._id}` : 'Thêm nhân viên'}
       </DialogTitle>
-      <Box className='border-t border-gray-300 w-full' />
+      <Box className="border-t border-gray-300 w-full" />
       <DialogContent>
-        {/* Hình ảnh nhân viên */}
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 4 }} className='flex justify-center'>
-            <Box display='flex'>
-              <Box
-                component='img'
-                src={formData.image || DEFAULT}
-                alt='Employee Image'
-                sx={{ width: '12rem', height: '12rem', borderRadius: '8px', objectFit: 'cover' }}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <img
+                src={formData.image_url}
+                alt="Avatar"
+                style={{ width: '100px', height: '100px', borderRadius: '8px', objectFit: 'cover' }}
               />
+              <Button variant="contained" component="label" sx={{ mt: 1 }}>
+                Chọn ảnh
+                <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+              </Button>
             </Box>
           </Grid>
           <Grid size={{ xs: 12, md: 8 }}>
             <TextField
               fullWidth
-              margin='dense'
-              label='Name'
-              name='name'
+              margin="dense"
+              label="Tên"
+              name="name"
               value={formData.name}
               onChange={handleChange}
-              sx={{ mt: 4 }}
+              error={!!errors.name}
+              helperText={errors.name}
+              sx={{ '& .MuiFormHelperText-root': { color: 'red' } }}
             />
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Birth'
-                  name='Birth'
-                  type='date'
-                  value={formData.Birth}
-                  onChange={handleChange}
-                  sx={{ mt: 4 }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <FormLabel component='legend' sx={{ mt: 4 }}>
-                  Gender
-                </FormLabel>
-                <RadioGroup row name='gender' value={formData.gender} onChange={handleChange}>
-                  <FormControlLabel value='Male' control={<Radio />} label='Male' />
-                  <FormControlLabel value='Female' control={<Radio />} label='Female' />
-                </RadioGroup>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        {/* Row 2: Birth - Gender */}
-        <Grid container columnSpacing={2}>
-          <Grid size={{ xs: 12, md: 8 }}></Grid>
-          <Grid size={{ xs: 12, md: 4 }}></Grid>
-        </Grid>
-
-        {/* Row 3: Email - Phone */}
-        <Grid container columnSpacing={2}>
-          <Grid size={{ xs: 12, md: 8 }}>
             <TextField
               fullWidth
-              margin='dense'
-              label='Email'
-              name='email'
+              margin="dense"
+              label="Email"
+              name="email"
               value={formData.email}
               onChange={handleChange}
-              sx={{ mt: 4 }}
+              error={!!errors.email}
+              helperText={errors.email}
+              sx={{ '& .MuiFormHelperText-root': { color: 'red' } }}
             />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
-              margin='dense'
-              label='Phone'
-              name='phone'
+              margin="dense"
+              label="Số điện thoại"
+              name="phone"
               value={formData.phone}
               onChange={handleChange}
-              sx={{ mt: 4 }}
+              error={!!errors.phone}
+              helperText={errors.phone}
+              sx={{ '& .MuiFormHelperText-root': { color: 'red' } }}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Select
+              fullWidth
+              margin="dense"
+              label="Vai trò"
+              name="role"
+              multiple
+              value={formData.role}
+              onChange={handleSelectChange}
+              error={!!errors.role}
+            >
+              <MenuItem value="MANAGER">Quản lý</MenuItem>
+              <MenuItem value="SALESTAFF">Nhân viên bán hàng</MenuItem>
+              <MenuItem value="CONSULTANT">Tư vấn viên</MenuItem>
+            </Select>
+            {errors.role && <Typography color="error">{errors.role}</Typography>}
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Select
+              fullWidth
+              margin="dense"
+              label="Loại"
+              name="type"
+              value={formData.type}
+              onChange={handleSelectChange}
+              error={!!errors.type}
+            >
+              <MenuItem value="PARTTIME">Bán thời gian</MenuItem>
+              <MenuItem value="FULLTIME">Toàn thời gian</MenuItem>
+            </Select>
+            {errors.type && <Typography color="error">{errors.type}</Typography>}
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <FormLabel component="legend">Hoạt động</FormLabel>
+            <RadioGroup row name="active" value={formData.active.toString()} onChange={handleChange}>
+              <FormControlLabel value="true" control={<Radio />} label="Hoạt động" />
+              <FormControlLabel value="false" control={<Radio />} label="Không hoạt động" />
+            </RadioGroup>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <FormLabel component="legend">Tắt</FormLabel>
+            <RadioGroup row name="disable" value={formData.disable.toString()} onChange={handleChange}>
+              <FormControlLabel value="true" control={<Radio />} label="Tắt" />
+              <FormControlLabel value="false" control={<Radio />} label="Bật" />
+            </RadioGroup>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              fullWidth
+              margin="dense"
+              label="Lý do"
+              name="reason"
+              value={formData.reason}
+              onChange={handleChange}
+              error={!!errors.reason}
+              helperText={errors.reason}
+              sx={{ '& .MuiFormHelperText-root': { color: 'red' } }}
             />
           </Grid>
         </Grid>
 
-        {/* Row 4: IDPP - Address */}
-        <TextField
-          fullWidth
-          margin='dense'
-          label='IDPP'
-          name='idpp'
-          value={formData.idpp}
-          onChange={handleChange}
-          sx={{ mt: 4 }}
-        />
-
-        <TextField
-          fullWidth
-          margin='dense'
-          label='Address'
-          name='addr'
-          value={formData.addr}
-          onChange={handleChange}
-          sx={{ mt: 4 }}
-        />
-        <Box className='border-t border-gray-300 w-full mt-4' />
-        <p className='font-bold text-2xl pt-2'>Company</p>
-        {/* Row 5: Role - Username */}
-        <Select
-          fullWidth
-          margin='dense'
-          label='Role'
-          name='role'
-          value={formData.role}
-          onChange={(event) => setFormData((prev) => ({ ...prev, role: event.target.value }))}
-          sx={{ mt: 4 }}
-        >
-          <MenuItem value='admin'>Admin</MenuItem>
-          <MenuItem value='staff'>Staff</MenuItem>
-        </Select>
-
-        {employee ? (
-          <>
-            <Grid container columnSpacing={2}>
-              <Grid size={{ xs: 12, md: 8 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Username'
-                  name='user'
-                  value={formData.user}
-                  onChange={handleChange}
-                  sx={{ mt: 4 }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
-                <FormLabel component='legend' sx={{ mt: 4 }}>
-                  Status
-                </FormLabel>
-                <RadioGroup row name='status' value={formData.status} onChange={handleChange}>
-                  <FormControlLabel value='Working' control={<Radio />} label='Working' />
-                  <FormControlLabel value='Disable' control={<Radio />} label='Disable' />
-                </RadioGroup>
-              </Grid>
-            </Grid>
-          </>
-        ) : (
-          ''
-        )}
-
-        <TextField
-          fullWidth
-          margin='dense'
-          label='Salary'
-          name='salary'
-          type='number'
-          value={formData.salary}
-          onChange={handleChange}
-          sx={{ mt: 4 }}
-        />
-        {employee ? (
-          <>
-            <Grid container columnSpacing={2}>
-              <Grid size={{ xs: 12, md: 8 }}>
-                <TextField
-                  fullWidth
-                  margin='dense'
-                  label='Date Joined'
-                  name='datejoined'
-                  value={formData.datejoined}
-                  onChange={handleChange}
-                  sx={{ mt: 4 }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
-                <FormLabel component='legend' sx={{ mt: 4 }}>
-                  Activation Status
-                </FormLabel>
-                <RadioGroup row name='active' value={formData.active} onChange={handleChange}>
-                  <FormControlLabel value='active' control={<Radio />} label='Active' />
-                  <FormControlLabel value='notactive' control={<Radio />} label='Not active' />
-                </RadioGroup>
-              </Grid>
-            </Grid>
-          </>
-        ) : (
-          ''
+        {editHistory.length > 0 && (
+          <Box mt={4}>
+            <Typography variant="h6">Lịch sử chỉnh sửa</Typography>
+            {editHistory.map((history, index) => (
+              <Box key={index} mt={2}>
+                <Typography variant="body1">
+                  <strong>Thời gian chỉnh sửa:</strong> {new Date(history.edited_at).toLocaleString()}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Người chỉnh sửa:</strong> {history.edited_by?.name || 'Admin'} (ID: {history.edited_by?._id || '67f2d1bcbbc14768a52717dd'})
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Lý do:</strong> {history.reason}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Thay đổi:</strong>
+                </Typography>
+                {history.changes?.before && history.changes?.after ? (
+                  Object.entries(history.changes.after).map(([key, value]) => (
+                    <Typography key={key} variant="body2">
+                      {key}: {history.changes.before[key] ?? 'N/A'} → {value ?? 'N/A'}
+                    </Typography>
+                  ))
+                ) : (
+                  <Typography variant="body2">Không có thay đổi chi tiết</Typography>
+                )}
+              </Box>
+            ))}
+          </Box>
         )}
       </DialogContent>
-      <Box className='border-t border-gray-300 w-full' />
-      <DialogActions className='flex !justify-between'>
+      <Box className="border-t border-gray-300 w-full" />
+      <DialogActions className="flex !justify-between">
         {employee ? (
           <>
-            <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
-              Edit History
-            </Button>
-            <div className='flex gap-2'>
-              <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={handleDelete}>
-                Disable
+            <div className="flex gap-2">
+              <Button variant="contained" color="error" startIcon={<CiCircleMinus />} onClick={handleDelete}>
+                Xóa
               </Button>
-              <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose} className='text-white'>
-                Close
+              <Button variant="contained" startIcon={<MdOutlineCancel />} onClick={onClose} className="text-white">
+                Đóng
               </Button>
               <Button
-                variant='contained'
+                variant="contained"
                 sx={{ backgroundColor: '#4caf50' }}
                 startIcon={<LuRecycle />}
                 onClick={handleSave}
               >
-                Save
+                Lưu
               </Button>
             </div>
           </>
         ) : (
           <>
             <Button
-              variant='contained'
-              className='!bg-red-500 text-white'
+              variant="contained"
+              className="!bg-red-500 text-white"
               startIcon={<MdOutlineCancel />}
               onClick={onClose}
             >
-              Close
+              Đóng
             </Button>
-            <Button variant='contained' startIcon={<CiCirclePlus />} onClick={handleSave}>
-              Add
+            <Button variant="contained" startIcon={<CiCirclePlus />} onClick={handleSave}>
+              Thêm
             </Button>
           </>
         )}
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default EmployeeDialog
+export default EmployeeDialog;

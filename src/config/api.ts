@@ -17,18 +17,15 @@ instance.interceptors.request.use(
 )
 
 instance.interceptors.response.use(
-  (response) => {
-    return response
-  },
+  (response) => response,
   (error) => {
     if (error.response && error.response.data) {
-      const data = error.response.data
-      const errorMessage = data.error?.message || 'An error occurred'
-      return Promise.reject(new Error(errorMessage))
-    } else {
-      return Promise.reject(new Error('Network error'))
+      const errorMessage = error.response.data.error?.message || 'An error occurred';
+      console.log('BE error:', error.response.data); // Log chi tiết lỗi từ BE
+      return Promise.reject(new Error(errorMessage));
     }
+    return Promise.reject(new Error('Network error'));
   }
-)
+);
 
 export default instance
