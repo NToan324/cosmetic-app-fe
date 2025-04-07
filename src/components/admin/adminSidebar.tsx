@@ -4,31 +4,32 @@ import { HiOutlineUsers } from 'react-icons/hi2'
 import { PiInvoice } from 'react-icons/pi'
 import { HiOutlineUserGroup } from 'react-icons/hi2'
 import { IoPieChartOutline } from 'react-icons/io5'
-import { TbLogout } from 'react-icons/tb'
 import { NavLink, useLocation } from 'react-router-dom'
 import Avatar from '@/assets/images/avatar.png'
-
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
+import DialogSignout from '../ui/dialogSignout'
 const Admin_SideBar = () => {
   const location = useLocation()
+  const { user } = useContext(AppContext)
   const menu = [
     { name: 'Dashboard', icon: VscDashboard, link: '/admin/dashboard' },
     { name: 'Product', icon: GoInbox, link: '/admin/product' },
     { name: 'Employee', icon: HiOutlineUserGroup, link: '/admin/employee' },
     { name: 'Customer', icon: HiOutlineUsers, link: '/admin/customer' },
     { name: 'Invoice', icon: PiInvoice, link: '/admin/invoice' },
-    { name: 'Statistic', icon: IoPieChartOutline, link: '/admin/statistic' },
-    { name: 'Logout', icon: TbLogout, link: '/logout' }
+    { name: 'Statistic', icon: IoPieChartOutline, link: '/admin/statistic' }
   ]
 
   return (
     <div className='w-[250px] flex flex-col items-center h-screen space-y-5 fixed top-0 left-0 z-50'>
-      <div className='text-center gap-2 pt-5'>
+      <div className='flex justify-center items-center flex-col text-center gap-2 pt-5'>
         <img src={Avatar} alt='Avatar' width={45} height={45} />
         <div className='flex flex-col justify-center items-start'>
           <h1 className='text-base'>
-            Alberts
+            {user?.name}
             <br />
-            <p className='text-gray-400 '>Admin</p>
+            <p className='text-gray-400 '>{user?.role[0]}</p>
           </h1>
         </div>
       </div>
@@ -56,6 +57,7 @@ const Admin_SideBar = () => {
             </div>
           )
         })}
+        {user && <DialogSignout />}
       </ul>
     </div>
   )

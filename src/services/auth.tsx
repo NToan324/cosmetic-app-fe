@@ -35,6 +35,12 @@ class AuthService {
     const response = await axios.post<AuthLogin>('/auth/login', data)
     return response
   }
+
+  async loginWithEmail(data: { email: string; password: string }) {
+    const response = await axios.post<AuthLogin>('/auth/login', data)
+    return response
+  }
+
   async getUser(accessToken: string) {
     const response = await axios.get<UserResponse>('/auth/me', {
       headers: {

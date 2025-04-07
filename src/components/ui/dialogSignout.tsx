@@ -9,11 +9,12 @@ import { useNavigate } from 'react-router-dom'
 import { TbLogout } from 'react-icons/tb'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
+import { Role } from '@/consts'
 
 export default function DialogSignout() {
   const [open, setOpen] = React.useState(false)
   const navigate = useNavigate()
-  const { setUser } = useContext(AppContext)
+  const { user, setUser } = useContext(AppContext)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -26,15 +27,12 @@ export default function DialogSignout() {
   const handleLogout = () => {
     setOpen(false)
     try {
-      const user = localStorage.getItem('user')
-      const parsedUser = user ? JSON.parse(user) : null
-      const role = Array.isArray(parsedUser?.role) ? parsedUser.role : []
+      const role = Array.isArray(user?.role) ? user.role : []
       localStorage.removeItem('accessToken')
-      localStorage.removeItem('user')
       setUser(null)
-      if (role.includes('CUSTOMER')) {
+      if (role.includes(Role.CUSTOMER)) {
         navigate('/auth/client/login')
-      } else if (role.length > 0) {
+      } else {
         navigate('/auth/employee/login')
       }
     } catch (error) {

@@ -28,33 +28,36 @@ function App() {
     <Router>
       <Routes>
         {/* Các route public */}
-        <Route path='/auth/client/login' Component={LoginPage} />
-        <Route path='/auth/employee/login' Component={LoginPage} />
-        <Route path='/auth/client/signup' Component={SignUpPage} />
-        <Route path='/auth/forgot-password' Component={ForgotPasswordPage} />
-        <Route path='/auth/verify' Component={VerifyPage}></Route>
-        <Route path='/auth/password-reset' Component={PasswordResetPage}></Route>
         <Route path='/unauthorized' element={<div>Unauthorized</div>} />
-        <Route path='/home' Component={HomePage} />
-        <Route path='/category' Component={CategoryPage} />
-        <Route path='/order' Component={OrderPage} />
-        <Route path='/' Component={HomePage} />
-
+        <Route path='/auth/client/login' element={LoginPage()} />
+        <Route path='/auth/employee/login' element={LoginPage()} />
+        <Route path='/auth/client/signup' element={SignUpPage()} />
+        <Route path='/auth/forgot-password' element={ForgotPasswordPage()} />
+        <Route path='/auth/verify' element={VerifyPage()}></Route>
+        <Route path='/auth/password-reset' element={PasswordResetPage()}></Route>
+        <Route path='/home' element={HomePage()} />
+        <Route path='/category' element={CategoryPage()} />
+        <Route path='/order' element={OrderPage()} />
+        <Route path='/' element={HomePage()} />
+        <Route path='/order/payment' element={PaymentPage()} />
+        <Route path='/history' element={HistoryPage()} />
         {/* Route của khách hàng */}
-        <Route element={<ProtectedRoute allowedRoles={[Role.CUSTOMER]} />}>
-          <Route path='/order/payment' Component={PaymentPage} />
-          <Route path='/history' Component={HistoryPage} />
-          <Route path='/customer-consulting' Component={UserPage} />
+        {/* <Route element={<ProtectedRoute allowedRoles={[Role.CUSTOMER]()} />}></Route> */}
+
+        {/* Route của nhân viên bán hàng */}
+        <Route element={<ProtectedRoute allowedRoles={[Role.SALESTAFF, Role.CONSULTANT, Role.MANAGER]} />}>
+          <Route path='/customer-consulting' element={UserPage()} />
         </Route>
 
-        {/* Route của nhân viên/admin */}
-        <Route element={<ProtectedRoute allowedRoles={[Role.MANAGER, Role.SALESTAFF, Role.CONSULTANT]} />}>
-          <Route path='/admin/dashboard' Component={DashboardPage} />
-          <Route path='/admin/product' Component={ProductPage} />
-          <Route path='/admin/employee' Component={EmployeePage} />
-          <Route path='/admin/customer' Component={CustomerPage} />
-          <Route path='/admin/invoice' Component={InvoicePage} />
-          <Route path='/admin/statistic' Component={StatisticPage} />
+        {/* Route của nhân viên/Manager */}
+        <Route element={<ProtectedRoute allowedRoles={[Role.MANAGER]} />}>
+          <Route path='/admin/dashboard' element={DashboardPage()} />
+          <Route path='/admin' element={DashboardPage()} />
+          <Route path='/admin/product' element={ProductPage()} />
+          <Route path='/admin/employee' element={EmployeePage()} />
+          <Route path='/admin/customer' element={CustomerPage()} />
+          <Route path='/admin/invoice' element={InvoicePage()} />
+          <Route path='/admin/statistic' element={StatisticPage()} />
         </Route>
       </Routes>
     </Router>
