@@ -176,14 +176,10 @@ const ProductPage = () => {
         </Table>
       </TableContainer>
 
-      {/* Menu lọc với checkbox */}
-
-      {/* Phân trang (chỉ là demo) */}
       <Stack spacing={2} sx={{ marginTop: 2, alignItems: 'center' }}>
         <Pagination count={5} variant='outlined' shape='rounded' />
       </Stack>
 
-      {/* Dialog Thêm/Sửa sản phẩm */}
       <ProductDialog
         open={dialogOpen}
         onClose={handleDialogClose}

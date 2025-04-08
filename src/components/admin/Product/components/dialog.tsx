@@ -182,6 +182,16 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
             {/* Product Fields */}
             <Grid size={{ xs: 12, md: 7 }}>
               <TextField
+                fullWidth
+                margin='dense'
+                type='text'
+                label='Code'
+                value={product?.code}
+                disabled
+                slotProps={{ inputLabel: { shrink: true } }}
+                sx={{ mb: 2 }}
+              />
+              <TextField
                 {...register('name', { required: 'Name is required' })}
                 fullWidth
                 margin='dense'
@@ -212,6 +222,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                 {...register('brand_id', { required: 'Brand is required' })}
                 fullWidth
                 margin='dense'
+                label='Brand'
                 defaultValue={product?.brand_id || ''}
                 displayEmpty
                 sx={{ mb: 2 }}
@@ -239,9 +250,11 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               <Select
                 {...register('units', { required: 'Units is required' })}
                 fullWidth
+                label='Units'
                 margin='dense'
                 defaultValue={product?.units || ''}
                 displayEmpty
+                sx={{ mb: 2 }}
               >
                 <MenuItem value=''>Select Unit</MenuItem>
                 <MenuItem value='BOX'>Box</MenuItem>

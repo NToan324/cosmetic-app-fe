@@ -1,9 +1,27 @@
 import axios from '@/config/api'
 
+interface ProductResponsePagination {
+  message: string
+  status: number
+  data: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    data: Product[]
+  }
+}
+
 interface ProductResponse {
   message: string
   status: number
   data: Product[]
+}
+
+interface ProductResponseSingle {
+  message: string
+  status: number
+  data: Product
 }
 
 interface edit_history {
@@ -16,6 +34,7 @@ export interface Product {
   _id: string
   name: string
   description: string
+  code: string
   price: number
   discount_price: number
   stock_quantity: number
@@ -35,13 +54,29 @@ export interface Product {
 }
 
 class ProductService {
-  async getAllProducts(categoryId?: string, price?: string) {
-    const url = categoryId
-      ? `/product?category=${categoryId}${price ? `&price=${price}` : ''}`
-      : `/product${price ? `?price=${price}` : ''}`
-    const response = await axios.get<ProductResponse>(url)
+  async getAllProducts(categoryId?: string, price?: string, page?: number, limit?: number) {
+    const params = new URLSearchParams()
+
+    if (categoryId) params.append('category', categoryId)
+    if (price) params.append('price', price)
+    if (page) params.append('page', page.toString())
+    if (limit) params.append('limit', limit.toString())
+
+    const url = `/product?${params.toString()}`
+    const response = await axios.get<ProductResponsePagination>(url)
     return response.data
   }
+
+  async getProduct(id: string) {
+    const response = await axios.get<ProductResponseSingle>(`/product/${id}`)
+    return response.data
+  }
+
+  async searchProduct(code: string) {
+    const response = await axios.get<ProductResponse>(`/product/search?code=${code}`)
+    return response.data
+  }
+
   async updateProduct({ accessToken, id, product }: { accessToken: string; id: string; product: Product }) {
     const response = await axios.put<ProductResponse>(`/product/${id}`, product, {
       headers: {
