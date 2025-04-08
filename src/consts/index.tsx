@@ -43,7 +43,7 @@ export enum EmployeeType {
   FULLTIME = 'FULLTIME'
 }
 
-export enum Branch {}
+export enum Brand {}
 
 export enum Unit {
   BOX = 'BOX',
@@ -51,3 +51,6 @@ export enum Unit {
   PACK = 'PACK',
   PCS = 'PCS'
 }
+
+export const urlImage = () =>
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTF60zFhSl23dWXNtksiXqrWtW4F3_ig5IKUIBb59YJNqyvz-6dBkE9X7BqdIJiw26UTgA&usqp=CAU'

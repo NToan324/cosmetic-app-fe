@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -6,7 +6,6 @@ import {
   DialogActions,
   TextField,
   Select,
-  SelectChangeEvent,
   MenuItem,
   Button,
   Grid,
@@ -19,92 +18,47 @@ import {
 } from '@mui/material'
 import { MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
-import { CiCirclePlus } from 'react-icons/ci'
-import { CiCircleMinus } from 'react-icons/ci'
-import DEFAULT from '@/assets/images/default_avatar.jpg'
-import employeeService, { Employee, EmployeeCreateData } from '@/services/employee'
+import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci'
+import employeeService, { Employee, EmployeeCreateData, EmployeeEditHistory } from '@/services/employee'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
+import ConfirmModalDelete from './dialogDelete'
+import { Role } from '@/consts'
 
 interface EmployeeDialogProps {
   open: boolean
   onClose: () => void
-  onSave: (employee: any) => void
-  employee?: Employee | null
+  employee: Employee | null
   accessToken: string
-  userId?: string
 }
 
-const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, employee, accessToken, userId }) => {
-  const [formData, setFormData] = useState<EmployeeCreateData>({
-    name: '',
-    email: '',
-    phone: '',
-    role: ['SALESTAFF'],
-    type: 'FULLTIME',
-    active: true,
-    disable: false,
-    image_url: DEFAULT,
-    created_by: undefined,
-    edited_by: userId,
-    reason: ''
-  })
-  const [editHistory, setEditHistory] = useState<any[]>([])
+const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialogProps) => {
+  const { reload, setReload } = useContext(AppContext)
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false)
+  const [disable, setDisable] = useState(employee ? employee.disable : true)
+  const [role, setRole] = useState<Array<string>>(employee ? employee.user.role : [Role.CONSULTANT])
+  const [editHistory, setEditHistory] = useState<EmployeeEditHistory[]>([])
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError
+    setError,
+    reset
   } = useForm<EmployeeCreateData>()
 
-  useEffect(() => {
-    if (open) {
-      setFormData({
-        name: employee?.user.name || '',
-        email: employee?.user.email || '',
-        phone: employee?.user.phone || '',
-        role: employee?.user.role || ['SALESTAFF'],
-        type: employee?.type || 'FULLTIME',
-        active: employee?.user?.active ?? true,
-        disable: employee?.disable ?? false,
-        image_url: employee?.image_url || DEFAULT,
-        created_by: userId,
-        edited_by: userId,
-        reason: ''
-      })
-      setEditHistory(employee?.edit_history || [])
-    }
-  }, [open, employee, userId])
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'active' || name === 'disable' ? value === 'true' : value
-    }))
-  }
-
-  const handleSelectChange = (event: SelectChangeEvent<string>) => {
-    const { name, value } = event.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const imageUrl = URL.createObjectURL(file)
-      setFormData((prev) => ({ ...prev, image_url: imageUrl }))
-    }
-  }
-
-  const handleSave: SubmitHandler<EmployeeCreateData> = async (data: EmployeeCreateData) => {
-    console.log('Form data:', data)
+  const handleAdd: SubmitHandler<EmployeeCreateData> = async (data: EmployeeCreateData) => {
+    data.disable = disable
+    data.role = role
     try {
       const response = await employeeService.createEmployee({
         accessToken: accessToken,
         data
       })
       if (response) {
+        setReload(!reload)
         onClose()
+        reset()
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -119,35 +73,65 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
     }
   }
 
-  const handleDelete = () => {
-    if (!employee) return
-    const deleteData = {
-      deleted_by: '67f2d1bcbbc14768a52717df',
-      reason: formData.reason || 'Xóa bởi admin'
-    }
-    onSave({ ...employee, ...deleteData })
+  const handleOnClose = () => {
+    setEditHistory([])
     onClose()
+    reset()
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!employee) return
+    await employeeService.deleteEmployee({
+      accessToken,
+      id: employee?.userId
+    })
+    setReload(!reload)
+    setOpenConfirmDelete(false)
+    onClose()
+    reset()
+  }
+
+  const handleUpdate: SubmitHandler<EmployeeCreateData> = async (data) => {
+    if (!employee) return
+    data.disable = disable
+    data.role = role
+    const updateData = {
+      ...data
+    }
+    try {
+      const response = await employeeService.updateEmployee({
+        accessToken,
+        id: employee.userId,
+        data: updateData
+      })
+      if (response) {
+        setReload(!reload)
+        onClose()
+        reset()
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Đã có lỗi xảy ra'
+      setError('root', { message })
+    }
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
-      <DialogTitle sx={{ textAlign: 'center' }}>
-        {employee ? `Chi tiết nhân viên: ${employee.user.id}` : 'Thêm nhân viên'}
-      </DialogTitle>
+    <Dialog open={open} maxWidth='md' fullWidth>
+      <DialogTitle sx={{ textAlign: 'center' }}>{employee ? employee?.user.name : 'Thêm nhân viên'}</DialogTitle>
       <Box className='border-t border-gray-300 w-full' />
-      <form action='' onSubmit={handleSubmit(handleSave)}>
+      <form action='' onSubmit={employee ? handleSubmit(handleUpdate) : handleSubmit(handleAdd)}>
         <DialogContent>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 4 }}>
               <Box display='flex' flexDirection='column' alignItems='center'>
                 <img
-                  src={formData.image_url}
+                  src={employee?.image_url}
                   alt='Avatar'
                   style={{ width: '100px', height: '100px', borderRadius: '8px', objectFit: 'cover' }}
                 />
                 <Button variant='contained' component='label' sx={{ mt: 1 }}>
                   Chọn ảnh
-                  <input type='file' hidden accept='image/*' onChange={handleImageChange} />
+                  <input type='file' hidden accept='image/*' />
                 </Button>
               </Box>
             </Grid>
@@ -161,6 +145,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
                 margin='dense'
                 label='Tên'
                 name='name'
+                defaultValue={employee?.user.name}
               />
               {errors.name && (
                 <Typography variant='body2' color='error' textAlign={'start'}>
@@ -179,6 +164,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
                 margin='dense'
                 label='Email'
                 name='email'
+                defaultValue={employee?.user.email}
               />
               {errors.email && (
                 <Typography variant='body2' color='error' textAlign={'start'}>
@@ -197,6 +183,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
                 margin='dense'
                 label='Số điện thoại'
                 name='phone'
+                defaultValue={employee?.user.phone}
               />
               {errors.phone && (
                 <Typography variant='body2' color='error' textAlign={'start'}>
@@ -206,19 +193,23 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Select
-                {...register('role', { required: 'Vai trò là bắt buộc' })}
+                multiple
                 fullWidth
                 margin='dense'
                 label='Vai trò'
                 name='role'
-                multiple
-                value={formData.role}
-                onChange={handleSelectChange}
+                defaultValue={role}
+                onChange={(e) => {
+                  const selectedRoles = e.target.value as string[]
+                  setRole(selectedRoles)
+                  console.log(selectedRoles)
+                }}
               >
                 <MenuItem value='MANAGER'>Quản lý</MenuItem>
                 <MenuItem value='SALESTAFF'>Nhân viên bán hàng</MenuItem>
                 <MenuItem value='CONSULTANT'>Tư vấn viên</MenuItem>
               </Select>
+
               {errors.role && (
                 <Typography variant='body2' color='error' textAlign={'start'}>
                   {errors.role.message}
@@ -232,8 +223,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
                 margin='dense'
                 label='Loại'
                 name='type'
-                value={formData.type}
-                onChange={handleSelectChange}
+                defaultValue={employee ? employee.type : 'FULLTIME'}
               >
                 <MenuItem value='PARTTIME'>Bán thời gian</MenuItem>
                 <MenuItem value='FULLTIME'>Toàn thời gian</MenuItem>
@@ -245,29 +235,43 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
               )}
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <FormLabel component='legend'>Hoạt động</FormLabel>
-              <RadioGroup row name='active' value={(formData.active ?? true).toString()} onChange={handleChange}>
-                <FormControlLabel value='true' control={<Radio />} label='Hoạt động' />
-                <FormControlLabel value='false' control={<Radio />} label='Không hoạt động' />
+              <FormLabel component='legend'>Trạng thái</FormLabel>
+              <RadioGroup
+                row
+                name='disable'
+                value={disable}
+                defaultValue={disable}
+                onChange={(e) => {
+                  setDisable(e.target.value === 'true')
+                  console.log(e.target.value)
+                }}
+              >
+                <FormControlLabel value={false} control={<Radio />} label='Hoạt động' />
+                <FormControlLabel value={true} control={<Radio />} label='Vô hiệu hóa' />
               </RadioGroup>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <FormLabel component='legend'>Tắt</FormLabel>
-              <RadioGroup row name='disable' value={(formData.disable ?? false).toString()} onChange={handleChange}>
-                <FormControlLabel value='true' control={<Radio />} label='Tắt' />
-                <FormControlLabel value='false' control={<Radio />} label='Bật' />
-              </RadioGroup>
+              {errors.disable && (
+                <Typography variant='body2' color='error' textAlign={'start'}>
+                  {errors.disable.message}
+                </Typography>
+              )}
             </Grid>
             <Grid size={{ xs: 12 }}>
               <TextField
+                {...register('reason', {
+                  required: 'Vui lòng nhập lý do',
+                  maxLength: { value: 200, message: 'Lý do không được vượt quá 200 ký tự' }
+                })}
                 fullWidth
                 margin='dense'
                 label='Lý do'
                 name='reason'
-                value={formData.reason}
-                onChange={handleChange}
               />
             </Grid>
+            {errors.reason && (
+              <Typography variant='body2' color='error' textAlign={'start'}>
+                {errors.reason.message}
+              </Typography>
+            )}
           </Grid>
 
           {editHistory.length > 0 && (
@@ -279,8 +283,8 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
                     <strong>Thời gian chỉnh sửa:</strong> {new Date(history.edited_at).toLocaleString()}
                   </Typography>
                   <Typography variant='body1'>
-                    <strong>Người chỉnh sửa:</strong> {history.edited_by?.name || 'Admin'} (ID:{' '}
-                    {history.edited_by?._id || '67f2d1bcbbc14768a52717dd'})
+                    <strong>Người chỉnh sửa:</strong> {history.edited_by?.user.name || 'Admin'} (
+                    {`ID: ${history.edited_by?.userId}`})
                   </Typography>
                   <Typography variant='body1'>
                     <strong>Lý do:</strong> {history.reason}
@@ -288,15 +292,6 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
                   <Typography variant='body1'>
                     <strong>Thay đổi:</strong>
                   </Typography>
-                  {history.changes?.before && history.changes?.after ? (
-                    Object.entries(history.changes.after).map(([key, value]) => (
-                      <Typography key={key} variant='body2'>
-                        {key}: {history.changes.before[key] ?? 'N/A'} → {value ?? 'N/A'}
-                      </Typography>
-                    ))
-                  ) : (
-                    <Typography variant='body2'>Không có thay đổi chi tiết</Typography>
-                  )}
                 </Box>
               ))}
             </Box>
@@ -306,16 +301,44 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
         <DialogActions className='flex !justify-between'>
           {employee ? (
             <>
-              <div className='flex gap-2'>
-                <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={handleDelete}>
-                  Xóa
-                </Button>
-                <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose} className='text-white'>
-                  Đóng
-                </Button>
-                <Button variant='contained' sx={{ backgroundColor: '#4caf50' }} startIcon={<LuRecycle />}>
-                  Lưu
-                </Button>
+              <div className='flex flex-col justify-end items-end w-full gap-2'>
+                <div className='flex justify-end gap-2'>
+                  <Button
+                    variant='contained'
+                    color='error'
+                    startIcon={<CiCircleMinus />}
+                    onClick={() => setOpenConfirmDelete(true)}
+                  >
+                    Delete
+                  </Button>
+                  <ConfirmModalDelete
+                    open={openConfirmDelete}
+                    onClose={() => setOpenConfirmDelete(false)}
+                    onConfirm={handleConfirmDelete}
+                  />
+
+                  <Button
+                    variant='contained'
+                    startIcon={<MdOutlineCancel />}
+                    onClick={handleOnClose}
+                    className='text-white'
+                  >
+                    Đóng
+                  </Button>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    sx={{ backgroundColor: '#4caf50' }}
+                    startIcon={<LuRecycle />}
+                  >
+                    Lưu
+                  </Button>
+                </div>
+                {errors.root && (
+                  <Typography variant='body2' color='error' textAlign={'start'}>
+                    {errors.root.message}
+                  </Typography>
+                )}
               </div>
             </>
           ) : (
@@ -325,7 +348,7 @@ const EmployeeDialog: React.FC<EmployeeDialogProps> = ({ open, onClose, onSave, 
                   variant='contained'
                   className='!bg-red-500 text-white'
                   startIcon={<MdOutlineCancel />}
-                  onClick={onClose}
+                  onClick={handleOnClose}
                 >
                   Đóng
                 </Button>

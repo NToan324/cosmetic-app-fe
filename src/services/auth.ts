@@ -18,6 +18,7 @@ interface AuthLogin {
 
 export interface UserResponse {
   message: string
+  status: number
   data: User
 }
 
