@@ -1,29 +1,117 @@
+import { useEffect, useState } from 'react'
 import ScanQRCodeDialog from '@/components/ui/dialogScanCode'
-const BarCode = () => {
+import { useCallback } from 'react'
+import productService, { Product } from '@/services/product'
+import OrderedProduct from './orderedProduct'
+import CircularProgress from '@mui/material/CircularProgress'
+import { OrderedProductInterface } from '../order'
+
+interface BarCodeProps {
+  setOrderedTempProduct: React.Dispatch<React.SetStateAction<OrderedProductInterface[]>>
+}
+
+const BarCode = ({ setOrderedTempProduct }: BarCodeProps) => {
+  const [productId, setProductId] = useState('')
+  const [orderedQuantity, setOrderedQuantity] = useState<number>(1)
+  const [products, setProducts] = useState<Array<Product>>([])
+
+  const handleAdd = () => {
+    if (!productId || !products || orderedQuantity <= 0) return
+    setOrderedTempProduct((prev) => {
+      const existingProduct = prev.find((item) => item.orderedProduct.code === products[0].code)
+      if (existingProduct) {
+        return prev.map((item) =>
+          item.orderedProduct.code === products[0].code
+            ? { ...item, orderedQuantity: item.orderedQuantity + orderedQuantity }
+            : item
+        )
+      } else {
+        return [{ orderedProduct: products[0], orderedQuantity }, ...prev]
+      }
+    })
+    handleClearSearch()
+  }
+
+  const handleClearSearch = () => {
+    setProductId('')
+    setProducts([])
+    setOrderedQuantity(1)
+  }
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (productId.length > 0) {
+        const data = await productService.searchProduct(productId)
+        if (data) {
+          setProducts(data.data)
+        }
+      }
+    }, 100)
+
+    return () => clearTimeout(delayDebounce)
+  }, [productId])
+
+  const handleSearchCode = useCallback((code: string) => {
+    setProductId(code)
+  }, [])
   return (
-    <div className='w-full flex-wrap flex justify-between items-start gap-4'>
+    <div className='w-full flex-wrap flex justify-start items-start gap-8'>
+      {/* Scan QR code */}
       <div className='flex flex-col justify-between items-start gap-4'>
         <p className='text-black/40'>Scan QR Code</p>
-        <ScanQRCodeDialog />
+        <ScanQRCodeDialog setOrderedTempProduct={setOrderedTempProduct} />
       </div>
+
+      {/* Manual barcode entry */}
       <div className='flex flex-col justify-between items-start gap-4'>
         <p className='text-black/40'>Or enter the barcode</p>
-        <div className='flex flex-wrap justify-between items-center gap-4'>
+        <div className='flex justify-around items-center gap-4 w-full'>
           <input
             type='text'
             placeholder='Product code'
+            value={productId}
+            onChange={(e) => handleSearchCode(e.target.value)}
             className='border-none outline-none rounded-2xl bg-gray-100 p-4 w-[200px]'
           />
-
-          <input
-            type='text'
-            placeholder='Quantity'
-            className='border-none outline-none rounded-2xl bg-gray-100 p-4 w-[200px]'
-          />
+          <div className='flex justify-start items-center gap-4 w-full'>
+            <button
+              disabled={products.length !== 1}
+              onClick={handleAdd}
+              className={`${products.length == 1 ? 'bg-primary' : 'bg-gray-300'} cursor-pointer  rounded-xl py-2 px-4 w-[100px]`}
+            >
+              <span className='text-white'>Add</span>
+            </button>
+            <button
+              onClick={handleClearSearch}
+              className={` cursor-pointer bg-red-600 text-white rounded-xl py-2 px-4 w-[100px]`}
+            >
+              <span className='text-white'>Clear</span>
+            </button>
+          </div>
         </div>
-        <button className='cursor-pointer bg-primary rounded-xl py-2 px-4 w-[100px]'>
-          <span className='text-white'>Add</span>
-        </button>
+        {productId && products.length === 0 ? (
+          <CircularProgress disableShrink color='primary' />
+        ) : (
+          <div className='max-h-[200px] overflow-y-auto flex flex-col justify-start items-start gap-4 p-2 w-full'>
+            {products &&
+              products.length > 0 &&
+              products.map((item) => {
+                return (
+                  <OrderedProduct
+                    image={item.image_url}
+                    quantity={item.stock_quantity}
+                    price={item.price}
+                    name={item.name}
+                    key={item._id}
+                    code={item.code}
+                    edit={true}
+                    setOrderedQuantity={setOrderedQuantity}
+                    orderedQuantity={orderedQuantity}
+                  />
+                )
+              })}
+          </div>
+        )}
       </div>
     </div>
   )

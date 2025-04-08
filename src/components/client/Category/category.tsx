@@ -2,7 +2,6 @@ import Filter from '@/components/filter'
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -10,42 +9,43 @@ import {
 } from '@/components/ui/pagination'
 import Product from '@/components/product'
 import OrderingFilter from '@/components/client/Category/components/orderingFilter'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { AppContext } from '@/provider/appContext'
-import productService from '@/services/product'
+import { useProduct } from '@/hooks/useProduct'
 
 const Category = () => {
-  const { products, categories, setProducts } = useContext(AppContext)
-  const [filterCategory, setFilterCategory] = useState<string>('all')
-  const [filterPrice, setFilterPrice] = useState<string>('')
+  const { categories } = useContext(AppContext)
+  const [categoryId, setCategoryId] = useState<string>()
+  const [price, setPrice] = useState<string>()
+  const [page, setPage] = useState<number>(1)
+  const limit = 9
+  const { data, isError, isLoading } = useProduct({ categoryId, price, page, limit })
+  const products = data?.data.data
+  const totalPages = data?.data.totalPages || 1
 
-  useEffect(() => {
-    const handleFilter = async (categoryId?: string, price?: string) => {
-      try {
-        if (categoryId === 'all') {
-          categoryId = undefined
-        }
-        const filteredProducts = await productService.getAllProducts(categoryId, price)
-        if (filteredProducts) {
-          setProducts(filteredProducts.data)
-          setFilterCategory(categoryId || 'all')
-          setFilterPrice(price || '')
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error)
-      }
-    }
-
-    handleFilter(filterCategory, filterPrice)
-  }, [filterCategory, filterPrice, setProducts])
+  if (isLoading) return <p>Loading...</p>
+  if (isError) return <p>Something went wrong</p>
 
   return (
     <div className='p-4'>
-      <Filter filterData={categories} filterCategory={filterCategory} setFilterCategory={setFilterCategory} />
+      <Filter
+        filterData={categories}
+        filterCategory={categoryId || 'all'}
+        setFilterCategory={(value) => {
+          setCategoryId(value === 'all' ? undefined : value)
+          setPage(1)
+        }}
+      />
       <div className='mt-12 flex flex-col justify-start items-start gap-4'>
         <div className='flex flex-wrap justify-between items-center w-full gap-2'>
           <h1 className='text-black text-2xl font-bold'>Skin Care</h1>
-          <OrderingFilter filterPrice={filterPrice} setFilterPrice={setFilterPrice} />
+          <OrderingFilter
+            filterPrice={price || ''}
+            setFilterPrice={(value) => {
+              setPrice(value)
+              setPage(1)
+            }}
+          />
         </div>
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2'>
           {products &&
@@ -65,24 +65,17 @@ const Category = () => {
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href='#' />
+              <PaginationPrevious href='#' onClick={() => setPage((prev) => Math.max(prev - 1, 1))} />
             </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink href='#' isActive={page === i + 1} onClick={() => setPage(i + 1)}>
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
             <PaginationItem>
-              <PaginationLink href='#' isActive>
-                1
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href='#'>2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href='#'>3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href='#' />
+              <PaginationNext href='#' onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))} />
             </PaginationItem>
           </PaginationContent>
         </Pagination>

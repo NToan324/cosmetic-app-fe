@@ -35,7 +35,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const { data } = await productService.getAllProducts()
         if (data) {
-          setProducts(data)
+          setProducts(data.data)
         }
       } catch (error) {
         throw new Error(error instanceof Error ? error.message : 'Unknown error')
