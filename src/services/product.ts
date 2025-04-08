@@ -17,7 +17,7 @@ export interface Product {
   name: string
   description: string
   price: number
-  discount_price?: number
+  discount_price: number
   stock_quantity: number
   units: string
   category_id: string
@@ -40,6 +40,30 @@ class ProductService {
       ? `/product?category=${categoryId}${price ? `&price=${price}` : ''}`
       : `/product${price ? `?price=${price}` : ''}`
     const response = await axios.get<ProductResponse>(url)
+    return response.data
+  }
+  async updateProduct({ accessToken, id, product }: { accessToken: string; id: string; product: Product }) {
+    const response = await axios.put<ProductResponse>(`/product/${id}`, product, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    return response.data
+  }
+  async createProduct({ accessToken, product }: { accessToken: string; product: Product }) {
+    const response = await axios.post<ProductResponse>(`/product`, product, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    return response.data
+  }
+  async deleteProduct({ accessToken, id }: { accessToken: string; id: string }) {
+    const response = await axios.delete<ProductResponse>(`/product/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
     return response.data
   }
 }

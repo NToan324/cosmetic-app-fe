@@ -1,7 +1,6 @@
 import axios from '@/config/api'
 
 interface User {
-  id: string
   name: string
   email: string
   phone: string
@@ -9,17 +8,25 @@ interface User {
   active: boolean
 }
 
+export interface EmployeeEditHistory {
+  edited_at: string
+  edited_by: Employee
+  reason: string
+}
+
 export interface Employee {
+  userId: string
   type: string
   disable: boolean
   image_url: string
   created_at: string
-  delete: boolean
-  edit_history: []
+  deleted: boolean
+  edit_history: EmployeeEditHistory[]
   user: User
 }
 
 export interface EmployeeCreateData {
+  userId: string
   name: string
   email: string
   phone: string
@@ -28,14 +35,9 @@ export interface EmployeeCreateData {
   image_url?: string
   created_by?: string
   reason?: string
-  disable?: boolean
   edited_by?: string
   active?: boolean
-}
-
-interface EmployeeDeleteData {
-  deleted_by: string
-  reason?: string
+  disable?: boolean
 }
 
 interface EmployeeResponse {
@@ -43,8 +45,12 @@ interface EmployeeResponse {
   data: Employee[]
 }
 class EmployeeService {
-  async getEmployees() {
-    const response = await axios.get<EmployeeResponse>('/employee')
+  async getEmployees(accessToken: string) {
+    const response = await axios.get<EmployeeResponse>('/employee', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
     return response.data
   }
 
@@ -57,8 +63,8 @@ class EmployeeService {
     return response.data
   }
 
-  async updateEmployee({ accessToken, data }: { accessToken: string; data: EmployeeCreateData }) {
-    const response = await axios.patch<EmployeeCreateData>(`/employee/`, data, {
+  async updateEmployee({ accessToken, id, data }: { accessToken: string; id: string; data: EmployeeCreateData }) {
+    const response = await axios.patch<EmployeeCreateData>(`/employee/${id}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -66,14 +72,11 @@ class EmployeeService {
     return response.data
   }
 
-  async deleteEmployee(id: string, data: EmployeeDeleteData) {
-    const formData = new FormData()
-    formData.append('deleted_by', data.deleted_by)
-    formData.append('reason', data.reason || 'Xóa bởi admin')
-
-    console.log('FormData sent to BE (delete):', Object.fromEntries(formData))
-    const response = await axios.put(`/employee/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+  async deleteEmployee({ accessToken, id }: { accessToken: string; id: string }) {
+    const response = await axios.delete<string>(`/employee/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
     })
     return response.data
   }

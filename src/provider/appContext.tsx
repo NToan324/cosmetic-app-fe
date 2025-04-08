@@ -2,6 +2,9 @@ import { User } from '@/services/auth'
 import { Product } from '@/services/product'
 import { Category } from '@/services/category'
 import { createContext } from 'react'
+import { Customer } from '@/services/customer'
+import { Employee } from '@/services/employee'
+import { Brand } from '@/services/brand'
 interface AppContextType {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
@@ -11,6 +14,14 @@ interface AppContextType {
   setProducts: (products: Array<Product>) => void
   categories: Array<Category>
   setCategories: (categories: Array<Category>) => void
+  customers: Array<Customer>
+  setCustomers: (customers: Array<Customer>) => void
+  employees: Array<Employee>
+  setEmployees: (employees: Array<Employee>) => void
+  reload: boolean
+  setReload: (reload: boolean) => void
+  brands: Array<Brand>
+  setBrands: (brands: Array<Brand>) => void
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -21,5 +32,13 @@ export const AppContext = createContext<AppContextType>({
   products: [],
   setProducts: () => {},
   categories: [],
-  setCategories: () => {}
+  setCategories: () => {},
+  customers: [],
+  setCustomers: () => {},
+  employees: [],
+  setEmployees: () => {},
+  reload: false,
+  setReload: () => {},
+  brands: [],
+  setBrands: () => {}
 })

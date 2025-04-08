@@ -148,15 +148,27 @@ const ProductPage = () => {
                 <TableCell>{formatCurrency(product.price)}</TableCell>
                 <TableCell>{formatCurrency(product.price)}</TableCell>
                 <TableCell>
-                  <span
-                    className='rounded-xl py-2 px-4'
-                    style={{
-                      color: 'red',
-                      backgroundColor: '#ffcdd2'
-                    }}
-                  >
-                    Stop Selling
-                  </span>
+                  {product.disable ? (
+                    <span
+                      className='rounded-xl py-2 px-4'
+                      style={{
+                        color: 'red',
+                        backgroundColor: '#ffcdd2'
+                      }}
+                    >
+                      Disable
+                    </span>
+                  ) : (
+                    <span
+                      className='rounded-xl py-2 px-4'
+                      style={{
+                        color: 'green',
+                        backgroundColor: '#c9eec7'
+                      }}
+                    >
+                      Active
+                    </span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
