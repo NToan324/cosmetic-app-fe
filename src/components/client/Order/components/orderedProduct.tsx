@@ -62,7 +62,7 @@ const OrderedProduct = ({
 
   return (
     <div className='flex flex-wrap justify-between items-center gap-4'>
-      <div className='min-w-[300px] max-w-[350px] h-[130px] shadow-[0_5px_10px_rgba(0,0,0,0.2)] bg-white rounded-xl p-4 flex justify-between items-center gap-4'>
+      <div className='w-[350px] h-[130px] shadow-[0_5px_10px_rgba(0,0,0,0.2)] bg-white rounded-xl p-4 flex justify-between items-center gap-4'>
         <div className='w-[130px] h-full bg-white rounded-xl flex justify-center items-center'>
           <img src={image} alt='product' className='object-cover' />
         </div>

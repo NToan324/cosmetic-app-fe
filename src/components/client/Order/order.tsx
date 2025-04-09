@@ -22,7 +22,7 @@ const Product = () => {
           </div>
           <div className='flex flex-col justify-start items-start gap-4 bg-white p-5 rounded-2xl w-full'>
             <h1 className='text-2xl font-bold'>Ordered Products</h1>
-            <div className='flex flex-col justify-start items-start gap-4 w-full h-[400px] overflow-y-auto pl-2 pt-2'>
+            <div className='flex flex-col justify-start items-start gap-4 w-full h-[400px] overflow-y-auto pl-2 py-2'>
               {orderedTempProduct && orderedTempProduct.length > 0 ? (
                 orderedTempProduct.map((item) => {
                   return (

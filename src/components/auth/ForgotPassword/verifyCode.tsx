@@ -1,20 +1,24 @@
 import { useState, useRef } from 'react'
 import { Avatar, Button } from '@mui/material'
 import { CiLock } from 'react-icons/ci'
-import { Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import authService from '@/services/auth'
 
 const VerifyCode = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const [error, setError] = useState('')
   const inputsRef = useRef<HTMLInputElement[]>([])
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { id } = location.state || {}
 
   const handleChange = (index: number, value: string) => {
-    if (!/^[a-zA-Z0-9]?$/.test(value)) return // Chỉ cho phép chữ & số
+    if (!/^[a-zA-Z0-9]?$/.test(value)) return
 
     const newOtp = [...otp]
     newOtp[index] = value
     setOtp(newOtp)
 
-    // Tự động chuyển sang input tiếp theo nếu nhập ký tự
     if (value && index < 5) {
       inputsRef.current[index + 1]?.focus()
     }
@@ -31,7 +35,27 @@ const VerifyCode = () => {
 
   const handleResend = () => {
     setOtp(['', '', '', '', '', ''])
+    setError('')
     inputsRef.current[0]?.focus()
+    // TODO: Gọi API resend tại đây nếu có
+  }
+
+  const handleVerify = async () => {
+    const otp_code = otp.join('')
+    try {
+      const res = await authService.verifyCode({ otp_code, id: id })
+      if (res.status === 200) {
+        navigate('/auth/password-reset', {
+          state: { active: 'reset', id }
+        })
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to verify code')
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
+    }
   }
 
   const charactersLeft = 6 - otp.filter((d) => d !== '').length
@@ -65,28 +89,19 @@ const VerifyCode = () => {
           ))}
         </div>
 
-        {/* Nút Verify */}
-        <Link
-          to={'/auth/password-reset'}
-          state={{
-            active: 'reset'
-          }}
-          style={{ textDecoration: 'none' }}
-        >
-          <Button
-            variant='contained'
-            color='primary'
-            sx={{
-              backgroundColor: '#FF8C00'
-            }}
-            fullWidth
-            disabled={!isFull}
-          >
-            {isFull ? 'Verify' : `${charactersLeft} digits left`}
-          </Button>
-        </Link>
+        {error && <p className='text-red-500 text-sm text-center mb-2'>{error}</p>}
 
-        {/* Nút Resend */}
+        <Button
+          variant='contained'
+          color='primary'
+          sx={{ backgroundColor: '#FF8C00' }}
+          fullWidth
+          disabled={!isFull}
+          onClick={handleVerify}
+        >
+          {isFull ? 'Verify' : `${charactersLeft} digits left`}
+        </Button>
+
         <span className='block mt-4 text-primary uppercase cursor-pointer' onClick={handleResend}>
           Resend
         </span>

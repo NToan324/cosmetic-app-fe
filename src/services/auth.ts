@@ -11,6 +11,16 @@ export interface User {
   type?: string
 }
 
+export interface Otp {
+  user_id: string
+}
+
+export interface OtpResponse {
+  message: string
+  status: number
+  data: Otp
+}
+
 interface AuthLogin {
   accessToken: string
   user: User
@@ -48,6 +58,26 @@ class AuthService {
         Authorization: `Bearer ${accessToken}`
       }
     })
+    return response.data
+  }
+
+  async forgotPassword(data: { phone?: string; email?: string }) {
+    const response = await axios.post<OtpResponse>('/auth/forgot-password', data)
+    return response.data
+  }
+
+  async verifyCode({ otp_code, id }: { otp_code: string; id: string }) {
+    const response = await axios.post<OtpResponse>(`/auth/verify-otp?id=${id}`, { otp_code })
+    return response.data
+  }
+
+  async resendCode(id: string) {
+    const response = await axios.post<OtpResponse>(`/auth/resend-otp?id=${id}`)
+    return response.data
+  }
+
+  async resetPassword({ password, id }: { password: string; id: string }) {
+    const response = await axios.post<OtpResponse>(`/auth/reset-password?id=${id}`, { password })
     return response.data
   }
 }
