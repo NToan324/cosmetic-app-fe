@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import 'react-toastify/dist/ReactToastify.css'
+import { useState } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Table,
   TableBody,
@@ -11,37 +11,50 @@ import {
   Button,
   Pagination,
   Stack,
-  Box
-} from '@mui/material'
-import { CiCirclePlus } from 'react-icons/ci'
-import { IoSearch } from 'react-icons/io5'
-import EmployeeDialog from '@/components/admin/Employee/components/dialog'
-import { Employee } from '@/services/employee'
-import DEFAULT from '@/assets/images/default_avatar.jpg'
-import { useContext } from 'react'
-import { AppContext } from '@/provider/appContext'
+  Box,
+  Snackbar
+} from '@mui/material';
+import { CiCirclePlus } from 'react-icons/ci';
+import { IoSearch } from 'react-icons/io5';
+import EmployeeDialog from '@/components/admin/Employee/components/dialog';
+import { Employee } from '@/services/employee';
+import DEFAULT from '@/assets/images/default_avatar.jpg';
+import { useContext } from 'react';
+import { AppContext } from '@/provider/appContext';
 
 const EmployeePage = () => {
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
-  const [page, setPage] = useState(1)
-  const itemsPerPage = 10
-  const accessToken = localStorage.getItem('accessToken') || ''
-  const { employees } = useContext(AppContext)
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [page, setPage] = useState(1);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const itemsPerPage = 10;
+  const accessToken = localStorage.getItem('accessToken') || '';
+  const { employees } = useContext(AppContext);
 
   const openDialogForAdd = () => {
-    setSelectedEmployee(null)
-    setDialogOpen(true)
-  }
+    setSelectedEmployee(null);
+    setDialogOpen(true);
+  };
 
   const openDialogForEdit = (employee: Employee) => {
-    setSelectedEmployee(employee)
-    setDialogOpen(true)
-  }
+    setSelectedEmployee(employee);
+    setDialogOpen(true);
+  };
 
   const handleDialogClose = () => {
-    setDialogOpen(false)
-  }
+    setDialogOpen(false);
+  };
+
+  // Callback để hiển thị snackbar
+  const handleSnackbar = (message: string) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <div className='p-4 pt-8'>
@@ -135,9 +148,18 @@ const EmployeePage = () => {
         onClose={handleDialogClose}
         employee={selectedEmployee}
         accessToken={accessToken}
+        onActionSuccess={handleSnackbar} // Truyền callback vào dialog
+      />
+      {/* Thêm Snackbar */}
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        open={snackbarOpen}
+        autoHideDuration={5000} // 5 giây
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
       />
     </div>
-  )
-}
+  );
+};
 
-export default EmployeePage
+export default EmployeePage;
