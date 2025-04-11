@@ -4,12 +4,13 @@ import { TbLockPassword } from 'react-icons/tb'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Visibility from '@mui/icons-material/Visibility'
 import { useLocation, useNavigate } from 'react-router-dom'
-import authService from '@/services/auth'
+import authService from '@/services/auth.service'
 
 const PasswordReset = () => {
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showNewPasswordAgain, setShowNewPasswordAgain] = useState(false)
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const location = useLocation()
@@ -21,9 +22,15 @@ const PasswordReset = () => {
   const handleToggleNewPasswordAgain = () => setShowNewPasswordAgain((prev) => !prev)
 
   const handleSubmit = async () => {
+    setIsLoading(true)
     setError('')
     if (!password || !confirmPassword) {
       setError('Please enter both password fields')
+      return
+    }
+
+    if (id === undefined) {
+      setError('Verification failed. Please try again from the beginning.')
       return
     }
 
@@ -39,7 +46,7 @@ const PasswordReset = () => {
 
     try {
       await authService.resetPassword({ password, id })
-      navigate('/auth/client/login')
+      navigate('/auth/login')
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || 'Failed to reset password')
@@ -47,6 +54,7 @@ const PasswordReset = () => {
         setError('An unexpected error occurred. Please try again.')
       }
     }
+    setIsLoading(false)
   }
 
   return (
@@ -117,6 +125,7 @@ const PasswordReset = () => {
         )}
 
         <Button
+          disabled={isLoading}
           fullWidth
           className='!mt-8'
           style={{ color: 'white', backgroundColor: 'orange' }}

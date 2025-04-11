@@ -16,12 +16,13 @@ import {
 import { MdOutlineCancel, MdHistory } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus, CiCircleMinus } from 'react-icons/ci'
-import productService, { Product } from '@/services/product'
+import productService, { Product } from '@/services/product.service'
 import { AppContext } from '@/provider/appContext'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { formatDateForInput } from '@/helpers'
 import { urlImage } from '@/consts'
 import ConfirmModalDelete from './dialogConfirmDelete'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface ProductDialogProps {
   open: boolean
@@ -36,6 +37,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false)
 
   const accessToken = localStorage.getItem('accessToken')
+  const queryClient = useQueryClient()
 
   const {
     register,
@@ -85,6 +87,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
     setOpenConfirmDelete(false)
     onClose()
     reset()
+    queryClient.invalidateQueries({ queryKey: ['products'] })
   }
 
   const onSubmit: SubmitHandler<Product> = async (data) => {
@@ -103,6 +106,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
         onClose()
         setReload(!reload)
         reset()
+        queryClient.invalidateQueries({ queryKey: ['products'] })
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -137,6 +141,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
         setReload(!reload)
         onClose()
         reset()
+        queryClient.invalidateQueries({ queryKey: ['products'] })
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -155,7 +160,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
 
   return (
     <Dialog open={open} maxWidth='md' fullWidth>
-      <DialogTitle sx={{ textAlign: 'center' }}>{product ? product.name : 'Add Product'}</DialogTitle>
+      <DialogTitle sx={{ textAlign: 'center' }}>{product ? product.name : 'Thêm sản phẩm mới'}</DialogTitle>
       <div className='border-t border-gray-300 w-full'></div>
       <form onSubmit={handleSubmit(product ? onUpdate : onSubmit)}>
         <DialogContent>
@@ -174,7 +179,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                 {...register('image_url')}
                 fullWidth
                 margin='dense'
-                label='Image URL'
+                label='URL hình ảnh'
                 defaultValue={product?.image_url}
               />
             </Grid>
@@ -185,17 +190,17 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                 fullWidth
                 margin='dense'
                 type='text'
-                label='Code'
+                label='Mã sản phẩm'
                 value={product?.code}
                 disabled
                 slotProps={{ inputLabel: { shrink: true } }}
                 sx={{ mb: 2 }}
               />
               <TextField
-                {...register('name', { required: 'Name is required' })}
+                {...register('name', { required: 'Vui lòng nhập tên sản phẩm' })}
                 fullWidth
                 margin='dense'
-                label='Name'
+                label='Tên sản phẩm'
                 defaultValue={product?.name}
                 error={!!errors.name}
                 helperText={errors.name?.message}
@@ -203,14 +208,15 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               />
 
               <Select
-                {...register('category_id', { required: 'Category is required' })}
+                {...register('category_id', { required: 'Vui lòng chọn danh mục sản phẩm' })}
                 fullWidth
                 margin='dense'
                 defaultValue={product?.category_id || ''}
+                label='Danh mục'
                 displayEmpty
                 sx={{ mb: 2 }}
               >
-                <MenuItem value=''>Select Category</MenuItem>
+                <MenuItem value=''>Danh mục sản phẩm</MenuItem>
                 {categories?.map((cat) => (
                   <MenuItem key={cat._id} value={cat._id}>
                     {cat.name}
@@ -219,15 +225,15 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               </Select>
 
               <Select
-                {...register('brand_id', { required: 'Brand is required' })}
+                {...register('brand_id', { required: 'Vui lòng chọn thương hiệu sản phẩm' })}
                 fullWidth
                 margin='dense'
-                label='Brand'
+                label='Thương hiệu'
                 defaultValue={product?.brand_id || ''}
                 displayEmpty
                 sx={{ mb: 2 }}
               >
-                <MenuItem value=''>Select Brand</MenuItem>
+                <MenuItem value=''>Thương hiệu</MenuItem>
                 {brands?.map((brand) => (
                   <MenuItem key={brand._id} value={brand._id}>
                     {brand.name}
@@ -236,10 +242,10 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               </Select>
 
               <TextField
-                {...register('stock_quantity', { required: 'Stock quantity is required', valueAsNumber: true })}
+                {...register('stock_quantity', { required: 'Vui lòng nhập số lượng', valueAsNumber: true })}
                 fullWidth
                 margin='dense'
-                label='Stock Quantity'
+                label='Số lượng tồn kho'
                 type='number'
                 defaultValue={product?.stock_quantity}
                 error={!!errors.stock_quantity}
@@ -248,28 +254,28 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               />
 
               <Select
-                {...register('units', { required: 'Units is required' })}
+                {...register('units', { required: 'Vui lòng chọn đơn vị tính' })}
                 fullWidth
-                label='Units'
+                label='Đơn vị tính'
                 margin='dense'
                 defaultValue={product?.units || ''}
                 displayEmpty
                 sx={{ mb: 2 }}
               >
-                <MenuItem value=''>Select Unit</MenuItem>
-                <MenuItem value='BOX'>Box</MenuItem>
-                <MenuItem value='TUBE'>Tube</MenuItem>
-                <MenuItem value='PACK'>Pack</MenuItem>
-                <MenuItem value='PCS'>Piece</MenuItem>
+                <MenuItem value=''>Đơn vị tính</MenuItem>
+                <MenuItem value='BOX'>Hộp</MenuItem>
+                <MenuItem value='TUBE'>Tuýp</MenuItem>
+                <MenuItem value='PACK'>Gói</MenuItem>
+                <MenuItem value='PCS'>Lọ</MenuItem>
               </Select>
 
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
-                    {...register('price', { required: 'Price is required', valueAsNumber: true })}
+                    {...register('price', { required: 'Vui lòng nhập giá gốc', valueAsNumber: true })}
                     fullWidth
                     margin='dense'
-                    label='Original Price'
+                    label='Giá gốc'
                     type='number'
                     defaultValue={product?.price}
                     error={!!errors.price}
@@ -282,7 +288,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                     {...register('discount_price', { valueAsNumber: true })}
                     fullWidth
                     margin='dense'
-                    label='Discount Price'
+                    label='Giá khuyến mãi'
                     type='number'
                     defaultValue={product?.discount_price}
                     error={!!errors.discount_price}
@@ -298,10 +304,10 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               />
 
               <TextField
-                {...register('description', { required: 'Description is required' })}
+                {...register('description', { required: 'Vui lòng nhập mô tả sản phẩm' })}
                 fullWidth
                 margin='dense'
-                label='Description'
+                label='Mô tả sản phẩm'
                 defaultValue={product?.description}
                 multiline
                 rows={4}
@@ -312,10 +318,10 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
-                    {...register('production_date', { required: 'Production date is required' })}
+                    {...register('production_date', { required: 'Vui lòng chọn ngày sản xuất' })}
                     fullWidth
                     margin='dense'
-                    label='Production Date'
+                    label='Ngày sản xuất'
                     type='date'
                     defaultValue={formatDateForInput(product?.production_date || '')}
                     error={!!errors.production_date}
@@ -326,10 +332,10 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
-                    {...register('expiration_date', { required: 'Expiration date is required' })}
+                    {...register('expiration_date', { required: 'Vui lòng chọn ngày hết hạn' })}
                     fullWidth
                     margin='dense'
-                    label='Expiration Date'
+                    label='Ngày hết hạn'
                     type='date'
                     defaultValue={formatDateForInput(product?.expiration_date || '')}
                     slotProps={{ inputLabel: { shrink: true } }}
@@ -346,7 +352,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                     {...register('release_date')}
                     fullWidth
                     margin='dense'
-                    label='Release Date'
+                    label='Ngày bán ra'
                     type='date'
                     slotProps={{ inputLabel: { shrink: true } }}
                     defaultValue={formatDateForInput(product?.release_date || '')}
@@ -358,7 +364,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                     {...register('discontinued_date')}
                     fullWidth
                     margin='dense'
-                    label='Discontinued Date'
+                    label='Ngày ngừng bán'
                     type='date'
                     slotProps={{ inputLabel: { shrink: true } }}
                     defaultValue={formatDateForInput(product?.discontinued_date || '')}
@@ -384,7 +390,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                     startIcon={<CiCircleMinus />}
                     onClick={() => setOpenConfirmDelete(true)}
                   >
-                    Delete
+                    Xóa
                   </Button>
                   <ConfirmModalDelete
                     open={openConfirmDelete}
@@ -397,35 +403,32 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                     startIcon={<MdOutlineCancel />}
                     onClick={handleOnClose}
                   >
-                    Close
+                    Đóng
                   </Button>
                   <Button variant='contained' color='success' startIcon={<LuRecycle />} type='submit'>
-                    Save
+                    Lưu
                   </Button>
                 </div>
                 {errors.root && <div className='text-red-500 text-sm '>{errors.root.message}</div>}
               </div>
             </>
           ) : (
-            <>
-              <div></div>
-              <div className='flex flex-col justify-end items-end gap-2 px-4'>
-                <div className='flex gap-2 justify-end items-center'>
-                  <Button
-                    variant='contained'
-                    className='!bg-red-500 text-white'
-                    startIcon={<MdOutlineCancel />}
-                    onClick={handleOnClose}
-                  >
-                    Close
-                  </Button>
-                  <Button variant='contained' color='success' startIcon={<CiCirclePlus />} type='submit'>
-                    Add
-                  </Button>
-                </div>
-                {errors.root && <div className='text-red-500 text-sm '>{errors.root.message}</div>}
+            <div className='flex flex-col justify-end items-end gap-2 px-4 w-full'>
+              <div className='flex gap-2 justify-end items-center'>
+                <Button
+                  variant='contained'
+                  className='!bg-red-500 text-white'
+                  startIcon={<MdOutlineCancel />}
+                  onClick={handleOnClose}
+                >
+                  Đóng
+                </Button>
+                <Button variant='contained' color='success' startIcon={<CiCirclePlus />} type='submit'>
+                  Thêm
+                </Button>
               </div>
-            </>
+              {errors.root && <div className='text-red-500 text-sm '>{errors.root.message}</div>}
+            </div>
           )}
         </DialogActions>
       </form>

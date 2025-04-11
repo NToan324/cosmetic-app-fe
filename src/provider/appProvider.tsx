@@ -1,19 +1,13 @@
 import { useEffect, useState } from 'react'
 import { AppContext } from '@/provider/appContext'
-import authService, { User } from '@/services/auth'
-import productService, { Product } from '@/services/product'
-import categoryService, { Category } from '@/services/category'
-import customerService, { Customer } from '@/services/customer'
-import employeeService, { Employee } from '@/services/employee'
-import brandService, { Brand } from '@/services/brand'
+import authService, { User } from '@/services/auth.service'
+import categoryService, { Category } from '@/services/category.service'
+import brandService, { Brand } from '@/services/brand.service'
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [user, setUser] = useState<User>()
-  const [products, setProducts] = useState<Array<Product>>([])
   const [categories, setCategories] = useState<Array<Category>>([])
-  const [customers, setCustomers] = useState<Array<Customer>>([])
-  const [employees, setEmployees] = useState<Array<Employee>>([])
   const [brands, setBrands] = useState<Array<Brand>>([])
   const [reload, setReload] = useState<boolean>(false)
 
@@ -31,16 +25,6 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }
     }
-    const getProducts = async () => {
-      try {
-        const { data } = await productService.getAllProducts()
-        if (data) {
-          setProducts(data.data)
-        }
-      } catch (error) {
-        throw new Error(error instanceof Error ? error.message : 'Unknown error')
-      }
-    }
     const getCategories = async () => {
       try {
         const { data } = await categoryService.getAllCategories()
@@ -49,32 +33,6 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (error) {
         throw new Error(error instanceof Error ? error.message : 'Unknown error')
-      }
-    }
-    const getCustomers = async () => {
-      const userStorage = localStorage.getItem('accessToken')
-      if (userStorage) {
-        try {
-          const { data } = await customerService.getCustomer(userStorage)
-          if (data) {
-            setCustomers(data)
-          }
-        } catch (error) {
-          throw new Error(error instanceof Error ? error.message : 'Unknown error')
-        }
-      }
-    }
-    const getEmployees = async () => {
-      const userStorage = localStorage.getItem('accessToken')
-      if (userStorage) {
-        try {
-          const { data } = await employeeService.getEmployees(userStorage)
-          if (data) {
-            setEmployees(data)
-          }
-        } catch (error) {
-          throw new Error(error instanceof Error ? error.message : 'Unknown error')
-        }
       }
     }
     const getBrands = async () => {
@@ -88,11 +46,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
     getBrands()
-    getEmployees()
-    getCustomers()
     getCategories()
     getUser()
-    getProducts()
   }, [reload])
   return (
     <AppContext.Provider
@@ -101,14 +56,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setIsOpen,
         user,
         setUser,
-        products,
-        setProducts,
         categories,
         setCategories,
-        customers,
-        setCustomers,
-        employees,
-        setEmployees,
         reload,
         setReload,
         brands,

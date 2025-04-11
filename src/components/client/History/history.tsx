@@ -18,17 +18,17 @@ const History = () => {
   return (
     <div className='p-4'>
       <div className='bg-white rounded-xl p-4 shadow-md'>
-        <h1 className='text-2xl font-bold text-start mb-4'>Order History</h1>
+        <h1 className='text-2xl font-bold text-start mb-4'>Lịch sử mua hàng</h1>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className='w-[50px]'>Number</TableHead>
-              <TableHead className='w-[100px]'>Order ID</TableHead>
-              <TableHead>Customer Name</TableHead>
-              <TableHead>Order Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead className='w-[80px]'>Số thứ tự</TableHead>
+              <TableHead className='w-[120px]'>Mã đơn hàng</TableHead>
+              <TableHead>Tên khách hàng</TableHead>
+              <TableHead>Ngày đặt hàng</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead>Tổng tiền</TableHead>
+              <TableHead>Hành động</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -64,7 +64,7 @@ const History = () => {
             ) : (
               <tr>
                 <td colSpan={7} className='text-center'>
-                  No data available
+                  Bạn chưa có đơn hàng nào
                 </td>
               </tr>
             )}

@@ -3,24 +3,22 @@ import { Box, Grid, Typography, TextField, Button, IconButton, InputAdornment } 
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Banner from '@/assets/images/login_banner.jpg'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import authService from '@/services/auth'
+import authService from '@/services/auth.service'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
 import { Role } from '@/consts'
 
 interface LoginForm {
-  phone?: string
-  email?: string
+  identifier: string
   password: string
 }
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
-  const location = useLocation()
+  const [isLogin, setIsLogin] = useState(false)
   const navigate = useNavigate()
-  const isClient = location.pathname.includes('client')
   const { setUser, user } = useContext(AppContext)
 
   useEffect(() => {
@@ -55,16 +53,20 @@ const Login = () => {
   } = useForm<LoginForm>()
 
   const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+    setIsLogin(true)
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.identifier)
+    const isPhone = /^\d{10,11}$/.test(data.identifier)
+
     try {
-      if (data.phone) {
+      if (isPhone) {
         const response = await authService.login({
-          phone: data.phone,
+          phone: data.identifier,
           password: data.password
         })
         if (response.status === 200) {
           localStorage.setItem('accessToken', response.data.accessToken)
           setUser({
-            id: response.data.user.id,
+            _id: response.data.user._id,
             phone: response.data.user.phone,
             name: response.data.user.name,
             email: response.data.user.email,
@@ -81,15 +83,16 @@ const Login = () => {
             })
           }
         }
-      } else if (data.email) {
+      } else if (isEmail) {
         const response = await authService.loginWithEmail({
-          email: data.email,
+          email: data.identifier,
           password: data.password
         })
         if (response.status === 200) {
           localStorage.setItem('accessToken', response.data.accessToken)
+
           setUser({
-            id: response.data.user.id,
+            _id: response.data.user._id,
             phone: response.data.user.phone,
             name: response.data.user.name,
             email: response.data.user.email,
@@ -114,6 +117,26 @@ const Login = () => {
       }
     } catch (error) {
       if (error instanceof Error) {
+        if (error.message.includes('UnverifiedAccount')) {
+          const findUser = await authService.getUserByEmailOrPhone({
+            email: data.identifier
+          })
+          const userId = findUser.data._id
+          const userRole = findUser.data.role
+
+          //sennd otp to email or phone
+          await authService.forgotPassword({
+            email: data.identifier
+          })
+
+          navigate(`/auth/verify?id=${userId}`, {
+            state: {
+              id: userId,
+              active: 'verify',
+              role: userRole
+            }
+          })
+        }
         setError('root', {
           type: 'manual',
           message: error.message
@@ -125,6 +148,7 @@ const Login = () => {
         })
       }
     }
+    setIsLogin(false)
   }
 
   return (
@@ -145,7 +169,7 @@ const Login = () => {
             <Typography variant='h4' gutterBottom sx={{ fontWeight: 600 }}>
               Login
             </Typography>
-            <Link to={isClient ? '/auth/employee/login' : '/auth/client/login'}>
+            {/* <Link to={isClient ? '/auth/employee/login' : '/auth/client/login'}>
               <Button
                 variant='outlined'
                 color='primary'
@@ -161,7 +185,7 @@ const Login = () => {
               >
                 {isClient ? 'Login as Employee' : 'Login as Customer'}
               </Button>
-            </Link>
+            </Link> */}
           </div>
 
           <Typography
@@ -177,23 +201,24 @@ const Login = () => {
           </Typography>
           <Box component='form' noValidate sx={{ width: '100%', maxWidth: 400 }} onSubmit={handleSubmit(onSubmit)}>
             <TextField
-              {...register(isClient ? 'phone' : 'email', {
-                required: isClient ? 'Phone number is required' : 'Email is required',
-                validate: !isClient
-                  ? (value) => {
-                      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-                      return regex.test(value || '') || 'Invalid email address'
-                    }
-                  : undefined,
-                minLength: isClient
-                  ? {
-                      value: 10,
-                      message: 'Phone number must be at least 10 characters'
-                    }
-                  : undefined
-              })}
+              // {...register(isClient ? 'phone' : 'email', {
+              //   required: isClient ? 'Phone number is required' : 'Email is required',
+              //   validate: !isClient
+              //     ? (value) => {
+              //         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+              //         return regex.test(value || '') || 'Invalid email address'
+              //       }
+              //     : undefined,
+              //   minLength: isClient
+              //     ? {
+              //         value: 10,
+              //         message: 'Phone number must be at least 10 characters'
+              //       }
+              //     : undefined
+              // })}
+              {...register('identifier', {})}
               fullWidth
-              label={`${isClient ? 'Phone Number' : 'Email'}`}
+              label={`Phone number or email`}
               variant='standard'
               margin='normal'
               sx={{
@@ -205,9 +230,9 @@ const Login = () => {
                 }
               }}
             />
-            {(errors.phone || errors.email) && (
+            {errors.identifier && (
               <Typography variant='body2' color='error' textAlign={'start'}>
-                {errors.phone?.message || errors.email?.message}
+                {errors.identifier.message}
               </Typography>
             )}
             <TextField
@@ -250,29 +275,27 @@ const Login = () => {
               </Typography>
             )}
             <div className='w-full flex justify-end'>
-              <Link
-                to={'/auth/forgot-password'}
-                state={{
-                  role: isClient ? 'client' : 'employee'
-                }}
-                className='text-gray-400 text-right'
-              >
+              <Link to={'/auth/forgot-password'} className='text-gray-400 text-right'>
                 Forgot password?
               </Link>
             </div>
 
             <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-              <Button type='submit' variant='contained' sx={{ mt: 2, px: 4, backgroundColor: 'orange' }}>
+              <Button
+                type='submit'
+                variant='contained'
+                sx={{ mt: 2, px: 4, backgroundColor: 'orange' }}
+                disabled={isLogin}
+              >
                 Login
               </Button>
-              {isClient && (
-                <div className='flex justify-start items-center gap-2 mt-4'>
-                  <span>Don't have an account?</span>
-                  <Link to='/auth/client/signup' className='text-primary'>
-                    Sign up
-                  </Link>
-                </div>
-              )}
+
+              <div className='flex justify-start items-center gap-2 mt-4'>
+                <span>Don't have an account?</span>
+                <Link to='/auth/signup' className='text-primary'>
+                  Sign up
+                </Link>
+              </div>
             </Box>
           </Box>
         </Grid>

@@ -2,7 +2,7 @@ import { Box, Grid, Typography, TextField, Button } from '@mui/material'
 import Banner from '@/assets/images/login_banner.jpg'
 import { Link } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import authService, { AuthSignUp } from '@/services/auth'
+import authService, { AuthSignUp } from '@/services/auth.service'
 import { useState } from 'react'
 import { PopupMessage } from '@/components/ui/popup'
 
@@ -140,7 +140,7 @@ const SignUp = () => {
 
               <div className='flex justify-start items-center gap-2 mt-4'>
                 <span>Have an account?</span>
-                <Link to='/auth/client/login' className='text-primary'>
+                <Link to='/auth/login' className='text-primary'>
                   Login
                 </Link>
               </div>

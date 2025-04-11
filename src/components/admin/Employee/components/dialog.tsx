@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -16,33 +16,34 @@ import {
   Radio,
   FormLabel,
   Collapse
-} from '@mui/material';
-import { MdOutlineCancel } from 'react-icons/md';
-import { LuRecycle } from 'react-icons/lu';
-import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
-import employeeService, { Employee, EmployeeCreateData, EmployeeEditHistory } from '@/services/employee';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { useContext } from 'react';
-import { AppContext } from '@/provider/appContext';
-import ConfirmModalDelete from './dialogDelete';
-import { Role } from '@/consts';
+} from '@mui/material'
+import { ExpandMore, ExpandLess } from '@mui/icons-material'
+import { MdOutlineCancel } from 'react-icons/md'
+import { LuRecycle } from 'react-icons/lu'
+import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci'
+import employeeService, { Employee, EmployeeCreateData, EmployeeEditHistory } from '@/services/employee.service'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
+import ConfirmModalDelete from './dialogDelete'
+import { Role } from '@/consts'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface EmployeeDialogProps {
-  open: boolean;
-  onClose: () => void;
-  employee: Employee | null;
-  accessToken: string;
-  onActionSuccess: (message: string) => void; // Thêm prop callback
+  open: boolean
+  onClose: () => void
+  employee: Employee | null
+  accessToken: string
+  onActionSuccess: (message: string) => void // Thêm prop callback
 }
 
 const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess }: EmployeeDialogProps) => {
-  const { reload, setReload } = useContext(AppContext);
-  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
-  const [disable, setDisable] = useState(employee ? employee.disable : true);
-  const [role, setRole] = useState<Array<string>>(employee ? employee.user.role : [Role.CONSULTANT]);
-  const [editHistory, setEditHistory] = useState<EmployeeEditHistory[]>([]);
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const { reload, setReload } = useContext(AppContext)
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false)
+  const [disable, setDisable] = useState(employee ? employee.disable : true)
+  const [role, setRole] = useState<Array<string>>(employee ? employee.user.role : [Role.CONSULTANT])
+  const [editHistory, setEditHistory] = useState<EmployeeEditHistory[]>([])
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   const {
     register,
@@ -50,7 +51,18 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
     formState: { errors },
     setError,
     reset
-  } = useForm<EmployeeCreateData>();
+  } = useForm<EmployeeCreateData>()
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    if (employee) {
+      setDisable(employee.disable)
+      setRole(employee.user.role)
+    } else {
+      setDisable(false)
+      setRole([Role.CONSULTANT])
+    }
+  }, [employee])
 
   useEffect(() => {
     const fetchEmployeeDetail = async () => {
@@ -59,83 +71,95 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
           const response = await employeeService.getEmployeeDetail({
             accessToken,
             id: employee.userId
-          });
-          setEditHistory(response.employee.edit_history.sort((a, b) =>
-            new Date(b.edited_at).getTime() - new Date(a.edited_at).getTime()
-          ));
+          })
+          setEditHistory(
+            response.employee.edit_history.sort(
+              (a, b) => new Date(b.edited_at).getTime() - new Date(a.edited_at).getTime()
+            )
+          )
         } catch (error) {
-          console.error('Error fetching employee detail:', error);
+          console.error('Error fetching employee detail:', error)
         }
       }
-    };
-    fetchEmployeeDetail();
-  }, [employee, open, accessToken]);
+    }
+    fetchEmployeeDetail()
+  }, [employee, open, accessToken])
 
   const handleAdd: SubmitHandler<EmployeeCreateData> = async (data: EmployeeCreateData) => {
-    data.disable = disable;
-    data.role = role;
+    data.disable = disable
+    data.role = role
     try {
       const response = await employeeService.createEmployee({
         accessToken: accessToken,
         data
-      });
+      })
       if (response) {
-        setReload(!reload);
-        onActionSuccess(`Đã thêm nhân viên ${data.name} thành công`); // Gọi callback
-        onClose();
-        reset();
+        queryClient.invalidateQueries({
+          queryKey: ['employees']
+        })
+        setReload(!reload)
+        onActionSuccess(`Đã thêm nhân viên ${data.name} thành công`) // Gọi callback
+        onClose()
+        reset()
       }
     } catch (error) {
       if (error instanceof Error) {
-        setError('root', { message: error.message });
+        setError('root', { message: error.message })
       } else {
-        setError('root', { message: 'An unknown error occurred' });
+        setError('root', { message: 'An unknown error occurred' })
       }
     }
-  };
+  }
 
   const handleOnClose = () => {
-    setEditHistory([]);
-    setHistoryOpen(false);
-    onClose();
-    reset();
-  };
+    setEditHistory([])
+    setHistoryOpen(false)
+    onClose()
+    reset()
+  }
 
   const handleConfirmDelete = async () => {
-    if (!employee) return;
+    if (!employee) return
     await employeeService.deleteEmployee({
       accessToken,
       id: employee?.userId
-    });
-    setReload(!reload);
-    onActionSuccess(`Đã xóa nhân viên ${employee.user.name} thành công`); // Gọi callback
-    setOpenConfirmDelete(false);
-    onClose();
-    reset();
-  };
+    })
+    onClose()
+    queryClient.invalidateQueries({
+      queryKey: ['employees']
+    })
+    setReload(!reload)
+    onActionSuccess(`Đã xóa nhân viên ${employee.user.name} thành công`) // Gọi callback
+    setOpenConfirmDelete(false)
+    onClose()
+    reset()
+  }
 
   const handleUpdate: SubmitHandler<EmployeeCreateData> = async (data) => {
-    if (!employee) return;
-    data.disable = disable;
-    data.role = role;
-    const updateData = { ...data };
+    if (!employee) return
+    data.disable = disable
+    data.role = role
+    const updateData = { ...data }
     try {
       const response = await employeeService.updateEmployee({
         accessToken,
         id: employee.userId,
         data: updateData
-      });
+      })
       if (response) {
-        setReload(!reload);
-        onActionSuccess(`Đã cập nhật nhân viên ${employee.user.name} thành công`); // Gọi callback
-        onClose();
-        reset();
+        queryClient.invalidateQueries({
+          queryKey: ['employees']
+        })
+        setReload(!reload)
+        onActionSuccess(`Đã cập nhật nhân viên ${employee.user.name} thành công`) // Gọi callback
+        onClose()
+        reset()
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Đã có lỗi xảy ra';
-      setError('root', { message });
+      const message = error instanceof Error ? error.message : 'Đã có lỗi xảy ra'
+      setError('root', { message })
     }
-  };
+  }
 
   return (
     <Dialog open={open} maxWidth='md' fullWidth>
@@ -222,9 +246,8 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
                 name='role'
                 defaultValue={role}
                 onChange={(e) => {
-                  const selectedRoles = e.target.value as string[];
-                  setRole(selectedRoles);
-                  console.log(selectedRoles);
+                  const selectedRoles = e.target.value as string[]
+                  setRole(selectedRoles)
                 }}
               >
                 <MenuItem value='MANAGER'>Quản lý</MenuItem>
@@ -263,8 +286,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
                 value={disable}
                 defaultValue={disable}
                 onChange={(e) => {
-                  setDisable(e.target.value === 'true');
-                  console.log(e.target.value);
+                  setDisable(e.target.value === 'true')
                 }}
               >
                 <FormControlLabel value={false} control={<Radio />} label='Hoạt động' />
@@ -322,7 +344,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
                             <strong>Ngày:</strong> {new Date(history.edited_at).toLocaleString()}
                           </Typography>
                           <Typography variant='body2'>
-                            <strong>Người thao tác:</strong> {history.edited_by?.name || 'Unknown'} 
+                            <strong>Người thao tác:</strong> {history.edited_by?.name || 'Unknown'}
                             (ID: {history.edited_by?._id || 'Unknown'})
                           </Typography>
                           <Typography variant='body2'>
@@ -349,7 +371,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
                     startIcon={<CiCircleMinus />}
                     onClick={() => setOpenConfirmDelete(true)}
                   >
-                    Delete
+                    Xóa
                   </Button>
                   <ConfirmModalDelete
                     open={openConfirmDelete}
@@ -405,7 +427,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
         </DialogActions>
       </form>
     </Dialog>
-  );
-};
+  )
+}
 
-export default EmployeeDialog;
+export default EmployeeDialog

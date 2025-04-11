@@ -1,7 +1,7 @@
 import axios from '@/config/api'
 
 export interface User {
-  id: string
+  _id: string
   phone: string
   name: string
   email?: string
@@ -61,6 +61,13 @@ class AuthService {
     return response.data
   }
 
+  async getUserByEmailOrPhone(data: { phone?: string; email?: string }) {
+    const response = await axios.get<UserResponse>(
+      `/auth/user?${data.phone ? `phone=${data.phone}` : `email=${data.email}`}`
+    )
+    return response.data
+  }
+
   async forgotPassword(data: { phone?: string; email?: string }) {
     const response = await axios.post<OtpResponse>('/auth/forgot-password', data)
     return response.data
@@ -72,7 +79,7 @@ class AuthService {
   }
 
   async resendCode(id: string) {
-    const response = await axios.post<OtpResponse>(`/auth/resend-otp?id=${id}`)
+    const response = await axios.post<OtpResponse>(`/auth/resend-otp`, { id })
     return response.data
   }
 

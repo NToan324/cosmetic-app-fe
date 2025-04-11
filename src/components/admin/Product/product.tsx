@@ -16,17 +16,19 @@ import {
 import { CiCirclePlus } from 'react-icons/ci'
 import { IoSearch } from 'react-icons/io5'
 import ProductDialog from '@/components/admin/Product/components/dialog'
-import { useContext } from 'react'
-import { AppContext } from '@/provider/appContext'
-import { Product } from '@/services/product'
+import { Product } from '@/services/product.service'
 import { formatCurrency } from '@/helpers'
+import { useProduct } from '@/hooks/useProduct'
 
 const ProductPage = () => {
   const [filters, setFilters] = useState<Record<string, string[]>>({})
   const [searchTerm, setSearchTerm] = useState('')
-  const { products } = useContext(AppContext)
+  const [page, setPage] = useState(1)
+  const limit = 10
+  const { data, isLoading, isError } = useProduct({ page, limit })
 
-  // Dialog State
+  const products = data?.data.data || []
+  const totalPages = data?.data.totalPages || 1
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
@@ -69,7 +71,7 @@ const ProductPage = () => {
       {/* Header */}
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
         <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={openDialogForAdd}>
-          ADD PRODUCT
+          Thêm sản phẩm
         </Button>
 
         {/* Hiển thị danh sách bộ lọc đang được chọn */}
@@ -88,7 +90,7 @@ const ProductPage = () => {
       </Box>
       <div className='border-t border-gray-300 w-full'></div>
       <Box display='flex' justifyContent='space-between' alignItems='center' my={1}>
-        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Products</h2>
+        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Quản lý sản phẩm</h2>
         <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
           <IoSearch size={25} color='black' />
           <input
@@ -106,78 +108,94 @@ const ProductPage = () => {
         <Table sx={{ minWidth: 650 }} aria-label='product table'>
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>Product</TableCell>
-              <TableCell>Stock</TableCell>
-              <TableCell>Original Price</TableCell>
-              <TableCell>Selling Price</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Số thứ tự</TableCell>
+              <TableCell>Sản phẩm</TableCell>
+              <TableCell>Số lượng</TableCell>
+              <TableCell>Giá gốc</TableCell>
+              <TableCell>Giá khuyến mãi</TableCell>
+              <TableCell>Trạng thái</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product, index) => (
-              <TableRow
-                key={product._id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit'
-                }}
-                onClick={() => openDialogForEdit(product)}
-              >
-                <TableCell>{index}</TableCell>
-                <TableCell>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={product.image_url} alt='product' style={{ width: 24, height: 24 }} />
-                    <div>
-                      {product.name} <br />
-                      <span style={{ color: 'gray', fontSize: '0.875rem' }}>{product._id}</span>
+            {products && products.length > 0 ? (
+              products.map((product, index) => (
+                <TableRow
+                  key={product._id}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit'
+                  }}
+                  onClick={() => openDialogForEdit(product)}
+                >
+                  <TableCell>{index}</TableCell>
+                  <TableCell>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <img src={product.image_url} alt='product' style={{ width: 24, height: 24 }} />
+                      <div>
+                        {product.name} <br />
+                        <span style={{ color: 'gray', fontSize: '0.875rem' }}>{product._id}</span>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span
-                    className='rounded-xl py-2 px-4'
-                    style={{
-                      color: product.stock_quantity === 0 ? '#808080' : 'inherit',
-                      backgroundColor: product.stock_quantity === 0 ? '#D3D3D3' : 'inherit',
-                      padding: '4px 8px'
-                    }}
-                  >
-                    {product.stock_quantity === 0 ? 'Out of Stock' : product.stock_quantity}
-                  </span>
-                </TableCell>
-                <TableCell>{formatCurrency(product.price)}</TableCell>
-                <TableCell>{formatCurrency(product.price)}</TableCell>
-                <TableCell>
-                  {product.disable ? (
+                  </TableCell>
+                  <TableCell>
                     <span
                       className='rounded-xl py-2 px-4'
                       style={{
-                        color: 'red',
-                        backgroundColor: '#ffcdd2'
+                        color: product.stock_quantity === 0 ? '#808080' : 'inherit',
+                        backgroundColor: product.stock_quantity === 0 ? '#D3D3D3' : 'inherit',
+                        padding: '4px 8px'
                       }}
                     >
-                      Disable
+                      {product.stock_quantity === 0 ? 'Out of Stock' : product.stock_quantity}
                     </span>
-                  ) : (
-                    <span
-                      className='rounded-xl py-2 px-4'
-                      style={{
-                        color: 'green',
-                        backgroundColor: '#c9eec7'
-                      }}
-                    >
-                      Active
-                    </span>
-                  )}
+                  </TableCell>
+                  <TableCell>{formatCurrency(product.price)}</TableCell>
+                  <TableCell>{formatCurrency(product.price)}</TableCell>
+                  <TableCell>
+                    {product.disable ? (
+                      <span
+                        className='rounded-xl py-2 px-4'
+                        style={{
+                          color: 'red',
+                          backgroundColor: '#ffcdd2'
+                        }}
+                      >
+                        Disable
+                      </span>
+                    ) : (
+                      <span
+                        className='rounded-xl py-2 px-4'
+                        style={{
+                          color: 'green',
+                          backgroundColor: '#c9eec7'
+                        }}
+                      >
+                        Active
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align='center'>
+                  {isLoading ? 'Loading...' : isError ? 'Error loading products' : 'No products found'}
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
       <Stack spacing={2} sx={{ marginTop: 2, alignItems: 'center' }}>
-        <Pagination count={5} variant='outlined' shape='rounded' />
+        <Pagination
+          count={totalPages}
+          page={page}
+          variant='outlined'
+          shape='rounded'
+          onChange={(_event, value) => {
+            setPage(value)
+          }}
+        />
       </Stack>
 
       <ProductDialog

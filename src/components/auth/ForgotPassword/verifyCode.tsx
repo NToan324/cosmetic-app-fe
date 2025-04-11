@@ -1,16 +1,19 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Avatar, Button } from '@mui/material'
 import { CiLock } from 'react-icons/ci'
 import { useLocation, useNavigate } from 'react-router-dom'
-import authService from '@/services/auth'
+import authService from '@/services/auth.service'
+import { Role } from '@/consts'
 
 const VerifyCode = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(60)
   const inputsRef = useRef<HTMLInputElement[]>([])
   const location = useLocation()
   const navigate = useNavigate()
-  const { id } = location.state || {}
+  const { id, active, role } = location.state || {}
 
   const handleChange = (index: number, value: string) => {
     if (!/^[a-zA-Z0-9]?$/.test(value)) return
@@ -24,6 +27,20 @@ const VerifyCode = () => {
     }
   }
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [timeLeft])
+
   const handleKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Backspace' && !otp[index] && index > 0) {
       const newOtp = [...otp]
@@ -33,21 +50,45 @@ const VerifyCode = () => {
     }
   }
 
-  const handleResend = () => {
+  const handleResend = async () => {
     setOtp(['', '', '', '', '', ''])
     setError('')
+    setTimeLeft(60)
     inputsRef.current[0]?.focus()
-    // TODO: Gọi API resend tại đây nếu có
+    try {
+      await authService.resendCode(id)
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message || 'Failed to resend code')
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
+    }
   }
 
   const handleVerify = async () => {
+    setIsLoading(true)
     const otp_code = otp.join('')
+    if (!id) {
+      setError('Verification failed. Please try again from the beginning.')
+      return
+    }
+
     try {
       const res = await authService.verifyCode({ otp_code, id: id })
       if (res.status === 200) {
-        navigate('/auth/password-reset', {
-          state: { active: 'reset', id }
-        })
+        if (active === 'verify') {
+          navigate('/auth/login', {
+            state: {
+              role: role ? role : Role.CONSULTANT
+            }
+          })
+        } else {
+          navigate('/auth/password-reset', {
+            state: { active: 'reset', id },
+            replace: true
+          })
+        }
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -56,6 +97,7 @@ const VerifyCode = () => {
         setError('An unexpected error occurred. Please try again.')
       }
     }
+    setIsLoading(false)
   }
 
   const charactersLeft = 6 - otp.filter((d) => d !== '').length
@@ -96,15 +138,19 @@ const VerifyCode = () => {
           color='primary'
           sx={{ backgroundColor: '#FF8C00' }}
           fullWidth
-          disabled={!isFull}
+          disabled={!isFull || isLoading}
           onClick={handleVerify}
         >
           {isFull ? 'Verify' : `${charactersLeft} digits left`}
         </Button>
 
-        <span className='block mt-4 text-primary uppercase cursor-pointer' onClick={handleResend}>
-          Resend
-        </span>
+        {timeLeft > 0 ? (
+          <p className='text-gray-500 text-sm mt-4'>Resend code in {timeLeft}s</p>
+        ) : (
+          <span className={`text-primary block mt-4 uppercase cursor-pointer`} onClick={handleResend}>
+            Resend
+          </span>
+        )}
       </div>
     </div>
   )

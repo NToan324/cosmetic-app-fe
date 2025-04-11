@@ -12,14 +12,14 @@ const OrderingFilter = ({ setFilterPrice, filterPrice }: OrderingFilterProps) =>
           className={`${filterPrice === 'low' ? 'bg-primary text-white' : 'border border-primary text-primary'} flex justify-center items-center gap-2 text-base p-2 rounded-2xl cursor-pointer`}
           onClick={() => setFilterPrice('low')}
         >
-          <span>The price is low to high</span>
+          <span>Giá cao xuống thấp</span>
           <IoArrowDownOutline className='inline-block rotate-180' />
         </button>
         <button
           className={`${filterPrice === 'high' ? 'bg-primary text-white' : 'border border-primary text-primary'} flex justify-center items-center gap-2 text-base p-2 rounded-2xl cursor-pointer`}
           onClick={() => setFilterPrice('high')}
         >
-          <span>The price is high to low</span>
+          <span>Giá thấp lên cao</span>
           <IoArrowDownOutline className='inline-block' />
         </button>
       </div>
@@ -30,7 +30,7 @@ const OrderingFilter = ({ setFilterPrice, filterPrice }: OrderingFilterProps) =>
           id='ordering'
         >
           <option value='' defaultValue={''}>
-            Showing
+            Hiển thị
           </option>
           <option value='10'>10</option>
           <option value='20'>20</option>

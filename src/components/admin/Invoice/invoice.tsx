@@ -177,7 +177,7 @@ const InvoicePage = () => {
       </Box>
       <div className='border-t border-gray-300 w-full'></div>
       <Box display='flex' justifyContent='space-between' alignItems='center' my={1}>
-        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Invoices</h2>
+        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Quản lý hóa đơn</h2>
         <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
           <IoSearch size={25} color='black' />
           <input
@@ -195,27 +195,27 @@ const InvoicePage = () => {
         <Table sx={{ minWidth: 650 }} aria-label='invoice table'>
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
+              <TableCell>Số thứ tự</TableCell>
               <TableCell>
-                ID
+                Mã hóa đơn
                 <Button className='w-[0.5rem]' onClick={(e) => handleFilterClick(e, 'code')}>
                   &gt;
                 </Button>
               </TableCell>
               <TableCell>
-                Phone
+                Số điện thoại
                 <Button onClick={(e) => handleFilterClick(e, 'phone')}>&gt;</Button>
               </TableCell>
               <TableCell>
-                Total
+                Tổng tiền
                 <Button onClick={(e) => handleFilterClick(e, 'total')}>&gt;</Button>
               </TableCell>
               <TableCell>
-                Payment
+                Phương thức thanh toán
                 <Button onClick={(e) => handleFilterClick(e, 'payment')}>&gt;</Button>
               </TableCell>
               <TableCell>
-                Date Export
+                Ngày xuất hóa đơn
                 <Button onClick={(e) => handleFilterClick(e, 'dateExport')}>&gt;</Button>
               </TableCell>
             </TableRow>

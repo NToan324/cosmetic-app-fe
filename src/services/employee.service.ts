@@ -30,6 +30,18 @@ export interface Employee {
   user: User
 }
 
+interface EmployeeResponsePagination {
+  message: string
+  status: number
+  data: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    data: Employee[]
+  }
+}
+
 export interface EmployeeCreateData {
   userId: string
   name: string
@@ -45,13 +57,13 @@ export interface EmployeeCreateData {
   disable?: boolean
 }
 
-interface EmployeeResponse {
-  message: string
-  data: Employee[]
-}
+// interface EmployeeResponse {
+//   message: string
+//   data: Employee[]
+// }
 class EmployeeService {
-  async getEmployees(accessToken: string) {
-    const response = await axios.get<EmployeeResponse>('/employee', {
+  async getEmployees(accessToken: string, page?: number, limit?: number) {
+    const response = await axios.get<EmployeeResponsePagination>(`/employee?page=${page}&limit${limit}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

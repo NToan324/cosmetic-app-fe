@@ -9,7 +9,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className='w-screen h-screen'>
       <SideBar />
-      <div className='ml-[250px] bg-[#F8F8F8]'>{children}</div>
+      <div className='ml-[280px] bg-[#F8F8F8]'>{children}</div>
     </div>
   )
 }
