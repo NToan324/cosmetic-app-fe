@@ -14,8 +14,10 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormLabel
+  FormLabel,
+  Collapse
 } from '@mui/material'
+import { ExpandMore, ExpandLess } from '@mui/icons-material'
 import { MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci'
@@ -32,14 +34,17 @@ interface EmployeeDialogProps {
   onClose: () => void
   employee: Employee | null
   accessToken: string
+  onActionSuccess: (message: string) => void // Thêm prop callback
 }
 
-const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialogProps) => {
+const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess }: EmployeeDialogProps) => {
   const { reload, setReload } = useContext(AppContext)
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false)
   const [disable, setDisable] = useState(employee ? employee.disable : true)
   const [role, setRole] = useState<Array<string>>(employee ? employee.user.role : [Role.CONSULTANT])
   const [editHistory, setEditHistory] = useState<EmployeeEditHistory[]>([])
+  const [historyOpen, setHistoryOpen] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -59,6 +64,27 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
     }
   }, [employee])
 
+  useEffect(() => {
+    const fetchEmployeeDetail = async () => {
+      if (employee && open) {
+        try {
+          const response = await employeeService.getEmployeeDetail({
+            accessToken,
+            id: employee.userId
+          })
+          setEditHistory(
+            response.employee.edit_history.sort(
+              (a, b) => new Date(b.edited_at).getTime() - new Date(a.edited_at).getTime()
+            )
+          )
+        } catch (error) {
+          console.error('Error fetching employee detail:', error)
+        }
+      }
+    }
+    fetchEmployeeDetail()
+  }, [employee, open, accessToken])
+
   const handleAdd: SubmitHandler<EmployeeCreateData> = async (data: EmployeeCreateData) => {
     data.disable = disable
     data.role = role
@@ -68,28 +94,26 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
         data
       })
       if (response) {
-        setReload(!reload)
-        onClose()
-        reset()
         queryClient.invalidateQueries({
           queryKey: ['employees']
         })
+        setReload(!reload)
+        onActionSuccess(`Đã thêm nhân viên ${data.name} thành công`) // Gọi callback
+        onClose()
+        reset()
       }
     } catch (error) {
       if (error instanceof Error) {
-        setError('root', {
-          message: error.message
-        })
+        setError('root', { message: error.message })
       } else {
-        setError('root', {
-          message: 'An unknown error occurred'
-        })
+        setError('root', { message: 'An unknown error occurred' })
       }
     }
   }
 
   const handleOnClose = () => {
     setEditHistory([])
+    setHistoryOpen(false)
     onClose()
     reset()
   }
@@ -100,22 +124,22 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
       accessToken,
       id: employee?.userId
     })
-    setReload(!reload)
-    setOpenConfirmDelete(false)
     onClose()
-    reset()
     queryClient.invalidateQueries({
       queryKey: ['employees']
     })
+    setReload(!reload)
+    onActionSuccess(`Đã xóa nhân viên ${employee.user.name} thành công`) // Gọi callback
+    setOpenConfirmDelete(false)
+    onClose()
+    reset()
   }
 
   const handleUpdate: SubmitHandler<EmployeeCreateData> = async (data) => {
     if (!employee) return
     data.disable = disable
     data.role = role
-    const updateData = {
-      ...data
-    }
+    const updateData = { ...data }
     try {
       const response = await employeeService.updateEmployee({
         accessToken,
@@ -123,12 +147,13 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
         data: updateData
       })
       if (response) {
-        setReload(!reload)
-        onClose()
-        reset()
         queryClient.invalidateQueries({
           queryKey: ['employees']
         })
+        setReload(!reload)
+        onActionSuccess(`Đã cập nhật nhân viên ${employee.user.name} thành công`) // Gọi callback
+        onClose()
+        reset()
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Đã có lỗi xảy ra'
@@ -229,7 +254,6 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
                 <MenuItem value='SALESTAFF'>Nhân viên bán hàng</MenuItem>
                 <MenuItem value='CONSULTANT'>Tư vấn viên</MenuItem>
               </Select>
-
               {errors.role && (
                 <Typography variant='body2' color='error' textAlign={'start'}>
                   {errors.role.message}
@@ -285,36 +309,55 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
                 label='Lý do'
                 name='reason'
               />
+              {errors.reason && (
+                <Typography variant='body2' color='error' textAlign={'start'}>
+                  {errors.reason.message}
+                </Typography>
+              )}
             </Grid>
-            {errors.reason && (
-              <Typography variant='body2' color='error' textAlign={'start'}>
-                {errors.reason.message}
-              </Typography>
+
+            {employee && editHistory.length > 0 && (
+              <Grid size={{ xs: 12 }}>
+                <Box mt={2}>
+                  <Button
+                    onClick={() => setHistoryOpen(!historyOpen)}
+                    endIcon={historyOpen ? <ExpandLess /> : <ExpandMore />}
+                    variant='outlined'
+                    fullWidth
+                  >
+                    Lịch sử chỉnh sửa
+                  </Button>
+                  <Collapse in={historyOpen}>
+                    <Box mt={2} sx={{ maxHeight: '200px', overflowY: 'auto' }}>
+                      {editHistory.map((history, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            p: 1,
+                            mb: 1,
+                            border: '1px solid #e0e0e0',
+                            borderRadius: '4px',
+                            backgroundColor: '#f5f5f5'
+                          }}
+                        >
+                          <Typography variant='body2'>
+                            <strong>Ngày:</strong> {new Date(history.edited_at).toLocaleString()}
+                          </Typography>
+                          <Typography variant='body2'>
+                            <strong>Người thao tác:</strong> {history.edited_by?.name || 'Unknown'}
+                            (ID: {history.edited_by?._id || 'Unknown'})
+                          </Typography>
+                          <Typography variant='body2'>
+                            <strong>Lý do:</strong> {history.reason}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Collapse>
+                </Box>
+              </Grid>
             )}
           </Grid>
-
-          {editHistory.length > 0 && (
-            <Box mt={4}>
-              <Typography variant='h6'>Lịch sử chỉnh sửa</Typography>
-              {editHistory.map((history, index) => (
-                <Box key={index} mt={2}>
-                  <Typography variant='body1'>
-                    <strong>Thời gian chỉnh sửa:</strong> {new Date(history.edited_at).toLocaleString()}
-                  </Typography>
-                  <Typography variant='body1'>
-                    <strong>Người chỉnh sửa:</strong> {history.edited_by?.user.name || 'Admin'} (
-                    {`ID: ${history.edited_by?.userId}`})
-                  </Typography>
-                  <Typography variant='body1'>
-                    <strong>Lý do:</strong> {history.reason}
-                  </Typography>
-                  <Typography variant='body1'>
-                    <strong>Thay đổi:</strong>
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          )}
         </DialogContent>
         <Box className='border-t border-gray-300 w-full' />
         <DialogActions className='flex !justify-between'>
@@ -335,7 +378,6 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
                     onClose={() => setOpenConfirmDelete(false)}
                     onConfirm={handleConfirmDelete}
                   />
-
                   <Button
                     variant='contained'
                     startIcon={<MdOutlineCancel />}

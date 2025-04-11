@@ -11,7 +11,8 @@ import {
   Button,
   Pagination,
   Stack,
-  Box
+  Box,
+  Snackbar
 } from '@mui/material'
 import { CiCirclePlus } from 'react-icons/ci'
 import { IoSearch } from 'react-icons/io5'
@@ -29,6 +30,8 @@ const EmployeePage = () => {
   const { data, isLoading, isError } = useEmployee({ accessToken, page, limit })
   const employees = data?.data.data || []
   const totalPages = data?.data.totalPages || 1
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
 
   const openDialogForAdd = () => {
     setSelectedEmployee(null)
@@ -42,6 +45,16 @@ const EmployeePage = () => {
 
   const handleDialogClose = () => {
     setDialogOpen(false)
+  }
+
+  // Callback để hiển thị snackbar
+  const handleSnackbar = (message: string) => {
+    setSnackbarMessage(message)
+    setSnackbarOpen(true)
+  }
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false)
   }
 
   return (
@@ -150,6 +163,15 @@ const EmployeePage = () => {
         onClose={handleDialogClose}
         employee={selectedEmployee}
         accessToken={accessToken}
+        onActionSuccess={handleSnackbar} // Truyền callback vào dialog
+      />
+      {/* Thêm Snackbar */}
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        open={snackbarOpen}
+        autoHideDuration={5000} // 5 giây
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
       />
     </div>
   )

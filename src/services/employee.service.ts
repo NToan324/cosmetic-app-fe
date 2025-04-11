@@ -8,9 +8,14 @@ interface User {
   active: boolean
 }
 
+interface EdittedBy {
+  _id: string
+  name: string
+}
+
 export interface EmployeeEditHistory {
   edited_at: string
-  edited_by: Employee
+  edited_by: EdittedBy
   reason: string
 }
 
@@ -64,6 +69,15 @@ class EmployeeService {
       }
     })
     return response.data
+  }
+
+  async getEmployeeDetail({ accessToken, id }: { accessToken: string; id: string }) {
+    const response = await axios.get<{ message: string; employee: Employee }>(`/employee/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    return response.data;
   }
 
   async createEmployee({ accessToken, data }: { accessToken: string; data: EmployeeCreateData }) {
