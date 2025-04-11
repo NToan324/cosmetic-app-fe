@@ -16,7 +16,7 @@ const Cash = () => {
   return (
     <div className='w-full space-y-4'>
       <div className='flex flex-col justify-start items-start gap-4'>
-        <label htmlFor='amount'>Amount</label>
+        <label htmlFor='amount'>Tiền khách đưa</label>
         <NumericFormat
           id='amount'
           value={amount}
@@ -40,7 +40,7 @@ const Cash = () => {
         })}
       </div>
       <div className='flex flex-col justify-start items-start gap-4'>
-        <label htmlFor='change'>Change</label>
+        <label htmlFor='change'>Tiền trả lại</label>
         <NumericFormat
           id='change'
           // value={change}

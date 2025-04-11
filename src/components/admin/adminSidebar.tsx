@@ -13,16 +13,16 @@ const Admin_SideBar = () => {
   const location = useLocation()
   const { user } = useContext(AppContext)
   const menu = [
-    { name: 'Dashboard', icon: VscDashboard, link: '/admin/dashboard' },
-    { name: 'Product', icon: GoInbox, link: '/admin/product' },
-    { name: 'Employee', icon: HiOutlineUserGroup, link: '/admin/employee' },
-    { name: 'Customer', icon: HiOutlineUsers, link: '/admin/customer' },
-    { name: 'Invoice', icon: PiInvoice, link: '/admin/invoice' },
-    { name: 'Statistic', icon: IoPieChartOutline, link: '/admin/statistic' }
+    { name: 'Tổng quan', icon: VscDashboard, link: '/admin/dashboard' },
+    { name: 'Quản lý sản phẩm', icon: GoInbox, link: '/admin/product' },
+    { name: 'Quản lý nhân viên', icon: HiOutlineUserGroup, link: '/admin/employee' },
+    { name: 'Quản lý khách hàng', icon: HiOutlineUsers, link: '/admin/customer' },
+    { name: 'Quán lý hóa đơn', icon: PiInvoice, link: '/admin/invoice' },
+    { name: 'Thống kê', icon: IoPieChartOutline, link: '/admin/statistic' }
   ]
 
   return (
-    <div className='w-[250px] flex flex-col items-center h-screen space-y-5 fixed top-0 left-0 z-50'>
+    <div className='w-[280px] flex flex-col items-center h-screen space-y-5 fixed top-0 left-0 z-50'>
       <div className='flex justify-center items-center flex-col text-center gap-2 pt-5'>
         <img src={Avatar} alt='Avatar' width={45} height={45} />
         <div className='flex flex-col justify-center items-start'>

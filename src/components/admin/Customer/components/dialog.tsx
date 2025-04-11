@@ -4,7 +4,7 @@ import { MdHistory, MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus } from 'react-icons/ci'
 import { CiCircleMinus } from 'react-icons/ci'
-import { Customer } from '@/services/customer'
+import { Customer } from '@/services/customer.service'
 import { formatDate } from '@/helpers'
 import { useForm, SubmitHandler } from 'react-hook-form'
 
@@ -16,19 +16,14 @@ interface CustomerDialogProps {
   customer: Customer | null
 }
 
-const CustomerDialog: React.FC<CustomerDialogProps> = ({ open, onClose, onSave, onDelete, customer }) => {
+const CustomerDialog: React.FC<CustomerDialogProps> = ({ open, onClose, onDelete, customer }) => {
   const handleDelete = () => {
     if (onDelete && customer) {
       onDelete(customer)
       onClose()
     }
   }
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError
-  } = useForm<Customer>()
+  const { register, handleSubmit } = useForm<Customer>()
 
   const onSubmit: SubmitHandler<Customer> = async (data) => {
     console.log('Form data:', data)
@@ -170,13 +165,13 @@ const CustomerDialog: React.FC<CustomerDialogProps> = ({ open, onClose, onSave, 
 
               <div className='flex gap-2'>
                 <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={handleDelete}>
-                  Delete
+                  Xóa
                 </Button>
                 <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose} className='text-white'>
-                  Close
+                  Đóng
                 </Button>
                 <Button type='submit' variant='contained' sx={{ backgroundColor: '#4caf50' }} startIcon={<LuRecycle />}>
-                  Save
+                  Lưu
                 </Button>
               </div>
             </>
@@ -190,10 +185,10 @@ const CustomerDialog: React.FC<CustomerDialogProps> = ({ open, onClose, onSave, 
                   onClick={onClose}
                   className='!bg-red-500 text-white'
                 >
-                  Close
+                  Đóng
                 </Button>
                 <Button variant='contained' startIcon={<CiCirclePlus />}>
-                  Add
+                  Thêm
                 </Button>
               </div>
             </>

@@ -3,6 +3,7 @@ import { FiMinus } from 'react-icons/fi'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { formatCurrency } from '@/helpers'
 import { OrderedProductInterface } from '@/components/client/Order/order'
+import { toast } from 'react-toastify'
 interface OrderedProductProps {
   image: string
   quantity: number
@@ -10,6 +11,8 @@ interface OrderedProductProps {
   name: string
   code?: string
   edit?: boolean
+  isDelete?: boolean
+  isPayment?: boolean
   setOrderedQuantity?: React.Dispatch<React.SetStateAction<number>>
   setOrderedTempProduct?: React.Dispatch<React.SetStateAction<OrderedProductInterface[]>>
   orderedQuantity?: number
@@ -24,7 +27,9 @@ const OrderedProduct = ({
   edit,
   setOrderedQuantity,
   setOrderedTempProduct,
-  orderedQuantity
+  orderedQuantity,
+  isDelete,
+  isPayment
 }: OrderedProductProps) => {
   const handleIncrease = () => {
     if (!orderedQuantity) return
@@ -57,6 +62,7 @@ const OrderedProduct = ({
 
   const handleDelete = () => {
     if (!setOrderedTempProduct) return
+    toast.success('Xóa sản phẩm thành công')
     setOrderedTempProduct((prev) => prev.filter((item) => item.orderedProduct.code !== code))
   }
 
@@ -70,11 +76,12 @@ const OrderedProduct = ({
           <p className='text-start'>{name}</p>
           <p className='text-start'>{code}</p>
           <div className='flex justify-between items-center gap-2 w-full'>
-            <span className='text-base'>x{quantity}</span>
+            <span className='text-base'>{`${isPayment ? `Đã đặt ${orderedQuantity}` : `Còn hàng: ${quantity}`}`} </span>
             <span className='text-red-600 text-xl'>{formatCurrency(price)}</span>
           </div>
         </div>
       </div>
+
       {edit && (
         <div className='flex justify-between items-center gap-4'>
           <div className='flex justify-between items-center gap-3'>
@@ -92,12 +99,14 @@ const OrderedProduct = ({
               <FiMinus />
             </button>
           </div>
-          <div
-            onClick={handleDelete}
-            className='flex justify-center items-center rounded-xl bg-red-500 text-white cursor-pointer w-[40px] h-[40px]'
-          >
-            <AiOutlineDelete size={25} />
-          </div>
+          {isDelete && (
+            <div
+              onClick={handleDelete}
+              className='flex justify-center items-center rounded-xl bg-red-500 text-white cursor-pointer w-[40px] h-[40px]'
+            >
+              <AiOutlineDelete size={25} />
+            </div>
+          )}
         </div>
       )}
     </div>

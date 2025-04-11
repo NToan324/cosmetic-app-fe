@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
   redirectPath?: string
 }
 
-const ProtectedRoute = ({ allowedRoles, redirectPath = '/auth/client/login' }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ allowedRoles, redirectPath = '/auth/login' }: ProtectedRouteProps) => {
   const accessToken = localStorage.getItem('accessToken')
   const { user } = useContext(AppContext)
 

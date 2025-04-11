@@ -53,7 +53,7 @@ export default function DialogLoginChoice() {
               <h3 className='font-bold text-xl'>Employee</h3>
             </Button>
             <Button
-              href='/auth/client/login'
+              href='/auth/login'
               sx={{
                 display: 'flex',
                 flexDirection: 'column',

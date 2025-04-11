@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -19,12 +19,13 @@ import {
 import { MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci'
-import employeeService, { Employee, EmployeeCreateData, EmployeeEditHistory } from '@/services/employee'
+import employeeService, { Employee, EmployeeCreateData, EmployeeEditHistory } from '@/services/employee.service'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
 import ConfirmModalDelete from './dialogDelete'
 import { Role } from '@/consts'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface EmployeeDialogProps {
   open: boolean
@@ -46,6 +47,17 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
     setError,
     reset
   } = useForm<EmployeeCreateData>()
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    if (employee) {
+      setDisable(employee.disable)
+      setRole(employee.user.role)
+    } else {
+      setDisable(false)
+      setRole([Role.CONSULTANT])
+    }
+  }, [employee])
 
   const handleAdd: SubmitHandler<EmployeeCreateData> = async (data: EmployeeCreateData) => {
     data.disable = disable
@@ -59,6 +71,9 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
         setReload(!reload)
         onClose()
         reset()
+        queryClient.invalidateQueries({
+          queryKey: ['employees']
+        })
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -89,6 +104,9 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
     setOpenConfirmDelete(false)
     onClose()
     reset()
+    queryClient.invalidateQueries({
+      queryKey: ['employees']
+    })
   }
 
   const handleUpdate: SubmitHandler<EmployeeCreateData> = async (data) => {
@@ -108,6 +126,9 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
         setReload(!reload)
         onClose()
         reset()
+        queryClient.invalidateQueries({
+          queryKey: ['employees']
+        })
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Đã có lỗi xảy ra'
@@ -202,7 +223,6 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
                 onChange={(e) => {
                   const selectedRoles = e.target.value as string[]
                   setRole(selectedRoles)
-                  console.log(selectedRoles)
                 }}
               >
                 <MenuItem value='MANAGER'>Quản lý</MenuItem>
@@ -243,7 +263,6 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
                 defaultValue={disable}
                 onChange={(e) => {
                   setDisable(e.target.value === 'true')
-                  console.log(e.target.value)
                 }}
               >
                 <FormControlLabel value={false} control={<Radio />} label='Hoạt động' />
@@ -309,7 +328,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken }: EmployeeDialog
                     startIcon={<CiCircleMinus />}
                     onClick={() => setOpenConfirmDelete(true)}
                   >
-                    Delete
+                    Xóa
                   </Button>
                   <ConfirmModalDelete
                     open={openConfirmDelete}

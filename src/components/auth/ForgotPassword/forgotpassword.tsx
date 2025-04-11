@@ -1,13 +1,14 @@
 import { Avatar, TextField } from '@mui/material'
-import { useLocation, Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { MdOutlineMail } from 'react-icons/md'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import authService from '@/services/auth'
+import authService from '@/services/auth.service'
+import { useState } from 'react'
 
-// to='/auth/verify
 const ForgotPassword = () => {
-  const location = useLocation()
-  const { role } = location.state || { role: 'client' }
+  // const location = useLocation()
+  // const { role } = location.state || { role: 'client' }
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const {
     register,
@@ -17,6 +18,7 @@ const ForgotPassword = () => {
   } = useForm<{ phoneOrEmail: string }>()
 
   const onSubmit: SubmitHandler<{ phoneOrEmail: string }> = async (data) => {
+    setIsLoading(true)
     try {
       const value = data.phoneOrEmail.trim()
 
@@ -53,6 +55,7 @@ const ForgotPassword = () => {
         })
       }
     }
+    setIsLoading(false)
   }
 
   return (
@@ -93,16 +96,14 @@ const ForgotPassword = () => {
 
           <button
             type='submit'
-            className='w-full block mt-4 text-white bg-primary rounded-xl px-4 py-2 text-center cursor-pointer'
+            disabled={isLoading}
+            className={`${isLoading ? 'bg-gray-300 text-black/40' : 'bg-primary text-white'} w-full block mt-4  rounded-xl px-4 py-2 text-center cursor-pointer`}
           >
             Send code
           </button>
         </form>
         <div style={{ width: '100%', textAlign: 'left', marginTop: '12px' }}>
-          <Link
-            to={`${role === 'client' ? '/auth/client/login' : '/auth/employee/login'}`}
-            className='!mt-8 text-primary'
-          >
+          <Link to={`/auth/login`} className='!mt-8 text-primary'>
             Back to Login
           </Link>
         </div>

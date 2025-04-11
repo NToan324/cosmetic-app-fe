@@ -13,12 +13,12 @@ const SideBar = () => {
   const location = useLocation()
   const { isOpen, setIsOpen, user } = useContext(AppContext)
   const menu = [
-    { name: 'Home', icon: HiOutlineHome, link: '/home' },
-    { name: 'Category', icon: BiCategoryAlt, link: '/category' },
-    { name: 'Order', icon: IoDocumentTextOutline, link: '/order' },
-    { name: 'History', icon: HiOutlineArchiveBox, link: '/history' },
-    { name: 'Consulting', icon: TbReportMedical, link: '/customer-consulting' },
-    { name: 'Profile', icon: CgProfile, link: '/profile' }
+    { name: 'Trang chủ', icon: HiOutlineHome, link: '/home' },
+    { name: 'Sản phẩm', icon: BiCategoryAlt, link: '/category' },
+    { name: 'Tạo đơn hàng', icon: IoDocumentTextOutline, link: '/order' },
+    { name: 'Lịch sử mua hàng', icon: HiOutlineArchiveBox, link: '/history' },
+    { name: 'Tư vấn', icon: TbReportMedical, link: '/customer-consulting' },
+    { name: 'Tài khoản', icon: CgProfile, link: '/profile' }
   ]
   return (
     <div

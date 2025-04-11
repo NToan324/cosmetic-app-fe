@@ -19,8 +19,8 @@ const Product = ({ name, price, quantity, image }: ProductProps) => {
         </div>
       </div>
       <div className='flex justify-between items-center w-full'>
-        <span className='text-primary text-base'>Quantity: {quantity}</span>
-        <button className='rounded-2xl px-4 py-2 bg-primary text-white cursor-pointer'>See Details</button>
+        <span className='text-primary text-base'>Số lượng: {quantity}</span>
+        <button className='rounded-2xl px-4 py-2 bg-primary text-white cursor-pointer'>Xem chi tiết</button>
       </div>
     </div>
   )

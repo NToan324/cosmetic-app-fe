@@ -8,8 +8,9 @@ import { Html5QrcodeScanner } from 'html5-qrcode'
 import { useEffect, useState, useCallback } from 'react'
 import { AiOutlineDelete, AiOutlinePlus } from 'react-icons/ai'
 import { FiMinus } from 'react-icons/fi'
-import productService, { Product } from '@/services/product'
+import productService, { Product } from '@/services/product.service'
 import { formatCurrency } from '@/helpers'
+import { toast } from 'react-toastify'
 
 interface ProductInterface {
   orderedProduct: Product
@@ -113,6 +114,7 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
   }
 
   const handleDelete = (code: string) => {
+    toast.success('Xóa sản phẩm thành công')
     setScanneredProduct((prev) => {
       return prev.filter((item) => item.orderedProduct.code !== code)
     })
@@ -142,6 +144,7 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
       })
       return [...newProducts, ...prev]
     })
+    toast.success('Thêm sản phẩm thành công')
     setScanneredProduct([])
     handleClose()
   }
@@ -160,7 +163,7 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
         onClick={handleClickOpen}
       >
         <LuScanQrCode size={35} className='text-primary' />
-        <span className='text-primary'>Click here</span>
+        <span className='text-primary'>Nhấp vào đây</span>
       </Button>
 
       <Dialog

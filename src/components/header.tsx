@@ -15,7 +15,7 @@ const Header = () => {
           <IoSearch size={25} color='black' />
           <input
             type='text'
-            placeholder='Search'
+            placeholder='Tìm kiếm sản phẩm'
             className='text-black border-none outline-none w-full hidden md:block'
           />
         </div>

@@ -16,16 +16,19 @@ import {
 import { CiCirclePlus } from 'react-icons/ci'
 import { IoSearch } from 'react-icons/io5'
 import CustomerDialog from '@/components/admin/Customer/components/dialog'
-import { useContext } from 'react'
-import { AppContext } from '@/provider/appContext'
-import { Customer } from '@/services/customer'
+import { Customer } from '@/services/customer.service'
 import { formatDate } from '@/helpers'
+import { useCustomer } from '@/hooks/useCustomer'
 
 const CustomerPage = () => {
   const [filters, setFilters] = useState<Record<string, string[]>>({})
   const [searchTerm, setSearchTerm] = useState('')
-  const { customers } = useContext(AppContext)
-
+  const [page, setPage] = useState(1)
+  const limit = 10
+  const accessToken = localStorage.getItem('accessToken') || ''
+  const { data, isLoading, isError } = useCustomer({ accessToken, page, limit })
+  const customers = data?.data.data || []
+  const totalPage = data?.data.totalPages || 1
   const getRankColor = (rank: string) => {
     switch (rank) {
       case 'Bronze':
@@ -79,7 +82,7 @@ const CustomerPage = () => {
       {/* Header */}
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
         <Button variant='contained' color='success' startIcon={<CiCirclePlus />} onClick={openDialogForAdd}>
-          ADD CUSTOMER
+          Thêm khách hàng
         </Button>
         <Box>
           {Object.entries(filters).map(([column, values]) =>
@@ -97,7 +100,7 @@ const CustomerPage = () => {
       </Box>
       <div className='border-t border-gray-300 w-full'></div>
       <Box display='flex' justifyContent='space-between' alignItems='center' my={1}>
-        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Customers</h2>
+        <h2 style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.75rem' }}>Quản lý khách hàng</h2>
         <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
           <IoSearch size={25} color='black' />
           <input
@@ -114,47 +117,62 @@ const CustomerPage = () => {
         <Table sx={{ minWidth: 650 }} aria-label='customer table'>
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Date Joined</TableCell>
-              <TableCell>Transaction</TableCell>
-              <TableCell>Point</TableCell>
-              <TableCell>Rank</TableCell>
+              <TableCell>Số thứ tự</TableCell>
+              <TableCell>Tên khách hàng</TableCell>
+              <TableCell>Số điện thoại</TableCell>
+              <TableCell>Ngày tham gia</TableCell>
+              <TableCell>Đơn hàng</TableCell>
+              <TableCell>Điểm</TableCell>
+              <TableCell>Hạng</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers.map((customer, index) => (
-              <TableRow
-                key={index}
-                sx={{ backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit' }}
-                onClick={() => openDialogForEdit(customer)}
-              >
-                <TableCell>{index}</TableCell>
-                <TableCell>{customer.name}</TableCell>
-                <TableCell>{customer.phone}</TableCell>
-                <TableCell>{formatDate(customer.createdAt)}</TableCell>
-                <TableCell>{2}</TableCell>
-                <TableCell>{customer.customer.point}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={customer.customer.rank}
-                    sx={{
-                      borderRadius: '4px',
-                      backgroundColor: getRankColor(customer.customer.rank).bgColor,
-                      color: getRankColor(customer.customer.rank).textColor,
-                      display: { xs: 'none', md: 'table-cell' }
-                    }}
-                  />
+            {customers && customers.length > 0 ? (
+              customers.map((customer, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ backgroundColor: index % 2 === 0 ? 'action.hover' : 'inherit' }}
+                  onClick={() => openDialogForEdit(customer)}
+                >
+                  <TableCell>{index}</TableCell>
+                  <TableCell>{customer.name}</TableCell>
+                  <TableCell>{customer.phone}</TableCell>
+                  <TableCell>{formatDate(customer.createdAt)}</TableCell>
+                  <TableCell>{2}</TableCell>
+                  <TableCell>{customer.customer.point}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={customer.customer.rank}
+                      sx={{
+                        borderRadius: '4px',
+                        backgroundColor: getRankColor(customer.customer.rank).bgColor,
+                        color: getRankColor(customer.customer.rank).textColor,
+                        display: { xs: 'none', md: 'table-cell' }
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} style={{ textAlign: 'center' }}>
+                  {isLoading ? 'Loading...' : isError ? 'Error loading customers' : 'No customers found'}
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
       <Stack spacing={2} sx={{ marginTop: 2, alignItems: 'center' }}>
-        <Pagination count={5} variant='outlined' shape='rounded' />
+        <Pagination
+          count={totalPage}
+          variant='outlined'
+          shape='rounded'
+          onChange={(_e, value) => {
+            setPage(value)
+          }}
+        />
       </Stack>
       <CustomerDialog
         open={dialogOpen}

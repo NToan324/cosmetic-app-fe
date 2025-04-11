@@ -1,4 +1,4 @@
-import { Category } from '@/services/category'
+import { Category } from '@/services/category.service'
 
 interface FilterProps {
   filterData: Array<Category>

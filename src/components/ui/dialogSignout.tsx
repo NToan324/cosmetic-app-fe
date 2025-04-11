@@ -7,14 +7,10 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import { useNavigate } from 'react-router-dom'
 import { TbLogout } from 'react-icons/tb'
-import { useContext } from 'react'
-import { AppContext } from '@/provider/appContext'
-import { Role } from '@/consts'
 
 export default function DialogSignout() {
   const [open, setOpen] = React.useState(false)
   const navigate = useNavigate()
-  const { user, setUser } = useContext(AppContext)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -27,14 +23,8 @@ export default function DialogSignout() {
   const handleLogout = () => {
     setOpen(false)
     try {
-      const role = Array.isArray(user?.role) ? user.role : []
       localStorage.removeItem('accessToken')
-      setUser(null)
-      if (role.includes(Role.CUSTOMER)) {
-        navigate('/auth/client/login')
-      } else {
-        navigate('/auth/employee/login')
-      }
+      navigate('/auth/login')
     } catch (error) {
       console.error('Error during logout:', error)
     }

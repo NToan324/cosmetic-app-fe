@@ -3,6 +3,10 @@ export const enum PAYMENT_METHOD {
   CASH = 'CASH'
 }
 
+export const enum LOCAL_STORAGE_KEY {
+  ORDERED_TEMP_PRODUCT = 'ordered_temp_product'
+}
+
 export const enum ORDER_STATUS {
   COMPLETED = 'COMPLETED',
   CANCELED = 'CANCELED'
