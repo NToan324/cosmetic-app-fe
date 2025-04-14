@@ -12,6 +12,7 @@ import OrderingFilter from '@/components/client/Category/components/orderingFilt
 import { useContext, useState } from 'react'
 import { AppContext } from '@/provider/appContext'
 import { useProduct } from '@/hooks/useProduct'
+import { CircularProgress } from '@mui/material'
 
 const Category = () => {
   const { categories } = useContext(AppContext)
@@ -19,12 +20,9 @@ const Category = () => {
   const [price, setPrice] = useState<string>()
   const [page, setPage] = useState<number>(1)
   const limit = 9
-  const { data, isError, isLoading } = useProduct({ categoryId, price, page, limit })
+  const { data, isLoading } = useProduct({ categoryId, price, page, limit })
   const products = data?.data.data
   const totalPages = data?.data.totalPages || 1
-
-  if (isLoading) return <p>Loading...</p>
-  if (isError) return <p>Something went wrong</p>
 
   return (
     <div className='p-4'>
@@ -47,21 +45,34 @@ const Category = () => {
             }}
           />
         </div>
-        <div className='grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2'>
-          {products &&
-            products.length > 0 &&
-            products.map((item) => {
-              return (
-                <Product
-                  name={item.name}
-                  price={item.price}
-                  quantity={item.stock_quantity}
-                  image={item.image_url}
-                  key={item._id}
-                />
-              )
-            })}
-        </div>
+        {!isLoading ? (
+          <div className='grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2'>
+            {products &&
+              products.length > 0 &&
+              products.map((item) => {
+                return (
+                  <Product
+                    name={item.name}
+                    price={item.price}
+                    quantity={item.stock_quantity}
+                    image={item.image_url}
+                    key={item._id}
+                  />
+                )
+              })}
+          </div>
+        ) : (
+          <div className='w-full h-[400px] flex justify-center items-center'>
+            <CircularProgress
+              size={30}
+              sx={{
+                color: 'black',
+                opacity: 0.2
+              }}
+            />
+          </div>
+        )}
+
         <Pagination>
           <PaginationContent>
             <PaginationItem>

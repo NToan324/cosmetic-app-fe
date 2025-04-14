@@ -24,6 +24,10 @@ export default function DialogSignout() {
     setOpen(false)
     try {
       localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('ordered_info_user')
+      localStorage.removeItem('ordered_temp_product')
+      localStorage.removeItem('user')
       navigate('/auth/login')
     } catch (error) {
       console.error('Error during logout:', error)
@@ -46,7 +50,7 @@ export default function DialogSignout() {
       >
         <DialogTitle id='alert-dialog-title'>{'Confirm Logout'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-description'>Are you sure you want to log out?</DialogContentText>
+          <DialogContentText id='alert-dialog-description'>Bạn có chắc chắn muốn đăng xuất?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button
@@ -55,7 +59,7 @@ export default function DialogSignout() {
               color: '#000000'
             }}
           >
-            Cancel
+            Hủy
           </Button>
           <Button
             onClick={handleLogout}
@@ -63,7 +67,7 @@ export default function DialogSignout() {
               color: '#ff8108'
             }}
           >
-            Logout
+            Đăng xuất
           </Button>
         </DialogActions>
       </Dialog>

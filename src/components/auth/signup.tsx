@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, TextField, Button } from '@mui/material'
+import { Box, Grid, Typography, TextField, Button, CircularProgress } from '@mui/material'
 import Banner from '@/assets/images/login_banner.jpg'
 import { Link } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
@@ -59,7 +59,7 @@ const SignUp = () => {
             gutterBottom
             sx={{ width: '100%', textAlign: { xs: 'center', md: 'left' }, fontWeight: 600 }}
           >
-            Sign Up
+            Đăng ký
           </Typography>
 
           <Typography
@@ -67,24 +67,24 @@ const SignUp = () => {
             sx={{
               mb: 2,
               color: 'text.secondary',
-              width: '100%',
+              width: '50%',
               textAlign: { xs: 'center', md: 'left' }
             }}
           >
-            Sign up to become our members and receive incentives.
+            Đăng ký tài khoản để trải nghiệm dịch vụ của chúng tôi
           </Typography>
 
           <Box component='form' noValidate sx={{ width: '100%', maxWidth: 400 }} onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register('phone', {
-                required: 'Phone number is required',
+                required: 'Vui lòng nhập số điện thoại',
                 pattern: {
                   value: /^[0-9]{10}$/,
                   message: 'Phone number must be 10 digits'
                 }
               })}
               fullWidth
-              label='Phone Number'
+              label='Số điện thoại'
               variant='standard'
               margin='normal'
               sx={{
@@ -103,10 +103,10 @@ const SignUp = () => {
             )}
             <TextField
               {...register('name', {
-                required: 'Name is required'
+                required: 'Vui lòng nhập tên'
               })}
               fullWidth
-              label='Name'
+              label='Tên khách hàng'
               variant='standard'
               margin='normal'
               sx={{
@@ -131,17 +131,26 @@ const SignUp = () => {
             <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
               <Button
                 variant='contained'
-                sx={{ mt: 2, px: 4, backgroundColor: 'orange' }}
+                sx={{ mt: 2, px: 4, backgroundColor: 'orange', display: 'flex', alignItems: 'center', gap: 2 }}
                 type='submit'
                 disabled={isLoading}
               >
-                Sign Up
+                {isLoading && (
+                  <CircularProgress
+                    size={20}
+                    sx={{
+                      color: 'black',
+                      opacity: 0.2
+                    }}
+                  />
+                )}
+                Đăng ký
               </Button>
 
               <div className='flex justify-start items-center gap-2 mt-4'>
-                <span>Have an account?</span>
-                <Link to='/auth/login' className='text-primary'>
-                  Login
+                <span>Bạn đã có tài khoản?</span>
+                <Link to='/auth/login'>
+                  <span className='text-primary'>Đăng nhập</span>
                 </Link>
               </div>
             </Box>

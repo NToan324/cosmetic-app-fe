@@ -32,7 +32,8 @@ const OrderedProduct = ({
   isPayment
 }: OrderedProductProps) => {
   const handleIncrease = () => {
-    if (!orderedQuantity) return
+    if (orderedQuantity === undefined) return
+
     if (setOrderedTempProduct) {
       setOrderedTempProduct((prev) =>
         prev.map((item) =>
@@ -41,13 +42,19 @@ const OrderedProduct = ({
       )
     }
     if (!setOrderedQuantity) return
-    if (orderedQuantity <= quantity) {
+    if (orderedQuantity < quantity) {
       setOrderedQuantity(orderedQuantity + 1)
     }
   }
+
   const handleDecrease = () => {
-    if (!orderedQuantity) return
+    if (orderedQuantity === undefined) return
+
     if (setOrderedTempProduct) {
+      if (orderedQuantity <= 1) {
+        toast.error('Số lượng không thể nhỏ hơn 1')
+        return
+      }
       setOrderedTempProduct((prev) =>
         prev.map((item) =>
           item.orderedProduct.code === code ? { ...item, orderedQuantity: orderedQuantity - 1 } : item

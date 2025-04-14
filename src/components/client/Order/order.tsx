@@ -5,6 +5,7 @@ import EmptyImage from '@/assets/images/empty.jpg'
 import { Product as ProduceInterface } from '@/services/product.service'
 import { useEffect, useState } from 'react'
 import { LOCAL_STORAGE_KEY } from '@/consts'
+import { User } from '@/services/auth.service'
 
 export interface OrderedProductInterface {
   orderedProduct: ProduceInterface
@@ -13,10 +14,15 @@ export interface OrderedProductInterface {
 
 const Product = () => {
   const [orderedTempProduct, setOrderedTempProduct] = useState<Array<OrderedProductInterface>>([])
+  const [user, setUser] = useState<User>()
   useEffect(() => {
     const storedProducts = localStorage.getItem(LOCAL_STORAGE_KEY.ORDERED_TEMP_PRODUCT)
+    const storedUser = localStorage.getItem(LOCAL_STORAGE_KEY.USER)
     if (storedProducts) {
       setOrderedTempProduct(JSON.parse(storedProducts))
+    }
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
     }
   }, [])
 
@@ -66,7 +72,7 @@ const Product = () => {
           </div>
         </div>
         <div className='bg-white p-5 rounded-2xl w-[400px]'>
-          <InfoCustomer />
+          <InfoCustomer orderedTempProduct={orderedTempProduct} user={user} />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Grid, Typography, TextField, Button, IconButton, InputAdornment } from '@mui/material'
+import { Box, Grid, Typography, TextField, Button, IconButton, InputAdornment, CircularProgress } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Banner from '@/assets/images/login_banner.jpg'
@@ -65,6 +65,7 @@ const Login = () => {
         })
         if (response.status === 200) {
           localStorage.setItem('accessToken', response.data.accessToken)
+          localStorage.setItem('user', JSON.stringify(response.data.user))
           setUser({
             _id: response.data.user._id,
             phone: response.data.user.phone,
@@ -90,7 +91,7 @@ const Login = () => {
         })
         if (response.status === 200) {
           localStorage.setItem('accessToken', response.data.accessToken)
-
+          localStorage.setItem('user', JSON.stringify(response.data.user))
           setUser({
             _id: response.data.user._id,
             phone: response.data.user.phone,
@@ -167,25 +168,8 @@ const Login = () => {
         >
           <div className='flex justify-start items-start gap-2 mb-4 w-full'>
             <Typography variant='h4' gutterBottom sx={{ fontWeight: 600 }}>
-              Login
+              Đăng nhập
             </Typography>
-            {/* <Link to={isClient ? '/auth/employee/login' : '/auth/client/login'}>
-              <Button
-                variant='outlined'
-                color='primary'
-                sx={{
-                  width: '200px',
-                  borderRadius: 2,
-                  color: '#ff8108',
-                  borderColor: '#ff8108',
-                  ':hover': {
-                    backgroundColor: '#ffe6ce'
-                  }
-                }}
-              >
-                {isClient ? 'Login as Employee' : 'Login as Customer'}
-              </Button>
-            </Link> */}
           </div>
 
           <Typography
@@ -193,32 +177,17 @@ const Login = () => {
             sx={{
               mb: 2,
               color: 'text.secondary',
-              width: '100%',
+              width: '50%',
               textAlign: { xs: 'center', md: 'left' }
             }}
           >
-            Access your account by signing in below
+            Vui lòng nhập thông tin tài khoản của bạn để đăng nhập vào hệ thống
           </Typography>
           <Box component='form' noValidate sx={{ width: '100%', maxWidth: 400 }} onSubmit={handleSubmit(onSubmit)}>
             <TextField
-              // {...register(isClient ? 'phone' : 'email', {
-              //   required: isClient ? 'Phone number is required' : 'Email is required',
-              //   validate: !isClient
-              //     ? (value) => {
-              //         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-              //         return regex.test(value || '') || 'Invalid email address'
-              //       }
-              //     : undefined,
-              //   minLength: isClient
-              //     ? {
-              //         value: 10,
-              //         message: 'Phone number must be at least 10 characters'
-              //       }
-              //     : undefined
-              // })}
               {...register('identifier', {})}
               fullWidth
-              label={`Phone number or email`}
+              label={`Số điện thoại hoặc email`}
               variant='standard'
               margin='normal'
               sx={{
@@ -240,7 +209,7 @@ const Login = () => {
                 required: 'Password is required'
               })}
               fullWidth
-              label='Password'
+              label='Mật khẩu'
               variant='standard'
               margin='normal'
               type={showPassword ? 'text' : 'password'}
@@ -276,7 +245,7 @@ const Login = () => {
             )}
             <div className='w-full flex justify-end'>
               <Link to={'/auth/forgot-password'} className='text-gray-400 text-right'>
-                Forgot password?
+                Quên mật khẩu?
               </Link>
             </div>
 
@@ -284,16 +253,25 @@ const Login = () => {
               <Button
                 type='submit'
                 variant='contained'
-                sx={{ mt: 2, px: 4, backgroundColor: 'orange' }}
+                sx={{ mt: 2, px: 4, backgroundColor: 'orange', display: 'flex', alignItems: 'center', gap: 2 }}
                 disabled={isLogin}
               >
-                Login
+                {isLogin && (
+                  <CircularProgress
+                    size={20}
+                    sx={{
+                      color: 'black',
+                      opacity: 0.2
+                    }}
+                  />
+                )}
+                Đăng nhập
               </Button>
 
               <div className='flex justify-start items-center gap-2 mt-4'>
-                <span>Don't have an account?</span>
-                <Link to='/auth/signup' className='text-primary'>
-                  Sign up
+                <span>Bạn chưa có tài khoản?</span>
+                <Link to='/auth/signup'>
+                  <span className='text-primary'>Đăng ký</span>
                 </Link>
               </div>
             </Box>
