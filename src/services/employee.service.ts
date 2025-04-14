@@ -30,7 +30,7 @@ export interface Employee {
   user: User
 }
 
-interface EmployeeResponsePagination {
+export interface ResponsePagination<T> {
   message: string
   status: number
   data: {
@@ -38,7 +38,7 @@ interface EmployeeResponsePagination {
     page: number
     limit: number
     totalPages: number
-    data: Employee[]
+    data: T[]
   }
 }
 
@@ -63,7 +63,7 @@ export interface EmployeeCreateData {
 // }
 class EmployeeService {
   async getEmployees(accessToken: string, page?: number, limit?: number) {
-    const response = await axios.get<EmployeeResponsePagination>(`/employee?page=${page}&limit${limit}`, {
+    const response = await axios.get<ResponsePagination<Employee>>(`/employee?page=${page}&limit${limit}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -76,8 +76,8 @@ class EmployeeService {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
-    });
-    return response.data;
+    })
+    return response.data
   }
 
   async createEmployee({ accessToken, data }: { accessToken: string; data: EmployeeCreateData }) {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Avatar, Button } from '@mui/material'
+import { Avatar, Button, CircularProgress } from '@mui/material'
 import { CiLock } from 'react-icons/ci'
 import { useLocation, useNavigate } from 'react-router-dom'
 import authService from '@/services/auth.service'
@@ -137,18 +137,28 @@ const VerifyCode = () => {
           variant='contained'
           color='primary'
           sx={{ backgroundColor: '#FF8C00' }}
+          className='flex justify-center items-center gap-2'
           fullWidth
           disabled={!isFull || isLoading}
           onClick={handleVerify}
         >
-          {isFull ? 'Verify' : `${charactersLeft} digits left`}
+          {isLoading && (
+            <CircularProgress
+              size={20}
+              sx={{
+                color: 'black',
+                opacity: 0.2
+              }}
+            />
+          )}
+          {isFull ? 'Xác thực' : `${charactersLeft} ký tự còn lại`}
         </Button>
 
         {timeLeft > 0 ? (
           <p className='text-gray-500 text-sm mt-4'>Resend code in {timeLeft}s</p>
         ) : (
-          <span className={`text-primary block mt-4 uppercase cursor-pointer`} onClick={handleResend}>
-            Resend
+          <span className={`text-primary block mt-4 cursor-pointer text-base`} onClick={handleResend}>
+            Gửi lại mã xác thực
           </span>
         )}
       </div>

@@ -41,13 +41,16 @@ function App() {
           <Route path='/order' element={OrderPage()} />
           <Route path='/' element={HomePage()} />
           <Route path='/order/payment' element={PaymentPage()} />
-          <Route path='/history' element={HistoryPage()} />
-          {/* Route của khách hàng */}
-          {/* <Route element={<ProtectedRoute allowedRoles={[Role.CUSTOMER]()} />}></Route> */}
 
           {/* Route của nhân viên bán hàng */}
           <Route element={<ProtectedRoute allowedRoles={[Role.SALESTAFF, Role.CONSULTANT, Role.MANAGER]} />}>
             <Route path='/customer-consulting' element={UserPage()} />
+          </Route>
+
+          <Route
+            element={<ProtectedRoute allowedRoles={[Role.CUSTOMER, Role.SALESTAFF, Role.CONSULTANT, Role.MANAGER]} />}
+          >
+            <Route path='/history' element={<HistoryPage />} />
           </Route>
 
           {/* Route của nhân viên/Manager */}

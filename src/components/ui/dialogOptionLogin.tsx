@@ -36,7 +36,7 @@ export default function DialogLoginChoice() {
         <DialogContent>
           <Box display='flex' justifyContent='space-around' alignItems='center' gap={2} mb={2}>
             <Button
-              href='/auth/employee/login'
+              href='/auth/login'
               sx={{
                 display: 'flex',
                 flexDirection: 'column',

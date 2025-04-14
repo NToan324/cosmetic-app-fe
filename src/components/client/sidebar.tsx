@@ -39,25 +39,34 @@ const SideBar = () => {
         </h1>
       </div>
       <ul className='w-full'>
-        {menu.map((item, index) => (
-          <div key={index}>
-            <NavLink
-              onClick={() => setIsOpen(!isOpen)}
-              to={item.link}
-              className={({ isActive }) =>
-                `cursor-pointer ml-4 flex items-center rounded-bl-2xl rounded-tl-2xl py-4 px-8 h-[60px] gap-4 ${
-                  isActive || (item.link === '/home' && location.pathname === '/')
-                    ? 'bg-primary text-white'
-                    : 'text-black'
-                }`
-              }
-            >
-              <item.icon size={25} />
-              <span className='text-base'>{item.name}</span>
-            </NavLink>
-            {index === 3 && <div className='border-t border-gray-300 w-full my-6'></div>}
-          </div>
-        ))}
+        {menu.map((item, index) => {
+          const roleless = item.link === '/customer-consulting' || item.link === '/profile' || item.link === '/history'
+          if (item.link === '/customer-consulting' && user?.role.includes('CUSTOMER')) {
+            return null
+          }
+          if (roleless && !user) {
+            return null
+          }
+          return (
+            <div key={index}>
+              <NavLink
+                onClick={() => setIsOpen(!isOpen)}
+                to={item.link}
+                className={({ isActive }) =>
+                  `cursor-pointer ml-4 flex items-center rounded-bl-2xl rounded-tl-2xl py-4 px-8 h-[60px] gap-4 ${
+                    isActive || (item.link === '/home' && location.pathname === '/')
+                      ? 'bg-primary text-white'
+                      : 'text-black'
+                  }`
+                }
+              >
+                <item.icon size={25} />
+                <span className='text-base'>{item.name}</span>
+              </NavLink>
+              {index === 3 && <div className='border-t border-gray-300 w-full my-6'></div>}
+            </div>
+          )
+        })}
         {user && <DialogSignout />}
       </ul>
     </div>

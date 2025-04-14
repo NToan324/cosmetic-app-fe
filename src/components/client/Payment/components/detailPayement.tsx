@@ -1,17 +1,23 @@
 import { HiQrCode } from 'react-icons/hi2'
 import { HiOutlineCash } from 'react-icons/hi'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PAYMENT_METHOD } from '@/consts'
 import { formatCurrency } from '@/helpers'
 import Cash from './cash'
+import { OrderedProductInterface } from '../../Order/order'
 
 interface CashProps {
   subTotal: number
   pointDiscount: number
+  orderedTempProducts: Array<OrderedProductInterface>
 }
 
-const DetailPayment = ({ subTotal, pointDiscount }: CashProps) => {
+const DetailPayment = ({ subTotal, pointDiscount, orderedTempProducts }: CashProps) => {
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH)
+  const [totalAmount, setTotalAmount] = useState<number>(0)
+  useEffect(() => {
+    setTotalAmount(subTotal - pointDiscount)
+  }, [subTotal, pointDiscount])
 
   return (
     <>
@@ -22,27 +28,17 @@ const DetailPayment = ({ subTotal, pointDiscount }: CashProps) => {
           <span className='text-base'>{formatCurrency(subTotal)}</span>
         </div>
         <div className='flex justify-between items-center gap-4 w-full'>
-          <span className='text-base'>Thuế VAT (8%)</span>
-          <span className='text-base'>{formatCurrency(subTotal * 0.08)}</span>
-        </div>
-        <div className='flex justify-between items-center gap-4 w-full'>
-          <span className='text-base'>Tạm tính</span>
-          <span className='text-base'>{formatCurrency(subTotal + subTotal * 0.08)}</span>
-        </div>
-        <div className='flex justify-between items-center gap-4 w-full'>
           <span className='text-base'>Giảm giá</span>
           <span className='text-base'>{formatCurrency(Number(pointDiscount))}</span>
         </div>
         <div className='flex justify-between items-center gap-4 w-full'>
           <span className='text-base'>Tổng cộng</span>
-          <span className='text-base'>{formatCurrency(subTotal + subTotal * 0.08 - pointDiscount)}</span>
+          <span className='text-base'>{formatCurrency(totalAmount)}</span>
         </div>
       </div>
       <div className='flex justify-between items-center gap-4 w-full px-4'>
         <span className='text-base'>Điểm cộng sau thanh toán</span>
-        <span className='text-base text-green-600 font-medium'>
-          {Math.floor((subTotal + subTotal * 0.08 - pointDiscount) * 0.01)} điểm
-        </span>
+        <span className='text-base text-green-600 font-medium'>{Math.floor(totalAmount * 0.01)} điểm</span>
       </div>
       <div className='flex flex-col justify-start items-start gap-4 bg-[#F8F8F8] p-4 rounded-2xl w-full mt-4'>
         <h1 className='text-xl font-bold'>Phương thức thanh toán</h1>
@@ -77,7 +73,9 @@ const DetailPayment = ({ subTotal, pointDiscount }: CashProps) => {
           </button>
         </div>
       </div>
-      {paymentMethod == PAYMENT_METHOD.CASH && <Cash />}
+      {paymentMethod == PAYMENT_METHOD.CASH && (
+        <Cash amount={totalAmount} orderedTempProducts={orderedTempProducts} pointDiscount={pointDiscount} />
+      )}
     </>
   )
 }

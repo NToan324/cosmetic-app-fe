@@ -1,7 +1,7 @@
 import axios from '@/config/api'
 
 export interface Customer {
-  id: string
+  _id: string
   name: string
   phone: string
   role: string[]

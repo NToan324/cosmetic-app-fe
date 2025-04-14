@@ -1,4 +1,4 @@
-import { Avatar, TextField } from '@mui/material'
+import { Avatar, CircularProgress, TextField } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import { MdOutlineMail } from 'react-icons/md'
 import { useForm, SubmitHandler } from 'react-hook-form'
@@ -66,9 +66,9 @@ const ForgotPassword = () => {
           <Avatar sx={{ width: 100, height: 100, mt: 4, mb: 6 }} style={{ backgroundColor: 'orange' }}>
             <MdOutlineMail style={{ fontSize: 46 }} />
           </Avatar>
-          <h1 className='text-2xl font-b'>Forgot Password</h1>
+          <h1 className='text-2xl font-b'>Quên mật khẩu</h1>
           <p className='text-gray-600 mt-2 text-center'>
-            {`Enter your phone number or email to retrieve your password`}
+            {`Vui lòng nhập số điện thoại hoặc email của bạn để nhận mã xác thực`}
           </p>
         </div>
 
@@ -76,10 +76,10 @@ const ForgotPassword = () => {
         <form action='' onSubmit={handleSubmit(onSubmit)}>
           <TextField
             {...register('phoneOrEmail', {
-              required: 'Please enter your phone number or email'
+              required: 'Vui lòng nhập số điện thoại hoặc email'
             })}
             fullWidth
-            label='Phone number or email'
+            label='Số điện thoại hoặc email'
             variant='standard'
             margin='normal'
             type='text'
@@ -97,14 +97,23 @@ const ForgotPassword = () => {
           <button
             type='submit'
             disabled={isLoading}
-            className={`${isLoading ? 'bg-gray-300 text-black/40' : 'bg-primary text-white'} w-full block mt-4  rounded-xl px-4 py-2 text-center cursor-pointer`}
+            className={`${isLoading ? 'bg-gray-300 text-black/40' : 'bg-primary text-white'} w-full mt-4  rounded-xl px-4 py-2 text-center cursor-pointer flex justify-center items-center gap-2`}
           >
-            Send code
+            {isLoading && (
+              <CircularProgress
+                size={20}
+                sx={{
+                  color: 'black',
+                  opacity: 0.2
+                }}
+              />
+            )}
+            <span className='text-base'>Gửi mã xác thực</span>
           </button>
         </form>
         <div style={{ width: '100%', textAlign: 'left', marginTop: '12px' }}>
           <Link to={`/auth/login`} className='!mt-8 text-primary'>
-            Back to Login
+            Đăng nhập
           </Link>
         </div>
       </div>
