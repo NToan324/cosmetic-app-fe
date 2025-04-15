@@ -3,20 +3,22 @@ import { AppContext } from '@/provider/appContext'
 import authService, { User } from '@/services/auth.service'
 import categoryService, { Category } from '@/services/category.service'
 import brandService, { Brand } from '@/services/brand.service'
+import shiftService from '@/services/shift.service'
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [user, setUser] = useState<User>()
+  const [user, setUser] = useState<User | null>(null)
   const [categories, setCategories] = useState<Array<Category>>([])
   const [brands, setBrands] = useState<Array<Brand>>([])
   const [reload, setReload] = useState<boolean>(false)
+  const [activeShift, setActiveShift] = useState<boolean>(false)
 
   useEffect(() => {
     const getUser = async () => {
-      const userStorage = localStorage.getItem('accessToken')
-      if (userStorage) {
+      const accessToken = localStorage.getItem('accessToken')
+      if (accessToken) {
         try {
-          const { data } = await authService.getUser(userStorage)
+          const { data } = await authService.getUser(accessToken)
           if (data) {
             setUser(data)
           }
@@ -45,9 +47,25 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error(error instanceof Error ? error.message : 'Unknown error')
       }
     }
+    const getActiveShift = async () => {
+      const accessToken = localStorage.getItem('accessToken')
+      if (accessToken) {
+        try {
+          const { data } = await shiftService.getShiftById(accessToken)
+          if (data) {
+            const isActive = !!data.start_time && !data.end_time
+            setActiveShift(isActive)
+          }
+        } catch (error) {
+          setActiveShift(false)
+          throw new Error(error instanceof Error ? error.message : 'Unknown error')
+        }
+      }
+    }
     getBrands()
     getCategories()
     getUser()
+    getActiveShift()
   }, [reload])
   return (
     <AppContext.Provider
@@ -61,7 +79,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         reload,
         setReload,
         brands,
-        setBrands
+        setBrands,
+        activeShift
       }}
     >
       {children}

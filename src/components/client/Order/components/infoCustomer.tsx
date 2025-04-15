@@ -15,7 +15,7 @@ interface CustomerInterface {
 
 interface InfoCustomerProps {
   orderedTempProduct: Array<OrderedProductInterface>
-  user?: User
+  user?: User | null
 }
 
 const InfoCustomer = ({ orderedTempProduct, user }: InfoCustomerProps) => {
@@ -220,23 +220,26 @@ const InfoCustomer = ({ orderedTempProduct, user }: InfoCustomerProps) => {
         </div>
       )}
 
-      <div className='flex justify-start items-center gap-2'>
-        <button
-          type='button'
-          className='px-4 py-2 border border-primary text-primary rounded-xl cursor-pointer'
-          onClick={handleSubmit(createNewCustomer)}
-        >
-          Tạo thành viên
-        </button>
+      {user && !user.role.includes(Role.CUSTOMER) && (
+        <div className='flex justify-start items-center gap-2'>
+          <button
+            type='button'
+            className='px-4 py-2 border border-primary text-primary rounded-xl cursor-pointer'
+            onClick={handleSubmit(createNewCustomer)}
+          >
+            Tạo thành viên
+          </button>
 
-        <button
-          type='button'
-          className='px-4 py-2 border border-primary text-primary rounded-xl cursor-pointer'
-          onClick={handleSubmit(viewHistory)}
-        >
-          Xem lịch sử đơn hàng
-        </button>
-      </div>
+          <button
+            type='button'
+            className='px-4 py-2 border border-primary text-primary rounded-xl cursor-pointer'
+            onClick={handleSubmit(viewHistory)}
+          >
+            Xem lịch sử đơn hàng
+          </button>
+        </div>
+      )}
+
       <button
         disabled={orderedTempProduct.length === 0}
         className={`${orderedTempProduct.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-2 bg-primary text-white rounded-xl w-full`}

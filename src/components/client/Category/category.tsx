@@ -13,6 +13,7 @@ import { useContext, useState } from 'react'
 import { AppContext } from '@/provider/appContext'
 import { useProduct } from '@/hooks/useProduct'
 import { CircularProgress } from '@mui/material'
+import { IoSearch } from 'react-icons/io5'
 
 const Category = () => {
   const { categories } = useContext(AppContext)
@@ -26,6 +27,10 @@ const Category = () => {
 
   return (
     <div className='p-4'>
+      <div className='bg-white flex items-center w-2/3 max-w-[350px] justify-between gap-2 p-2 rounded-2xl px-4 border border-black/20'>
+        <IoSearch size={25} color='black' />
+        <input type='text' placeholder='Tìm kiếm sản phẩm' className='text-black w-full border-none outline-none' />
+      </div>
       <Filter
         filterData={categories}
         filterCategory={categoryId || 'all'}

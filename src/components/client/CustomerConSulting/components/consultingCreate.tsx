@@ -8,15 +8,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
+import { AppContext } from '@/provider/appContext'
+import { Role } from '@/consts'
 
 const ConsultingCreate = () => {
   const [selectedSkinType, setSelectedSkinType] = useState('Select Skin Type')
   const [selectedSkinIssues, setSelectedSkinIssues] = useState('Select Skin Issues')
+  const { activeShift, user } = useContext(AppContext)
 
   return (
-    <form className='w-full rounded-2xl bg-white p-4'>
+    <form className='relative w-full rounded-2xl bg-white p-4'>
+      {user && !user.role.includes(Role.CUSTOMER) && !activeShift && (
+        <div className='absolute bg-black/70 top-0 left-0 w-full h-full z-50 '>
+          <div className='bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4'>
+            Bạn chưa mở ca làm việc. Vui lòng mở ca trước khi thao tác bán hàng.
+          </div>
+        </div>
+      )}
       <div className='flex justify-start items-center gap-4'>
         <h1 className='text-base font-semibold'>Create New Consultation</h1>
       </div>

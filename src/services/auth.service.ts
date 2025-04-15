@@ -1,6 +1,7 @@
 import axios from '@/config/api'
 
 export interface User {
+  id?: string
   _id: string
   phone: string
   name: string

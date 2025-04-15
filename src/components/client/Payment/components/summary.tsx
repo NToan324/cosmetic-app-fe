@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import DetailPayment from './detailPayement'
 import { Role } from '@/consts'
+import { User } from '@/services/auth.service'
 
 interface SummaryProps {
   orderedTempProducts: Array<OrderedProductInterface>
@@ -16,6 +17,7 @@ const Summary = ({ orderedTempProducts }: SummaryProps) => {
   const [pointDiscount, setPointDiscount] = useState(0)
   const [isApplyPoint, setIsApplyPoint] = useState(false)
   const [haveCustomer, setHaveCustomer] = useState(false)
+  const [user, setUser] = useState<User>()
   const {
     register,
     watch,
@@ -26,17 +28,23 @@ const Summary = ({ orderedTempProducts }: SummaryProps) => {
   const point = watch('point')
 
   useEffect(() => {
-    const storedOrderedUser = localStorage.getItem('ordered_info_user')
-    const storedUser = localStorage.getItem('user')
-    if (storedOrderedUser) {
-      const orderedUser = JSON.parse(storedOrderedUser)
-      if (storedUser) {
-        const user = JSON.parse(storedUser)
-        if (user.role.includes(Role.CUSTOMER) && user.phone === orderedUser.phone) {
-          setTotalPoint(orderedUser.customer?.point ? orderedUser.customer.point : 0)
+    const storedUserRaw = localStorage.getItem('user')
+    const storedOrderedUserRaw = localStorage.getItem('ordered_info_user')
+
+    if (storedUserRaw) {
+      const parsedUser = JSON.parse(storedUserRaw)
+      setUser(parsedUser)
+
+      if (storedOrderedUserRaw) {
+        const parsedOrderedUser = JSON.parse(storedOrderedUserRaw)
+
+        // Nếu là khách hàng và trùng số điện thoại
+        if (parsedUser.role?.includes(Role.CUSTOMER) && parsedUser.phone === parsedOrderedUser.phone) {
+          setTotalPoint(parsedOrderedUser.customer?.point || 0)
           setHaveCustomer(true)
-        } else if (!user.role.includes(Role.CUSTOMER)) {
-          setTotalPoint(orderedUser.customer?.point ? orderedUser.customer.point : 0)
+        } else if (!parsedUser.role?.includes(Role.CUSTOMER)) {
+          // Nếu là nhân viên hoặc người khác
+          setTotalPoint(parsedOrderedUser.customer?.point || 0)
           setHaveCustomer(true)
         } else {
           setHaveCustomer(false)
@@ -75,10 +83,10 @@ const Summary = ({ orderedTempProducts }: SummaryProps) => {
         <div className='flex flex-col justify-start items-start gap-4 bg-[#F8F8F8] p-4 rounded-2xl w-full'>
           <h1 className='text-xl font-bold'>Điểm tích lũy</h1>
           <div className='flex justify-between items-center gap-4 w-full'>
-            <span className='text-base'>Tổng điểm hiện tại</span>
-            <span className='text-base'>{totalPoint} điểm</span>
+            <span className='text-base text-left'>Tổng điểm hiện tại</span>
+            <span className='text-base text-right'>{totalPoint} điểm</span>
           </div>
-          <div className='flex items-center gap-2 w-full'>
+          <div className='flex flex-wrap items-center gap-2 w-full'>
             <input
               {...register('point', {
                 max: {
@@ -96,36 +104,38 @@ const Summary = ({ orderedTempProducts }: SummaryProps) => {
               disabled={isApplyPoint}
               className='p-2 rounded-xl bg-white border border-gray-300 w-full outline-none'
             />
-            <button
-              disabled={point ? Number(point) > totalPoint || Number(point) < 0 || isApplyPoint : false}
-              onClick={() => {
-                handleApplyPoint()
-              }}
-              type='button'
-              className={
-                'px-4 py-2 bg-primary text-white rounded-xl whitespace-nowrap cursor-pointer' +
-                (point
-                  ? Number(point) > totalPoint || Number(point) < 0 || isApplyPoint
-                    ? ' opacity-50 cursor-not-allowed'
-                    : ''
-                  : '')
-              }
-            >
-              Áp dụng
-            </button>
-            <button
-              disabled={!isApplyPoint}
-              onClick={() => {
-                handleDeletePoint()
-              }}
-              type='button'
-              className={
-                'px-4 py-2 bg-red-600 text-white rounded-xl whitespace-nowrap cursor-pointer' +
-                (!isApplyPoint ? ' opacity-50 cursor-not-allowed' : '')
-              }
-            >
-              Xóa điểm
-            </button>
+            <div className='flex justify-center items-center gap-4'>
+              <button
+                disabled={point ? Number(point) > totalPoint || Number(point) < 0 || isApplyPoint : false}
+                onClick={() => {
+                  handleApplyPoint()
+                }}
+                type='button'
+                className={
+                  'px-4 py-2 bg-primary text-white rounded-xl whitespace-nowrap cursor-pointer' +
+                  (point
+                    ? Number(point) > totalPoint || Number(point) < 0 || isApplyPoint
+                      ? ' opacity-50 cursor-not-allowed'
+                      : ''
+                    : '')
+                }
+              >
+                Áp dụng
+              </button>
+              <button
+                disabled={!isApplyPoint}
+                onClick={() => {
+                  handleDeletePoint()
+                }}
+                type='button'
+                className={
+                  'px-4 py-2 bg-red-600 text-white rounded-xl whitespace-nowrap cursor-pointer' +
+                  (!isApplyPoint ? ' opacity-50 cursor-not-allowed' : '')
+                }
+              >
+                Xóa điểm
+              </button>
+            </div>
           </div>
           {errors.point && <div className='text-red-500 text-start text-sm'>{errors.point.message}</div>}
           {point && point > 0 && !errors.point && (
@@ -141,7 +151,12 @@ const Summary = ({ orderedTempProducts }: SummaryProps) => {
         </div>
       )}
 
-      <DetailPayment subTotal={subTotal} pointDiscount={pointDiscount} orderedTempProducts={orderedTempProducts} />
+      <DetailPayment
+        user={user}
+        subTotal={subTotal}
+        pointDiscount={pointDiscount}
+        orderedTempProducts={orderedTempProducts}
+      />
     </div>
   )
 }

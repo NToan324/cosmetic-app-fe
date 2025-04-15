@@ -5,7 +5,6 @@ import { ResponsePagination } from './employee.service'
 export interface OrderDetails {
   items: Array<Partial<Product>>
   discount_point: number
-  payment_method: string
 }
 
 export interface OrderHistory {
@@ -27,17 +26,35 @@ export interface OrderHistory {
   }>
 }
 
+export interface orderReponse {
+  message: string
+  status: number
+  data: {
+    order_id: string
+    total_price: number
+  }
+}
+
 export interface Order {
   userId?: string
   createdBy?: string
+  paymentMethod?: string
   order: OrderDetails
 }
 class OrderService {
-  async createOrder({ userId, createdBy, order }: Order) {
-    const response = await axios.post('/order', {
+  async createOrder({ userId, createdBy, paymentMethod, order }: Order) {
+    const response = await axios.post<orderReponse>('/order', {
       userId,
       createdBy,
+      paymentMethod,
       order
+    })
+    return response.data
+  }
+
+  async updateOrderStatus(id: string, payload: { createdBy: string; paymentMethod: string; total_amount: number }) {
+    const response = await axios.patch(`/order/${id}`, {
+      ...payload
     })
     return response.data
   }

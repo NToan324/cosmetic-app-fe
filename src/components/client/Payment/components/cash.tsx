@@ -4,24 +4,21 @@ import { NumericFormat } from 'react-number-format'
 import { OrderedProductInterface } from '../../Order/order'
 import orderService from '@/services/order.service'
 import { LOCAL_STORAGE_KEY } from '@/consts'
-import customerService from '@/services/customer.service'
+import customerService, { CustomerInfo } from '@/services/customer.service'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { User } from '@/services/auth.service'
 
 interface CashProps {
   amount: number
   orderedTempProducts: Array<OrderedProductInterface>
   pointDiscount: number
-}
-interface CustomerInfo {
-  _id: string
-  rank: string
-  point: number
-  phone: string
-  name: string
+  user: User | undefined
+  setReload: (reload: boolean) => void
+  reload: boolean
 }
 
-const Cash = ({ amount, orderedTempProducts, pointDiscount }: CashProps) => {
+const Cash = ({ amount, orderedTempProducts, pointDiscount, user, reload, setReload }: CashProps) => {
   const [amountDefault, setAmountDefault] = useState<number>(0)
   const [change, setChange] = useState<number>(0)
   const [orderedInfoUser, setOrderedInfoUser] = useState<CustomerInfo>()
@@ -56,6 +53,7 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount }: CashProps) => {
       setOrderedInfoUser(JSON.parse(infoUser || '{}'))
     }
   }, [])
+
   const listMoney = [
     { id: 1, amount: 10000 },
     { id: 2, amount: 20000 },
@@ -103,11 +101,11 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount }: CashProps) => {
     try {
       await orderService.createOrder({
         userId: orderedInfoUser?._id || '',
-        createdBy: orderedInfoUser?._id || '',
+        createdBy: user?.id || '',
+        paymentMethod: 'Cash',
         order: {
           items: items,
-          discount_point: pointDiscount,
-          payment_method: 'Cash'
+          discount_point: pointDiscount
         }
       })
       localStorage.removeItem(LOCAL_STORAGE_KEY.ORDERED_TEMP_PRODUCT)
@@ -116,12 +114,17 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount }: CashProps) => {
       toast.success('Thanh toán thành công')
       navigate('/order')
     } catch (error) {
-      console.log('error', error)
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('Thanh toán thất bại')
+      }
     }
+    setReload(!reload)
   }
   return (
     <div className='flex flex-col justify-start items-start gap-4 bg-[#F8F8F8] p-4 rounded-2xl w-full'>
-      <div className='flex justify-between items-start w-full space-y-4 gap-4'>
+      <div className='flex flex-wrap justify-between items-start w-full space-y-4 gap-4'>
         <div className='flex flex-col justify-start items-start gap-4'>
           <label htmlFor='amount'>Tiền khách đưa</label>
           <NumericFormat
@@ -131,7 +134,7 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount }: CashProps) => {
             thousandSeparator='.'
             decimalSeparator=','
             placeholder='100.000'
-            className='bg-white border border-black/50 px-4 h-[55px] rounded-2xl w-[300px] outline-none'
+            className='bg-white border border-black/50 px-4 h-[55px] rounded-2xl w-2/3 outline-none'
           />
           <div className='flex flex-wrap justify-start items-center gap-4'>
             {listMoney.map((item) => {
@@ -147,7 +150,7 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount }: CashProps) => {
             })}
           </div>
         </div>
-        <div className='flex flex-col justify-start items-start gap-4'>
+        <div className='flex flex-col justify-start items-start gap-4 w-full'>
           <label htmlFor='change'>Tiền trả lại</label>
           <NumericFormat
             disabled
@@ -156,7 +159,7 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount }: CashProps) => {
             thousandSeparator='.'
             decimalSeparator=','
             placeholder='100.000'
-            className='bg-white border border-black/50 px-4 h-[55px] rounded-2xl w-[300px] outline-none'
+            className='bg-white border border-black/50 px-4 h-[55px] rounded-2xl w-2/3 outline-none'
           />
         </div>
         {/* Button thanh toan */}

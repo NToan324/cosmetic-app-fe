@@ -5,7 +5,7 @@ import { Brand } from '@/services/brand.service'
 interface AppContextType {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
-  user: User
+  user: User | null
   setUser: (user: AppContextType['user']) => void
   categories: Array<Category>
   setCategories: (categories: Array<Category>) => void
@@ -13,6 +13,7 @@ interface AppContextType {
   setReload: (reload: boolean) => void
   brands: Array<Brand>
   setBrands: (brands: Array<Brand>) => void
+  activeShift: boolean
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -25,5 +26,6 @@ export const AppContext = createContext<AppContextType>({
   reload: false,
   setReload: () => {},
   brands: [],
-  setBrands: () => {}
+  setBrands: () => {},
+  activeShift: false
 })
