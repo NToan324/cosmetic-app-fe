@@ -1,58 +1,121 @@
-import { IoSearch } from 'react-icons/io5'
 import Avatar from '@/assets/images/avatar.png'
 import { IoMenu } from 'react-icons/io5'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from '@/provider/appContext'
 import DialogLoginChoice from './ui/dialogOptionLogin'
 import OpenShiftDialog from '@/components/client/shift/OpenShiftDialog'
 import { Button } from '@mui/material'
 import { Role } from '@/consts'
+import shiftService from '@/services/shift.service'
+import { toast } from 'react-toastify'
+import CloseShiftDialog from './client/shift/CloseShiftDialog'
 
 const Header = () => {
-  const { isOpen, setIsOpen, user } = useContext(AppContext)
+  const { isOpen, setIsOpen, user, activeShift, reload, setReload } = useContext(AppContext)
   const [openDialog, setOpenDialog] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
 
-  const handleOpenShift = (data: { opening_cash: number }) => {
-    console.log('Mở ca với tiền mặt:', data.opening_cash)
-
-    // Gửi API tạo ca làm việc
-    // await api.post('/shifts/open', data)
-
-    setOpenDialog(false)
+  const handleOpenShift = async (opening_cash: number) => {
+    if (user && user.role.includes(Role.SALESTAFF) && opening_cash <= 0) {
+      toast.error('Vui lòng nhập số tiền mở ca')
+      return
+    }
+    setIsLoading(true)
+    try {
+      if (accessToken) {
+        await shiftService.openShift(accessToken, opening_cash)
+        setOpenDialog(false)
+        toast.success('Mở ca thành công')
+      }
+    } catch (error) {
+      toast.error('Mở ca thất bại')
+      console.error('Error opening shift:', error)
+    } finally {
+      setIsLoading(false)
+      setReload(!reload)
+    }
   }
 
-  return (
-    <div className='flex justify-between items-center bg-white w-full p-4 h-[80px] gap-4'>
-      <IoMenu size={35} className='cursor-pointer md:hidden' onClick={() => setIsOpen(!isOpen)} />
-      <div className='flex justify-end items-center w-full md:justify-between'>
-        <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
-          <IoSearch size={25} color='black' />
-          <input
-            type='text'
-            placeholder='Tìm kiếm sản phẩm'
-            className='text-black border-none outline-none w-full hidden md:block'
-          />
-        </div>
+  const handleCloseShift = async (actual_cash: number, note: string) => {
+    if (user && user.role.includes(Role.SALESTAFF) && actual_cash <= 0) {
+      toast.error('Vui lòng nhập số tiền thực tế')
+      return
+    }
+    setIsLoading(true)
+    try {
+      if (accessToken) {
+        await shiftService.closeShift(accessToken, actual_cash, note)
+        setOpenDialog(false)
+        toast.success('Đóng ca thành công')
+      }
+    } catch (error) {
+      toast.error('Đóng ca thất bại')
+      console.error('Error closing shift:', error)
+    } finally {
+      setIsLoading(false)
+      setReload(!reload)
+    }
+  }
 
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken')
+    if (accessToken) {
+      setAccessToken(accessToken)
+    }
+  }, [])
+
+  return (
+    <div className='flex justify-end items-center bg-white w-full p-4 h-[80px] gap-4'>
+      <IoMenu size={35} className='cursor-pointer md:hidden' onClick={() => setIsOpen(!isOpen)} />
+      <div className='flex justify-end items-center w-full'>
         <div className='flex justify-between items-center gap-2'>
           {user ? (
             <>
-              {!user.role.includes(Role.CUSTOMER) && (
-                <>
-                  <Button
-                    variant='contained'
-                    sx={{
-                      bgcolor: '#ff8108',
-                      color: 'white',
-                      borderRadius: '10px'
-                    }}
-                    onClick={() => setOpenDialog(true)}
-                  >
-                    Mở ca làm việc
-                  </Button>
-                  <OpenShiftDialog open={openDialog} onClose={() => setOpenDialog(false)} onSubmit={handleOpenShift} user={user}/>
-                </>
-              )}
+              {!user.role.includes(Role.CUSTOMER) ? (
+                !activeShift ? (
+                  <>
+                    <Button
+                      variant='contained'
+                      sx={{
+                        bgcolor: '#ff8108',
+                        color: 'white',
+                        borderRadius: '10px'
+                      }}
+                      onClick={() => setOpenDialog(true)}
+                    >
+                      Mở ca làm việc
+                    </Button>
+                    <OpenShiftDialog
+                      open={openDialog}
+                      onClose={() => setOpenDialog(false)}
+                      onSubmit={handleOpenShift}
+                      user={user}
+                      isLoading={isLoading}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant='contained'
+                      sx={{
+                        bgcolor: '#ff8108',
+                        color: 'white',
+                        borderRadius: '10px'
+                      }}
+                      onClick={() => setOpenDialog(true)}
+                    >
+                      Đóng ca
+                    </Button>
+                    <CloseShiftDialog
+                      open={openDialog}
+                      onClose={() => setOpenDialog(false)}
+                      onSubmit={handleCloseShift}
+                      isLoading={isLoading}
+                    />
+                  </>
+                )
+              ) : null}
 
               <img src={Avatar} alt='Avatar' width={45} height={45} />
               <div className='hidden flex-col justify-center items-start md:flex'>

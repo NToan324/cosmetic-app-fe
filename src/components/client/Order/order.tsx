@@ -4,8 +4,9 @@ import BarCode from '@/components/client/Order/components/barcode'
 import EmptyImage from '@/assets/images/empty.jpg'
 import { Product as ProduceInterface } from '@/services/product.service'
 import { useEffect, useState } from 'react'
-import { LOCAL_STORAGE_KEY } from '@/consts'
-import { User } from '@/services/auth.service'
+import { LOCAL_STORAGE_KEY, Role } from '@/consts'
+import { useContext } from 'react'
+import { AppContext } from '@/provider/appContext'
 
 export interface OrderedProductInterface {
   orderedProduct: ProduceInterface
@@ -14,15 +15,12 @@ export interface OrderedProductInterface {
 
 const Product = () => {
   const [orderedTempProduct, setOrderedTempProduct] = useState<Array<OrderedProductInterface>>([])
-  const [user, setUser] = useState<User>()
+  const { activeShift, user } = useContext(AppContext)
+
   useEffect(() => {
     const storedProducts = localStorage.getItem(LOCAL_STORAGE_KEY.ORDERED_TEMP_PRODUCT)
-    const storedUser = localStorage.getItem(LOCAL_STORAGE_KEY.USER)
     if (storedProducts) {
       setOrderedTempProduct(JSON.parse(storedProducts))
-    }
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
     }
   }, [])
 
@@ -35,7 +33,14 @@ const Product = () => {
   }, [orderedTempProduct])
 
   return (
-    <div className='p-4'>
+    <div className='p-4 relative'>
+      {user && !user.role.includes(Role.CUSTOMER) && !activeShift && (
+        <div className='absolute bg-black/70 top-0 left-0 w-full h-full z-50 '>
+          <div className='bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4'>
+            Bạn chưa mở ca làm việc. Vui lòng mở ca trước khi thao tác bán hàng.
+          </div>
+        </div>
+      )}
       <div className='flex flex-wrap justify-between items-start gap-4'>
         <div className='flex-1/2 flex flex-col justify-between items-start gap-4 w-full'>
           <div className='flex flex-col justify-start items-start bg-white p-5 rounded-2xl w-full min-h-[220px]'>

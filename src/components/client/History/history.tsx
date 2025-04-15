@@ -4,8 +4,9 @@ import { formatCurrency, formatDate } from '@/helpers'
 
 import DialogViewHistory from '@/components/ui/dialogViewHistory'
 import { useHistory } from '@/hooks/useHistory'
-import { useState } from 'react'
 import { CircularProgress, Pagination, Stack } from '@mui/material'
+import { useState } from 'react'
+import { IoSearch } from 'react-icons/io5'
 
 const History = () => {
   const [page, setPage] = useState(1)
@@ -15,11 +16,22 @@ const History = () => {
   const { data, isLoading } = useHistory({ accessToken, page, limit })
   const orderedHistory = data?.data?.data || []
   const totalPages = data?.data?.totalPages || 1
+  console.log('orderedHistory', orderedHistory)
 
   return (
     <div className='p-4'>
       <div className='bg-white rounded-xl p-4 shadow-md'>
-        <h1 className='text-2xl font-bold text-start mb-4'>Lịch sử mua hàng</h1>
+        <div className='flex justify-between items-center mb-4'>
+          <h1 className='text-2xl font-bold text-start'>Lịch sử mua hàng</h1>
+          <div className='bg-white flex items-center justify-between gap-2 p-2 rounded-2xl px-4 md:w-[300px] md:h-[50px] md:bg-gray-100'>
+            <IoSearch size={25} color='black' />
+            <input
+              type='text'
+              placeholder='Tìm kiếm đơn hàng'
+              className='text-black border-none outline-none w-full hidden md:block'
+            />
+          </div>
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -66,8 +78,8 @@ const History = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className='text-center'>
-                    Bạn chưa có đơn hàng nào
+                  <td colSpan={7} className='text-center p-4'>
+                    Hiện tại bạn chưa có đơn hàng nào
                   </td>
                 </tr>
               )

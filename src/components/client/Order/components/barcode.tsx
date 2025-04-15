@@ -17,7 +17,6 @@ const BarCode = ({ setOrderedTempProduct }: BarCodeProps) => {
   const [products, setProducts] = useState<Array<Product>>([])
 
   const handleAdd = () => {
-    console.log('products', products)
     if (!productId || !products || products[0].stock_quantity <= 0 || orderedQuantity <= 0) {
       toast.error('Sản phẩm đã hết hàng')
       return
