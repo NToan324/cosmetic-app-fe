@@ -4,6 +4,7 @@ import { HiOutlineUsers } from 'react-icons/hi2'
 import { PiInvoice } from 'react-icons/pi'
 import { HiOutlineUserGroup } from 'react-icons/hi2'
 import { IoPieChartOutline } from 'react-icons/io5'
+import { BiCategoryAlt } from 'react-icons/bi'
 import { NavLink, useLocation } from 'react-router-dom'
 import Avatar from '@/assets/images/avatar.png'
 import { useContext } from 'react'
@@ -18,7 +19,8 @@ const Admin_SideBar = () => {
     { name: 'Quản lý nhân viên', icon: HiOutlineUserGroup, link: '/admin/employee' },
     { name: 'Quản lý khách hàng', icon: HiOutlineUsers, link: '/admin/customer' },
     { name: 'Quán lý hóa đơn', icon: PiInvoice, link: '/admin/invoice' },
-    { name: 'Thống kê', icon: IoPieChartOutline, link: '/admin/statistic' }
+    { name: 'Thống kê', icon: IoPieChartOutline, link: '/admin/statistic' },
+    { name: 'Bán hàng', icon: BiCategoryAlt, link: '/' }
   ]
 
   return (

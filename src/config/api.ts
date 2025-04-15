@@ -23,10 +23,10 @@ instance.interceptors.response.use(
       const errorMessage = error.response.data.error?.message || 'An error occurred'
 
       if (status === 401 || status === 403) {
-        localStorage.removeItem('token')
+        localStorage.removeItem('accessToken')
         localStorage.removeItem('ordered_info_user')
-        localStorage.removeItem('user_info')
         localStorage.removeItem('user')
+        localStorage.removeItem('ordered_temp_product')
 
         toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
       }

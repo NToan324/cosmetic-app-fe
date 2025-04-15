@@ -17,7 +17,11 @@ const BarCode = ({ setOrderedTempProduct }: BarCodeProps) => {
   const [products, setProducts] = useState<Array<Product>>([])
 
   const handleAdd = () => {
-    if (!productId || !products || orderedQuantity <= 0) return
+    console.log('products', products)
+    if (!productId || !products || products[0].stock_quantity <= 0 || orderedQuantity <= 0) {
+      toast.error('Sản phẩm đã hết hàng')
+      return
+    }
     setOrderedTempProduct((prev) => {
       const existingProduct = prev.find((item) => item.orderedProduct.code === products[0].code)
       if (existingProduct) {
@@ -57,23 +61,23 @@ const BarCode = ({ setOrderedTempProduct }: BarCodeProps) => {
     setProductId(code)
   }, [])
   return (
-    <div className='w-full flex-wrap flex justify-start items-start gap-8'>
+    <div className='w-full flex justify-start items-start gap-4 md:flex-row flex-col'>
       {/* Scan QR code */}
-      <div className='flex flex-col justify-between items-start gap-4'>
-        <p className='text-black/40'>Vui lòng quét mã sản phẩm tại đây</p>
+      <div className='flex flex-col flex-1/2 justify-between items-start gap-4'>
+        <p className='text-black/40 text-left'>Vui lòng quét mã sản phẩm tại đây</p>
         <ScanQRCodeDialog setOrderedTempProduct={setOrderedTempProduct} />
       </div>
 
       {/* Manual barcode entry */}
-      <div className='flex flex-col justify-between items-start gap-4'>
+      <div className='flex flex-1/2 flex-col justify-between items-start gap-4'>
         <p className='text-black/40'>Hoặc nhập mã sản phẩm</p>
-        <div className='flex justify-around items-center gap-4 w-full'>
+        <div className='flex flex-wrap justify-between items-center gap-4 w-full'>
           <input
             type='text'
             placeholder='Mã sản phẩm'
             value={productId}
             onChange={(e) => handleSearchCode(e.target.value)}
-            className='border-none outline-none rounded-2xl bg-gray-100 p-4 w-[200px]'
+            className='border-none outline-none rounded-2xl bg-gray-100 p-4 w-2/3 max-w-[350px] min-w-[250px]'
           />
           <div className='flex justify-start items-center gap-4 w-full'>
             <button
@@ -81,7 +85,7 @@ const BarCode = ({ setOrderedTempProduct }: BarCodeProps) => {
               onClick={handleAdd}
               className={`${products.length == 1 ? 'bg-primary' : 'bg-gray-300'} cursor-pointer  rounded-xl py-2 px-4 w-[100px]`}
             >
-              <span className='text-white'>Add</span>
+              <span className='text-white'>Thêm</span>
             </button>
             <button
               onClick={handleClearSearch}

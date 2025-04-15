@@ -1,12 +1,26 @@
 import { IoSearch } from 'react-icons/io5'
 import Avatar from '@/assets/images/avatar.png'
 import { IoMenu } from 'react-icons/io5'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AppContext } from '@/provider/appContext'
 import DialogLoginChoice from './ui/dialogOptionLogin'
+import OpenShiftDialog from '@/components/client/shift/OpenShiftDialog'
+import { Button } from '@mui/material'
+import { Role } from '@/consts'
 
 const Header = () => {
   const { isOpen, setIsOpen, user } = useContext(AppContext)
+  const [openDialog, setOpenDialog] = useState(false)
+
+  const handleOpenShift = (data: { opening_cash: number }) => {
+    console.log('Mở ca với tiền mặt:', data.opening_cash)
+
+    // Gửi API tạo ca làm việc
+    // await api.post('/shifts/open', data)
+
+    setOpenDialog(false)
+  }
+
   return (
     <div className='flex justify-between items-center bg-white w-full p-4 h-[80px] gap-4'>
       <IoMenu size={35} className='cursor-pointer md:hidden' onClick={() => setIsOpen(!isOpen)} />
@@ -19,9 +33,27 @@ const Header = () => {
             className='text-black border-none outline-none w-full hidden md:block'
           />
         </div>
+
         <div className='flex justify-between items-center gap-2'>
           {user ? (
             <>
+              {!user.role.includes(Role.CUSTOMER) && (
+                <>
+                  <Button
+                    variant='contained'
+                    sx={{
+                      bgcolor: '#ff8108',
+                      color: 'white',
+                      borderRadius: '10px'
+                    }}
+                    onClick={() => setOpenDialog(true)}
+                  >
+                    Mở ca làm việc
+                  </Button>
+                  <OpenShiftDialog open={openDialog} onClose={() => setOpenDialog(false)} onSubmit={handleOpenShift} user={user}/>
+                </>
+              )}
+
               <img src={Avatar} alt='Avatar' width={45} height={45} />
               <div className='hidden flex-col justify-center items-start md:flex'>
                 <h1 className='text-base'>{user.name}</h1>

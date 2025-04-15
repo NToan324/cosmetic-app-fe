@@ -92,7 +92,7 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
         }
       },
       () => {
-        setErrorMessage('Please put the product into the frame')
+        setErrorMessage('Vui đặt mã sản phẩm vào giữa khung quét')
       }
     )
   }, [])
@@ -121,6 +121,18 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
   }
 
   const handleAddTempProduct = () => {
+    // Check if there are any products in the scanneredProduct array
+    if (scanneredProduct.length === 0) {
+      toast.error('Không có sản phẩm nào để thêm')
+      return
+    }
+
+    //check if there are any products with stock_quantity = 0
+    const outOfStockProducts = scanneredProduct.filter((item) => item.orderedProduct.stock_quantity <= 0)
+    if (outOfStockProducts.length > 0) {
+      toast.error('Sản phẩm ' + outOfStockProducts[0].orderedProduct.name + ' đã hết hàng')
+      return
+    }
     setOrderedTempProduct((prev) => {
       const isExist = prev.some((item) => item.orderedProduct._id === scanneredProduct[0].orderedProduct._id)
       if (isExist) {
@@ -172,14 +184,14 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
       >
-        <DialogTitle id='alert-dialog-title'>Scan barcode</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>Quét barcode</DialogTitle>
         <DialogContent
           sx={{
             width: '500px',
             height: '700px'
           }}
         >
-          <div className='text-red-500'>{errorMessage}</div>
+          <div className='text-red-500 mb-2'>{errorMessage}</div>
           <div className='w-full h-[400px]'>
             <div className='' id='reader'></div>
           </div>
@@ -195,7 +207,11 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
                       <p className='text-start line-clamp-2'>{item.orderedProduct.name}</p>
                       <p className='text-base truncate w-64'>Code: {item.orderedProduct.code}</p>
                       <div className='w-full flex justify-between items-center gap-2'>
-                        <p className='text-base'>Remaining: {item.orderedProduct.stock_quantity}</p>
+                        <p className='text-base'>
+                          {item.orderedProduct.stock_quantity === 0
+                            ? 'Hết hàng'
+                            : `Còn hàng: ${item.orderedProduct.stock_quantity}`}
+                        </p>
                         <span className='text-red-600 text-xl'>{formatCurrency(item.orderedProduct.price)}</span>
                       </div>
                       <div className='w-full flex justify-between items-center gap-4'>
@@ -227,15 +243,15 @@ export default function ScanQRCodeDialog({ setOrderedTempProduct }: ScanQRCodeDi
               )
             })
           ) : (
-            <p>There are currently no products</p>
+            <p>Bạn chưa thêm sản phẩm nào</p>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} sx={{ color: '#ff8108' }}>
-            Cancel
+            Hủy
           </Button>
           <Button onClick={handleAddTempProduct} autoFocus sx={{ color: '#ff8108' }}>
-            Add Product
+            Thêm sản phẩm
           </Button>
         </DialogActions>
       </Dialog>

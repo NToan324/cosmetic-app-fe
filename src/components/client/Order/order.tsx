@@ -37,7 +37,7 @@ const Product = () => {
   return (
     <div className='p-4'>
       <div className='flex flex-wrap justify-between items-start gap-4'>
-        <div className='flex-1/2 flex flex-col justify-between items-start gap-4'>
+        <div className='flex-1/2 flex flex-col justify-between items-start gap-4 w-full'>
           <div className='flex flex-col justify-start items-start bg-white p-5 rounded-2xl w-full min-h-[220px]'>
             <h1 className='text-2xl font-bold'>Mã sản phẩm</h1>
             <BarCode setOrderedTempProduct={setOrderedTempProduct} />
@@ -71,7 +71,7 @@ const Product = () => {
             </div>
           </div>
         </div>
-        <div className='bg-white p-5 rounded-2xl w-[400px]'>
+        <div className='bg-white p-5 rounded-2xl w-full md:w-[400px]'>
           <InfoCustomer orderedTempProduct={orderedTempProduct} user={user} />
         </div>
       </div>

@@ -40,7 +40,7 @@ export default function DialogSignout() {
         className='cursor-pointer ml-4 flex items-center rounded-bl-2xl rounded-tl-2xl py-4 px-8 h-[60px] gap-4'
       >
         <TbLogout size={25} />
-        <span className='text-base'>Logout</span>
+        <span className='text-base'>Đăng xuất</span>
       </div>
       <Dialog
         open={open}
@@ -48,7 +48,7 @@ export default function DialogSignout() {
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
       >
-        <DialogTitle id='alert-dialog-title'>{'Confirm Logout'}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>Thông báo</DialogTitle>
         <DialogContent>
           <DialogContentText id='alert-dialog-description'>Bạn có chắc chắn muốn đăng xuất?</DialogContentText>
         </DialogContent>

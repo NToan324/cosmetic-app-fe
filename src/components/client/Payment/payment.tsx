@@ -27,8 +27,8 @@ const Payment = () => {
         <IoChevronBackOutline size={25} />
         <span>Chỉnh sửa đơn hàng</span>
       </button>
-      <div className='flex justify-between items-start gap-4 mt-4'>
-        <div className='flex flex-1/2 flex-col justify-start items-start gap-4 bg-white p-5 rounded-2xl max-w-[450px] h-[650px]'>
+      <div className='flex justify-between items-start gap-4 mt-4 md:flex-row flex-col'>
+        <div className='flex flex-1/2 flex-col justify-start items-start gap-4 bg-white p-5 rounded-2xl w-full  h-[650px] md:max-w-[450px]'>
           <h1 className='text-2xl font-bold'>Chi tiết đơn hàng</h1>
           <div className='flex flex-col justify-start items-start gap-4 overflow-y-auto w-full p-2'>
             {orderedTempProducts &&
@@ -48,7 +48,7 @@ const Payment = () => {
               })}
           </div>
         </div>
-        <div className='bg-white p-2 rounded-2xl w-2/3'>
+        <div className='bg-white p-2 rounded-2xl w-full md:w-2/3'>
           <Summary orderedTempProducts={orderedTempProducts} />
         </div>
       </div>

@@ -8,7 +8,9 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
 import { IoIosArrowBack } from 'react-icons/io'
+import { VscDashboard } from 'react-icons/vsc'
 import DialogSignout from '@/components/ui/dialogSignout'
+import { Role } from '@/consts'
 const SideBar = () => {
   const location = useLocation()
   const { isOpen, setIsOpen, user } = useContext(AppContext)
@@ -18,7 +20,8 @@ const SideBar = () => {
     { name: 'Tạo đơn hàng', icon: IoDocumentTextOutline, link: '/order' },
     { name: 'Lịch sử mua hàng', icon: HiOutlineArchiveBox, link: '/history' },
     { name: 'Tư vấn', icon: TbReportMedical, link: '/customer-consulting' },
-    { name: 'Tài khoản', icon: CgProfile, link: '/profile' }
+    { name: 'Tài khoản', icon: CgProfile, link: '/profile' },
+    { name: 'Quản lý bán hàng', icon: VscDashboard, link: '/admin' }
   ]
   return (
     <div
@@ -41,7 +44,10 @@ const SideBar = () => {
       <ul className='w-full'>
         {menu.map((item, index) => {
           const roleless = item.link === '/customer-consulting' || item.link === '/profile' || item.link === '/history'
-          if (item.link === '/customer-consulting' && user?.role.includes('CUSTOMER')) {
+          if (item.link === '/customer-consulting' && user?.role.includes(Role.CUSTOMER)) {
+            return null
+          }
+          if (item.link === '/admin' && !user?.role.includes(Role.MANAGER)) {
             return null
           }
           if (roleless && !user) {

@@ -48,7 +48,7 @@ const History = () => {
                         {order.status}
                       </div>
                     </TableCell>
-                    <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
+                    <TableCell>{formatCurrency(order.totalPrice || 0)}</TableCell>
                     <TableCell>
                       <DialogViewHistory
                         customerName={order.customerName}

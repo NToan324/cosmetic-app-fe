@@ -75,7 +75,7 @@ const OrderedProduct = ({
 
   return (
     <div className='flex flex-wrap justify-between items-center gap-4'>
-      <div className='w-[350px] h-[130px] shadow-[0_5px_10px_rgba(0,0,0,0.2)] bg-white rounded-xl p-4 flex justify-between items-center gap-4'>
+      <div className='w-full max-w-[350px] min-w-[250px] h-[150px] shadow-[0_5px_10px_rgba(0,0,0,0.2)] bg-white rounded-xl p-4 flex justify-between items-center gap-4'>
         <div className='w-[130px] h-full bg-white rounded-xl flex justify-center items-center'>
           <img src={image} alt='product' className='object-cover' />
         </div>
@@ -83,7 +83,9 @@ const OrderedProduct = ({
           <p className='text-start'>{name}</p>
           <p className='text-start'>{code}</p>
           <div className='flex justify-between items-center gap-2 w-full'>
-            <span className='text-base'>{`${isPayment ? `Đã đặt ${orderedQuantity}` : `Còn hàng: ${quantity}`}`} </span>
+            <span className='text-base text-left'>
+              {`${isPayment ? `Đã đặt ${orderedQuantity}` : `${quantity === 0 ? 'Hết hàng' : `Còn hàng: ${quantity}`} `}`}
+            </span>
             <span className='text-red-600 text-xl'>{formatCurrency(price)}</span>
           </div>
         </div>
