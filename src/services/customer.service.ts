@@ -1,11 +1,11 @@
 import axios from '@/config/api'
 
-// interface User {
-//   name: string
-//   phone: string
-//   role: string[]
-//   active: boolean
-// }
+interface User {
+  name: string
+  phone: string
+  role: string[]
+  active: boolean
+}
 
 interface EditedBy {
   _id: string
@@ -27,15 +27,15 @@ export interface CustomerInfo {
 }
 
 // // Đây là kiểu dữ liệu gốc của khách hàng lưu trong CSDL
-// export interface Customer {
-//   userId: string
-//   rank: string
-//   point: number
-//   note: string
-//   created_at: string
-//   edit_history: CustomerEditHistory[]
-//   user: User
-// }
+export interface Customer {
+  userId: string
+  rank: string
+  point: number
+  note: string
+  created_at: string
+  edit_history: CustomerEditHistory[]
+  user: User
+}
 
 export interface ResponsePagination<T> {
   message: string
@@ -54,13 +54,6 @@ export interface CustomerCreateData {
   phone: string
   note?: string
   reason?: string
-}
-
-export interface CustomerUpdateData {
-  name?: string
-  phone?: string
-  note?: string
-  reason: string
 }
 
 /*
@@ -131,8 +124,8 @@ class CustomerService {
     return response.data
   }
 
-  async updateCustomer({ accessToken, id, data }: { accessToken: string; id: string; data: CustomerUpdateData }) {
-    const response = await axios.patch<CustomerUpdateData>(`/customer/${id}`, data, {
+  async updateCustomer({ accessToken, id, data }: { accessToken: string; id: string; data: CustomerCreateData }) {
+    const response = await axios.patch<CustomerCreateData>(`/customer/${id}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

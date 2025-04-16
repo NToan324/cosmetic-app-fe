@@ -4,7 +4,7 @@ import { FaBox } from 'react-icons/fa'
 import { FaFileInvoice } from 'react-icons/fa6'
 import { FaUser } from 'react-icons/fa'
 import BarChart from '@/components/admin/Dashboard/components/barchart'
-import NewCustomer from '@/components/admin/Dashboard/components/new_customer'
+// import NewCustomer from '@/components/admin/Dashboard/components/new_customer'
 const Dashboard = () => {
   return (
     <div className='p-4 pt-8'>
@@ -95,7 +95,7 @@ const Dashboard = () => {
         </Grid>
       </Grid>
       <div className='border-t border-gray-300 w-full mt-12'></div>
-      <NewCustomer />
+      {/* <NewCustomer /> */}
     </div>
   )
 }

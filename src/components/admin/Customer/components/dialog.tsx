@@ -15,12 +15,7 @@ import { ExpandMore, ExpandLess } from '@mui/icons-material'
 import { MdOutlineCancel } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
 import { CiCirclePlus, CiCircleMinus } from 'react-icons/ci'
-import customerService, {
-  Customer,
-  CustomerCreateData,
-  CustomerUpdateData,
-  CustomerEditHistory
-} from '@/services/customer.service'
+import customerService, { Customer, CustomerCreateData, CustomerEditHistory } from '@/services/customer.service'
 import { useForm } from 'react-hook-form'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
@@ -30,7 +25,7 @@ import ConfirmModalDelete from './dialogDelete'
 interface CustomerDialogProps {
   open: boolean
   onClose: () => void
-  customer: Customer | null
+  customer: Customer
   accessToken: string
   onActionSuccess: (message: string) => void
 }
@@ -47,10 +42,10 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
     formState: { errors },
     setError,
     reset
-  } = useForm<CustomerCreateData | CustomerUpdateData>({
+  } = useForm<CustomerCreateData>({
     defaultValues: {
-      name: customer?.user.name || '',
-      phone: customer?.user.phone || '',
+      name: customer?.name || '',
+      phone: customer?.phone || '',
       note: customer?.note || '',
       reason: ''
     }
@@ -60,8 +55,8 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
   // Khi customer thay đổi hoặc dialog mở, reset lại giá trị của form.
   useEffect(() => {
     reset({
-      name: customer?.user.name || '',
-      phone: customer?.user.phone || '',
+      name: customer?.name || '',
+      phone: customer?.phone || '',
       note: customer?.note || '',
       reason: ''
     })
@@ -112,7 +107,7 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
     }
   }
 
-  const handleUpdate = async (data: CustomerUpdateData) => {
+  const handleUpdate = async (data: CustomerCreateData) => {
     if (!customer) return
     try {
       const response = await customerService.updateCustomer({
@@ -166,7 +161,7 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
       <form
         onSubmit={handleSubmit((data) => {
           if (customer) {
-            handleUpdate(data as CustomerUpdateData)
+            handleUpdate(data as CustomerCreateData)
           } else {
             handleAdd(data as CustomerCreateData)
           }
