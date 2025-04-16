@@ -17,6 +17,7 @@ import { LOCAL_STORAGE_KEY } from '@/consts'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { User } from '@/services/auth.service'
+import { ChangePayment } from './changePayment'
 
 interface PaymentDialogProps {
   open: boolean
@@ -34,6 +35,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
   const [timeLeft, setTimeLeft] = useState(5)
   const [resetTransaction, setResetTransaction] = useState(false)
   const navigate = useNavigate()
+  const [confirmChangePaymentOpen, setConfirmChangePaymentOpen] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -58,7 +60,8 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
       await orderService.updateOrderStatus(orderId || '', {
         createdBy: user?.id || '',
         paymentMethod: 'VNPay',
-        total_amount: amount
+        total_amount: amount,
+        status: 'Completed'
       })
       localStorage.removeItem(LOCAL_STORAGE_KEY.ORDERED_TEMP_PRODUCT)
       localStorage.removeItem(LOCAL_STORAGE_KEY.ORDERED_INFO_USER)
@@ -73,6 +76,56 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
       }
     }
     setReload(!reload)
+  }
+
+  const handleConfirmCash = async () => {
+    setConfirmChangePaymentOpen(false)
+    try {
+      await orderService.updateOrderStatus(orderId || '', {
+        createdBy: user?.id || '',
+        paymentMethod: 'Cash',
+        total_amount: amount,
+        status: 'Completed'
+      })
+      localStorage.removeItem(LOCAL_STORAGE_KEY.ORDERED_TEMP_PRODUCT)
+      localStorage.removeItem(LOCAL_STORAGE_KEY.ORDERED_INFO_USER)
+      localStorage.removeItem(LOCAL_STORAGE_KEY.PENDING_ORDER)
+      toast.success('Thanh toán thành công')
+      navigate('/order')
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('Thanh toán thất bại')
+      }
+    }
+    setReload(!reload)
+    onClose()
+  }
+
+  const handleCancelOrder = async () => {
+    setConfirmChangePaymentOpen(false)
+    try {
+      await orderService.updateOrderStatus(orderId || '', {
+        createdBy: user?.id || '',
+        paymentMethod: 'VNPay',
+        total_amount: amount,
+        status: 'Canceled'
+      })
+      localStorage.removeItem(LOCAL_STORAGE_KEY.ORDERED_TEMP_PRODUCT)
+      localStorage.removeItem(LOCAL_STORAGE_KEY.ORDERED_INFO_USER)
+      localStorage.removeItem(LOCAL_STORAGE_KEY.PENDING_ORDER)
+      toast.success('Hủy đơn hàng thành công')
+      navigate('/order')
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('Hủy đơn hàng thất bại')
+      }
+    }
+    setReload(!reload)
+    onClose()
   }
 
   return (
@@ -178,7 +231,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
             color: '#ff8108'
           }}
           color='error'
-          onClick={onClose}
+          onClick={() => setConfirmChangePaymentOpen(true)}
         >
           Hủy thanh toán
         </Button>
@@ -195,6 +248,12 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
           </Button>
         )}
       </DialogActions>
+      <ChangePayment
+        open={confirmChangePaymentOpen}
+        onClose={() => setConfirmChangePaymentOpen(false)}
+        onConfirmCash={handleConfirmCash}
+        onCancelOrder={handleCancelOrder}
+      />
     </Dialog>
   )
 }
