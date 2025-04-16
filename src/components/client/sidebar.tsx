@@ -26,7 +26,7 @@ const SideBar = () => {
   return (
     <div
       className={
-        'w-[250px] flex-col shadow-2xl bg-white items-center h-screen space-y-5 fixed top-0 left-0 z-50 transition-all duration-300 ease-out md:flex md:translate-x-0 md:shadow-none ' +
+        'w-[250px] z-[100] flex-col shadow-2xl bg-white items-center h-screen space-y-5 fixed top-0 left-0 transition-all duration-300 ease-out md:flex md:translate-x-0 md:shadow-none ' +
         (isOpen ? 'translate-x-0' : '-translate-x-full')
       }
     >

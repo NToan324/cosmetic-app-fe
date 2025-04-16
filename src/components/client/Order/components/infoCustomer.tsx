@@ -206,7 +206,7 @@ const InfoCustomer = ({ orderedTempProduct, user }: InfoCustomerProps) => {
       {notify && (
         <div className='text-red-500 text-start text-sm'>
           {notify}
-          {!user && (
+          {!user && notify !== 'Khách hàng mới' && (
             <button
               type='button'
               className='text-blue-500 underline ml-2 cursor-pointer'
@@ -215,6 +215,17 @@ const InfoCustomer = ({ orderedTempProduct, user }: InfoCustomerProps) => {
               }}
             >
               Đăng nhập
+            </button>
+          )}
+          {!user && notify === 'Khách hàng mới' && (
+            <button
+              type='button'
+              className='text-blue-500 underline ml-2 cursor-pointer'
+              onClick={() => {
+                navigate('/auth/signup')
+              }}
+            >
+              Đăng Kí
             </button>
           )}
         </div>
