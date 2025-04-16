@@ -169,7 +169,7 @@ const Login = () => {
             p: { xs: 4, md: 12 }
           }}
         >
-          <div className='flex justify-start items-start gap-2 mb-4 w-full'>
+          <div className='flex justify-center items-start gap-2 mb-4'>
             <Typography variant='h4' gutterBottom sx={{ fontWeight: 600 }}>
               Đăng nhập
             </Typography>
@@ -183,6 +183,7 @@ const Login = () => {
               width: '50%',
               textAlign: { xs: 'center', md: 'left' }
             }}
+            className='md:block hidden'
           >
             Vui lòng nhập thông tin tài khoản của bạn để đăng nhập vào hệ thống
           </Typography>
@@ -258,6 +259,7 @@ const Login = () => {
                 variant='contained'
                 sx={{ mt: 2, px: 4, backgroundColor: 'orange', display: 'flex', alignItems: 'center', gap: 2 }}
                 disabled={isLogin}
+                className='w-full'
               >
                 {isLogin && (
                   <CircularProgress

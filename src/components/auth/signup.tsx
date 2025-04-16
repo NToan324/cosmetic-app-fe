@@ -70,6 +70,7 @@ const SignUp = () => {
               width: '50%',
               textAlign: { xs: 'center', md: 'left' }
             }}
+            className='md:block hidden'
           >
             Đăng ký tài khoản để trải nghiệm dịch vụ của chúng tôi
           </Typography>
@@ -134,6 +135,7 @@ const SignUp = () => {
                 sx={{ mt: 2, px: 4, backgroundColor: 'orange', display: 'flex', alignItems: 'center', gap: 2 }}
                 type='submit'
                 disabled={isLoading}
+                className='w-full'
               >
                 {isLoading && (
                   <CircularProgress
