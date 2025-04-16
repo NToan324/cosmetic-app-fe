@@ -10,7 +10,7 @@ import { IoSearch } from 'react-icons/io5'
 
 const History = () => {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
+  const limit = 10
 
   const accessToken = localStorage.getItem('accessToken') || ''
   const { data, isLoading } = useHistory({ accessToken, page, limit })
