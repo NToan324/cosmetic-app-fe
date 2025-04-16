@@ -1,12 +1,20 @@
 import { formatCurrency } from '@/helpers'
+import ProductDetailCard from './client/ProductDetailCard'
+import { useState } from 'react'
+import { Button } from './ui/button'
 
 interface ProductProps {
   name: string
   price: number
   quantity: number
   image: string
+  description: string
+  expiration_date: string
+  production_date: string
 }
-const Product = ({ name, price, quantity, image }: ProductProps) => {
+const Product = ({ name, price, quantity, image, description, expiration_date, production_date }: ProductProps) => {
+  const [showDetail, setShowDetail] = useState(false)
+
   return (
     <div className='flex flex-col justify-between items-center h-[250px] bg-white rounded-xl p-4'>
       <div className='flex justify-between items-start w-full gap-4 h-[160px]'>
@@ -20,8 +28,34 @@ const Product = ({ name, price, quantity, image }: ProductProps) => {
       </div>
       <div className='flex justify-between items-center w-full'>
         <span className='text-primary text-base'>Số lượng: {quantity}</span>
-        <button className='rounded-2xl px-4 py-2 bg-primary text-white cursor-pointer'>Xem chi tiết</button>
+        <Button
+          className='rounded-2xl px-4 py-2 bg-primary text-white cursor-pointer'
+          onClick={() => setShowDetail(true)}
+        >
+          Xem chi tiết
+        </Button>
       </div>
+      {showDetail && (
+        <div className='fixed inset-0 z-50 bg-black/40 bg-opacity-50 flex justify-center items-center p-4'>
+          <div className='relative bg-white rounded-lg overflow-auto max-h-[90vh]'>
+            <Button
+              className='absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-xl'
+              onClick={() => setShowDetail(false)}
+            >
+              Đóng
+            </Button>
+            <ProductDetailCard
+              name={name}
+              price={price}
+              image_url={image}
+              stock_quantity={quantity}
+              description={description}
+              production_date={production_date}
+              expiration_date={expiration_date}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

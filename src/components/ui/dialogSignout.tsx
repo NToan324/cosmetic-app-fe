@@ -5,12 +5,10 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import { useNavigate } from 'react-router-dom'
 import { TbLogout } from 'react-icons/tb'
 
 export default function DialogSignout() {
   const [open, setOpen] = React.useState(false)
-  const navigate = useNavigate()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -23,12 +21,8 @@ export default function DialogSignout() {
   const handleLogout = () => {
     setOpen(false)
     try {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
-      localStorage.removeItem('ordered_info_user')
-      localStorage.removeItem('ordered_temp_product')
-      localStorage.removeItem('user')
-      navigate('/auth/login')
+      localStorage.clear()
+      window.location.href = '/'
     } catch (error) {
       console.error('Error during logout:', error)
     }

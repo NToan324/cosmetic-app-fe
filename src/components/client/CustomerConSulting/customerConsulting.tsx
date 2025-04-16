@@ -10,7 +10,7 @@ const CustomerConsultation = () => {
   return (
     <div className='p-4 flex flex-col justify-start items-center gap-4'>
       <div className='flex justify-start items-center gap-4 w-full'>
-        <h1 className='text-2xl font-bold text-start'>Customer Consulting</h1>
+        <h1 className='text-2xl font-bold text-start'>Tư vấn khách hàng</h1>
       </div>
       <div className='w-full flex flex-col justify-between items-start gap-4'>
         <div className='p-4 bg-white rounded-2xl flex justify-start items-start gap-4'>
@@ -21,7 +21,7 @@ const CustomerConsultation = () => {
                 setSelectOptionMenu(CONSULTING_CUSTOMER_STATUS.CREATE)
               }}
             >
-              Create New Consultation
+              Tạo tư vấn mới
             </li>
             <li
               className={`${selectOptionMenu === CONSULTING_CUSTOMER_STATUS.SEARCH ? 'bg-[#ffe3c9] text-primary' : 'bg-white'} py-2 px-4 bg-[#ffe3c9] rounded-2xl cursor-pointer`}
@@ -29,7 +29,7 @@ const CustomerConsultation = () => {
                 setSelectOptionMenu(CONSULTING_CUSTOMER_STATUS.SEARCH)
               }}
             >
-              Search for Consultation
+              Tìm kiếm tư vấn
             </li>
           </ul>
         </div>

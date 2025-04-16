@@ -17,13 +17,19 @@ const ConsultingCreate = () => {
   const [selectedSkinType, setSelectedSkinType] = useState('Select Skin Type')
   const [selectedSkinIssues, setSelectedSkinIssues] = useState('Select Skin Issues')
   const { activeShift, user } = useContext(AppContext)
-
   return (
     <form className='relative w-full rounded-2xl bg-white p-4'>
       {user && !user.role.includes(Role.CUSTOMER) && !activeShift && (
         <div className='absolute bg-black/70 top-0 left-0 w-full h-full z-50 '>
           <div className='bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4'>
             Bạn chưa mở ca làm việc. Vui lòng mở ca trước khi thao tác bán hàng.
+          </div>
+        </div>
+      )}
+      {user && !user.role.includes(Role.CONSULTANT) && activeShift && (
+        <div className='absolute bg-black/70 top-0 left-0 w-full h-full z-50 '>
+          <div className='bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4'>
+            Chỉ có nhân viên tư vấn mới có thể tạo đơn tư vấn. Vui lòng chuyển sang tài khoản nhân viên để thao tác.
           </div>
         </div>
       )}

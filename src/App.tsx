@@ -7,6 +7,7 @@ import OrderPage from '@/pages/client/orderPage'
 import PaymentPage from '@/pages/client/paymentPage'
 import HistoryPage from '@/pages/client/historyPage'
 import UserPage from '@/pages/client/userPage'
+import ProfilePage from '@/pages/client/profilePage'
 
 import DashboardPage from '@/pages/admin/admin'
 import ProductPage from '@/pages/admin/adminProductPage'
@@ -51,6 +52,7 @@ function App() {
             element={<ProtectedRoute allowedRoles={[Role.CUSTOMER, Role.SALESTAFF, Role.CONSULTANT, Role.MANAGER]} />}
           >
             <Route path='/history' element={<HistoryPage />} />
+            <Route path='/profile' element={<ProfilePage />} />
           </Route>
 
           {/* Route của nhân viên/Manager */}

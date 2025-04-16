@@ -51,6 +51,9 @@ const Home = () => {
                     price={item.price}
                     quantity={item.stock_quantity}
                     image={item.image_url}
+                    description={item.description}
+                    expiration_date={item.expiration_date}
+                    production_date={item.production_date}
                     key={item._id}
                   />
                 )

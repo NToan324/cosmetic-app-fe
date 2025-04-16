@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { User } from '@/services/auth.service'
 import { ChangePayment } from './changePayment'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface PaymentDialogProps {
   open: boolean
@@ -32,14 +33,15 @@ interface PaymentDialogProps {
 }
 
 const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, reload, setReload, amount, orderId }) => {
-  const [timeLeft, setTimeLeft] = useState(5)
+  const [timeLeft, setTimeLeft] = useState(120)
   const [resetTransaction, setResetTransaction] = useState(false)
   const navigate = useNavigate()
   const [confirmChangePaymentOpen, setConfirmChangePaymentOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (!open) return
-    setTimeLeft(5)
+    setTimeLeft(120)
     const intervalTimeLeft = setInterval(() => {
       setTimeLeft((prevTimeLeft) => {
         if (prevTimeLeft === 1) {
@@ -75,6 +77,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
         toast.error('Thanh toán thất bại')
       }
     }
+    queryClient.invalidateQueries({ queryKey: ['histories'] })
     setReload(!reload)
   }
 
@@ -99,6 +102,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
         toast.error('Thanh toán thất bại')
       }
     }
+    queryClient.invalidateQueries({ queryKey: ['histories'] })
     setReload(!reload)
     onClose()
   }
@@ -124,6 +128,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
         toast.error('Hủy đơn hàng thất bại')
       }
     }
+    queryClient.invalidateQueries({ queryKey: ['histories'] })
     setReload(!reload)
     onClose()
   }
@@ -149,7 +154,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
               }
             }}
             onClick={handlePaymentByVNPay}
-            disabled={timeLeft > 0}
+            disabled={timeLeft === 0}
           >
             Thanh toán
           </Button>
@@ -231,7 +236,13 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({ open, onClose, user, relo
             color: '#ff8108'
           }}
           color='error'
-          onClick={() => setConfirmChangePaymentOpen(true)}
+          onClick={() => {
+            if (user && user.role) {
+              setConfirmChangePaymentOpen(true)
+            } else {
+              handleCancelOrder()
+            }
+          }}
         >
           Hủy thanh toán
         </Button>

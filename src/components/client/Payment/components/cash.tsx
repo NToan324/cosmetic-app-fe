@@ -8,6 +8,7 @@ import customerService, { CustomerInfo } from '@/services/customer.service'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { User } from '@/services/auth.service'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface CashProps {
   amount: number
@@ -23,6 +24,7 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount, user, reload, setRel
   const [change, setChange] = useState<number>(0)
   const [orderedInfoUser, setOrderedInfoUser] = useState<CustomerInfo>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     const getUsers = async () => {
@@ -120,6 +122,7 @@ const Cash = ({ amount, orderedTempProducts, pointDiscount, user, reload, setRel
         toast.error('Thanh toán thất bại')
       }
     }
+    queryClient.invalidateQueries({ queryKey: ['histories'] })
     setReload(!reload)
   }
   return (

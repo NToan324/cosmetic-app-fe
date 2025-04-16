@@ -120,7 +120,7 @@ const Header = () => {
               <img src={Avatar} alt='Avatar' width={45} height={45} />
               <div className='hidden flex-col justify-center items-start md:flex'>
                 <h1 className='text-base'>{user.name}</h1>
-                <p className='text-sm text-black/40'>{user.role}</p>
+                <p className='text-sm text-black/40'>{user.role[0]}</p>
               </div>
             </>
           ) : (

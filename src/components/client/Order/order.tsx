@@ -41,6 +41,14 @@ const Product = () => {
           </div>
         </div>
       )}
+      {user && !user.role.includes(Role.SALESTAFF) && !user.role.includes(Role.MANAGER) && activeShift && (
+        <div className='absolute bg-black/70 top-0 left-0 w-full h-full z-50 '>
+          <div className='bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4'>
+            Chỉ có nhân viên bán hàng hoặc quản lý mới có thể tạo đơn hàng. Vui lòng chuyển sang tài khoản nhân viên để
+            thao tác.
+          </div>
+        </div>
+      )}
       <div className='flex flex-wrap justify-between items-start gap-4'>
         <div className='flex-1/2 flex flex-col justify-between items-start gap-4 w-full'>
           <div className='flex flex-col justify-start items-start bg-white p-5 rounded-2xl w-full min-h-[220px]'>

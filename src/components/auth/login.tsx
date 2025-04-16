@@ -19,13 +19,14 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
   const navigate = useNavigate()
-  const { setUser, user } = useContext(AppContext)
+  const { setUser, user, setReload, reload } = useContext(AppContext)
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken')
     if (accessToken && user && user?.role) {
       const role = user.role
 
+      setReload(!reload)
       if (Array.isArray(role) && role.includes(Role.CUSTOMER)) {
         navigate('/home', {
           replace: true,
@@ -77,6 +78,7 @@ const Login = () => {
           })
           const roles = response.data.user.role
           if (roles.includes(Role.CUSTOMER)) {
+            setReload(!reload)
             navigate('/home', {
               state: {
                 role: [Role.CUSTOMER]
@@ -101,6 +103,7 @@ const Login = () => {
             type: response.data.user.type
           })
           const roles = response.data.user.role
+          setReload(!reload)
           if (roles.includes(Role.MANAGER)) {
             navigate('/admin/dashboard', {
               state: {
