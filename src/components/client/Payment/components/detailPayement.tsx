@@ -70,12 +70,11 @@ const DetailPayment = ({ subTotal, pointDiscount, orderedTempProducts, user }: C
     const pendingOrder = localStorage.getItem(LOCAL_STORAGE_KEY.PENDING_ORDER)
     if (pendingOrder) {
       const pendingOrderData = JSON.parse(pendingOrder)
-      if (pendingOrderData.order_id && pendingOrderData.order_id !== '') {
+      if (pendingOrderData.order.order_id && pendingOrderData.order.order_id !== '') {
         setOpen(true)
-        setOrderId(pendingOrderData.order_id)
+        setOrderId(pendingOrderData.order.order_id)
         setPaymentMethod(PAYMENT_METHOD.VN_PAY)
         setIsLoading(false)
-
         return
       }
     }
@@ -99,14 +98,12 @@ const DetailPayment = ({ subTotal, pointDiscount, orderedTempProducts, user }: C
         }
       })
 
-      if (data.order_id && data.order_id !== '') {
-        setOrderId(data.order_id)
+      if (data.order.order_id && data.order.order_id !== '') {
+        setOrderId(data.order.order_id)
         setOpen(true)
         setPaymentMethod(PAYMENT_METHOD.VN_PAY)
         localStorage.setItem('pending_order', JSON.stringify(data))
       }
-      // toast.success('Thanh toán thành công')
-      // navigate('/order')
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message)

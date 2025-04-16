@@ -16,7 +16,6 @@ const History = () => {
   const { data, isLoading } = useHistory({ accessToken, page, limit })
   const orderedHistory = data?.data?.data || []
   const totalPages = data?.data?.totalPages || 1
-  console.log('orderedHistory', orderedHistory)
 
   return (
     <div className='p-4'>

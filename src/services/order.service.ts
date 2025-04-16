@@ -29,9 +29,15 @@ export interface OrderHistory {
 export interface orderReponse {
   message: string
   status: number
+  // data: {
+  //   order_id: string
+  //   total_price: number
+  // }
   data: {
-    order_id: string
-    total_price: number
+    order: {
+      order_id: string
+      total_price: number
+    }
   }
 }
 
@@ -52,7 +58,10 @@ class OrderService {
     return response.data
   }
 
-  async updateOrderStatus(id: string, payload: { createdBy: string; paymentMethod: string; total_amount: number }) {
+  async updateOrderStatus(
+    id: string,
+    payload: { createdBy: string; paymentMethod: string; total_amount: number; status: string }
+  ) {
     const response = await axios.patch(`/order/${id}`, {
       ...payload
     })
