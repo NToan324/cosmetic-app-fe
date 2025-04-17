@@ -1,0 +1,52 @@
+// import React from 'react'
+// import { Dialog, DialogTitle, DialogContent, DialogActions, TableCell} from '@mui/material'
+// import { OrderHistory } from '@/services/order.service';
+// import { formatCurrency, formatDate } from '@/helpers';
+
+// interface StatisticDialogProps {
+//   open: boolean;
+//   onClose: () => void;
+//   order: OrderHistory | null;
+// }
+
+// const StatisticDialog: React.FC<StatisticDialogProps> = ({ open, onClose, order }) => {
+//   if (!order) return null;
+
+//   return (
+//     <Dialog open={open} onClose={onClose} fullWidth maxWidth='md'>
+//       <DialogTitle>Chi tiết hóa đơn {order.orderId}</DialogTitle>
+//       <DialogContent dividers>
+//         <p><strong>Khách hàng:</strong> {order.customerName}</p>
+//         <p><strong>Số điện thoại:</strong> {order.phoneNumber}</p>
+//         <p><strong>Ngày tạo:</strong> {formatDate(order.createdAt)}</p>
+//         <p><strong>Trạng thái:</strong> {order.status}</p>
+//         <p><strong>Tổng tiền:</strong> {formatCurrency(order.totalPrice)}</p>
+
+//         <Table sx={{ mt: 2 }}>
+//           <TableHead>
+//             <TableRow>
+//               <TableCell>Sản phẩm</TableCell>
+//               <TableCell align="center">Số lượng</TableCell>
+//               <TableCell align="right">Giá</TableCell>
+//             </TableRow>
+//           </TableHead>
+//           <TableBody>
+//             {order.items.map((item, idx) => (
+//               <TableRow key={idx}>
+//                 <TableCell>{item.productName}</TableCell>
+//                 <TableCell align="center">{item.quantity}</TableCell>
+//                 <TableCell align="right">{formatCurrency(item.price)}</TableCell>
+//               </TableRow>
+//             ))}
+//           </TableBody>
+//         </Table>
+
+//       </DialogContent>
+//       <DialogActions>
+//         <Button variant='contained' onClick={onClose}>Đóng</Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+// };
+
+// export default StatisticDialog;
