@@ -113,6 +113,7 @@ const ProductPage = () => {
               <TableCell>Số lượng</TableCell>
               <TableCell>Giá gốc</TableCell>
               <TableCell>Giá khuyến mãi</TableCell>
+              <TableCell>Tình trạng hàng</TableCell>
               <TableCell>Trạng thái</TableCell>
             </TableRow>
           </TableHead>
@@ -132,7 +133,7 @@ const ProductPage = () => {
                       <img src={product.image_url} alt='product' style={{ width: 24, height: 24 }} />
                       <div>
                         {product.name} <br />
-                        <span style={{ color: 'gray', fontSize: '0.875rem' }}>{product._id}</span>
+                        <span style={{ color: 'gray', fontSize: '0.875rem' }}>{product.code}</span>
                       </div>
                     </div>
                   </TableCell>
@@ -150,6 +151,13 @@ const ProductPage = () => {
                   </TableCell>
                   <TableCell>{formatCurrency(product.price)}</TableCell>
                   <TableCell>{formatCurrency(product.price)}</TableCell>
+                  <TableCell
+                    style={{
+                      color: product.stock_quantity < 20 ? 'red' : 'black'
+                    }}
+                  >
+                    {product.stock_quantity < 20 ? 'Sắp hết' : 'Còn hàng'}
+                  </TableCell>
                   <TableCell>
                     {product.disable ? (
                       <span

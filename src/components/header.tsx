@@ -25,13 +25,13 @@ const Header = () => {
     try {
       if (accessToken) {
         await shiftService.openShift(accessToken, opening_cash)
-        setOpenDialog(false)
         toast.success('Mở ca thành công')
       }
     } catch (error) {
       toast.error('Mở ca thất bại')
       console.error('Error opening shift:', error)
     } finally {
+      setOpenDialog(false)
       setIsLoading(false)
       setReload(!reload)
     }
@@ -46,13 +46,13 @@ const Header = () => {
     try {
       if (accessToken) {
         await shiftService.closeShift(accessToken, actual_cash, note)
-        setOpenDialog(false)
         toast.success('Đóng ca thành công')
       }
     } catch (error) {
       toast.error('Đóng ca thất bại')
       console.error('Error closing shift:', error)
     } finally {
+      setOpenDialog(false)
       setIsLoading(false)
       setReload(!reload)
     }

@@ -19,9 +19,10 @@ interface CashProps {
   pointDiscount: number
   orderedTempProducts: Array<OrderedProductInterface>
   user: User | undefined
+  haveCustomer: boolean
 }
 
-const DetailPayment = ({ subTotal, pointDiscount, orderedTempProducts, user }: CashProps) => {
+const DetailPayment = ({ subTotal, pointDiscount, orderedTempProducts, user, haveCustomer }: CashProps) => {
   const [paymentMethod, setPaymentMethod] = useState<string>()
   const [totalAmount, setTotalAmount] = useState<number>(0)
   const [open, setOpen] = useState(false)
@@ -131,10 +132,12 @@ const DetailPayment = ({ subTotal, pointDiscount, orderedTempProducts, user }: C
           <span className='text-base'>{formatCurrency(totalAmount)}</span>
         </div>
       </div>
-      <div className='flex justify-between items-center gap-4 w-full px-4'>
-        <span className='text-base text-left'>Điểm cộng sau thanh toán</span>
-        <span className='text-base text-green-600 font-medium'>{Math.floor(subTotal * 0.015)} điểm</span>
-      </div>
+      {haveCustomer && (
+        <div className='flex justify-between items-center gap-4 w-full px-4'>
+          <span className='text-base text-left'>Điểm cộng sau thanh toán</span>
+          <span className='text-base text-green-600 font-medium'>{Math.floor(subTotal * 0.015)} điểm</span>
+        </div>
+      )}
       <div className='flex flex-col justify-start items-start gap-4 bg-[#F8F8F8] p-4 rounded-2xl w-full mt-4'>
         <h1 className='text-xl font-bold'>Phương thức thanh toán</h1>
         <div className='flex justify-start items-center gap-4'>

@@ -55,6 +55,7 @@ const Home = () => {
                     expiration_date={item.expiration_date}
                     production_date={item.production_date}
                     key={item._id}
+                    code={item.code}
                   />
                 )
               })}

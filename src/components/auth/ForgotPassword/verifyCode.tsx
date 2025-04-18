@@ -3,7 +3,6 @@ import { Avatar, Button, CircularProgress } from '@mui/material'
 import { CiLock } from 'react-icons/ci'
 import { useLocation, useNavigate } from 'react-router-dom'
 import authService from '@/services/auth.service'
-import { Role } from '@/consts'
 
 const VerifyCode = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
@@ -13,7 +12,7 @@ const VerifyCode = () => {
   const inputsRef = useRef<HTMLInputElement[]>([])
   const location = useLocation()
   const navigate = useNavigate()
-  const { id, active, role } = location.state || {}
+  const { id, active } = location.state || {}
 
   const handleChange = (index: number, value: string) => {
     if (!/^[a-zA-Z0-9]?$/.test(value)) return
@@ -78,10 +77,9 @@ const VerifyCode = () => {
       const res = await authService.verifyCode({ otp_code, id: id })
       if (res.status === 200) {
         if (active === 'verify') {
-          navigate('/auth/login', {
-            state: {
-              role: role ? role : Role.CONSULTANT
-            }
+          navigate('/auth/password-reset', {
+            state: { active: 'verify', id },
+            replace: true
           })
         } else {
           navigate('/auth/password-reset', {

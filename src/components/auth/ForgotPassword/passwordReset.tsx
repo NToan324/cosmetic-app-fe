@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Avatar, Button, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import { Avatar, Button, CircularProgress, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
 import { TbLockPassword } from 'react-icons/tb'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Visibility from '@mui/icons-material/Visibility'
@@ -64,17 +64,17 @@ const PasswordReset = () => {
           <Avatar sx={{ width: 80, height: 80, mt: 4, mb: 6 }} style={{ backgroundColor: '#ff8108' }}>
             <TbLockPassword style={{ fontSize: 46 }} />
           </Avatar>
-          <h1 className='text-2xl font-bold'>{active === 'reset' ? 'Reset Your Password' : 'Change Your Password'}</h1>
+          <h1 className='text-2xl font-bold'>{active === 'reset' ? 'Tạo lại mật khẩu mới' : 'Thay đổi mật khẩu'}</h1>
           <p className='text-gray-600 mt-2 text-center'>
             {active === 'reset'
-              ? 'Please enter your new password'
-              : 'This is your first time logging in, please set a new password to access your account'}
+              ? 'Vui lòng nhập mật khẩu mới để tạo lại mật khẩu'
+              : 'Đây là lần đầu tiên bạn đăng nhập, vui lòng thay đổi mật khẩu'}
           </p>
         </div>
 
         <TextField
           fullWidth
-          label='New Password'
+          label='Mật khẩu mới'
           variant='standard'
           margin='normal'
           type={showNewPassword ? 'text' : 'password'}
@@ -97,7 +97,7 @@ const PasswordReset = () => {
 
         <TextField
           fullWidth
-          label='Confirm Password'
+          label='Nhập lại mật khẩu mới'
           variant='standard'
           margin='normal'
           type={showNewPasswordAgain ? 'text' : 'password'}
@@ -128,10 +128,27 @@ const PasswordReset = () => {
           disabled={isLoading}
           fullWidth
           className='!mt-8'
-          style={{ color: 'white', backgroundColor: 'orange' }}
+          style={{
+            color: 'white',
+            backgroundColor: 'orange',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            justifyContent: 'center'
+          }}
           onClick={handleSubmit}
         >
-          Confirm
+          {isLoading && (
+            <CircularProgress
+              size={20}
+              sx={{
+                color: 'black',
+                opacity: 0.2,
+                mr: 1
+              }}
+            />
+          )}
+          {active === 'reset' ? 'Tạo lại mật khẩu' : 'Thay đổi mật khẩu'}
         </Button>
       </div>
     </div>

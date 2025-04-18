@@ -11,8 +11,18 @@ interface ProductProps {
   description: string
   expiration_date: string
   production_date: string
+  code?: string
 }
-const Product = ({ name, price, quantity, image, description, expiration_date, production_date }: ProductProps) => {
+const Product = ({
+  name,
+  price,
+  quantity,
+  image,
+  description,
+  expiration_date,
+  production_date,
+  code
+}: ProductProps) => {
   const [showDetail, setShowDetail] = useState(false)
 
   return (
@@ -21,9 +31,10 @@ const Product = ({ name, price, quantity, image, description, expiration_date, p
         <div className='flex-1 w-[130px] h-full bg-white rounded-xl flex justify-center items-center'>
           <img src={image} alt='product' className='object-cover ' />
         </div>
-        <div className='flex-1 flex flex-col justify-between items-start'>
+        <div className='flex-1 flex flex-col justify-between items-start gap-1'>
           <p className='text-black text-base text-start text-ellipsis'>{name}</p>
           <span className='text-primary text-base'>{formatCurrency(price)}</span>
+          <span className='text-primary text-base'>Mã sản phẩm: {code}</span>
         </div>
       </div>
       <div className='flex justify-between items-center w-full'>

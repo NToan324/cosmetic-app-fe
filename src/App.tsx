@@ -8,6 +8,7 @@ import PaymentPage from '@/pages/client/paymentPage'
 import HistoryPage from '@/pages/client/historyPage'
 import UserPage from '@/pages/client/userPage'
 import ProfilePage from '@/pages/client/profilePage'
+import ShiftPage from './pages/client/shiftPage'
 
 import DashboardPage from '@/pages/admin/admin'
 import ProductPage from '@/pages/admin/adminProductPage'
@@ -46,6 +47,7 @@ function App() {
           {/* Route của nhân viên bán hàng */}
           <Route element={<ProtectedRoute allowedRoles={[Role.SALESTAFF, Role.CONSULTANT, Role.MANAGER]} />}>
             <Route path='/customer-consulting' element={UserPage()} />
+            <Route path='/shift' element={ShiftPage()} />
           </Route>
 
           <Route

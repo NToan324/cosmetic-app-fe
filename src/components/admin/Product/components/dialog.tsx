@@ -11,7 +11,8 @@ import {
   Grid,
   Box,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  CircularProgress
 } from '@mui/material'
 import { MdOutlineCancel, MdHistory } from 'react-icons/md'
 import { LuRecycle } from 'react-icons/lu'
@@ -35,6 +36,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
   const { categories, brands, setReload, reload } = useContext(AppContext)
   const [imagePreview, setImagePreview] = useState<string>(product?.image_url || urlImage)
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const accessToken = localStorage.getItem('accessToken')
   const queryClient = useQueryClient()
@@ -78,11 +80,13 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
   }
 
   const handleDelete = async () => {
+    setIsLoading(true)
     if (!product) return
     await productService.deleteProduct({
       accessToken: accessToken || '',
       id: product._id
     })
+    setIsLoading(false)
     setReload(!reload)
     setOpenConfirmDelete(false)
     onClose()
@@ -91,6 +95,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
   }
 
   const onSubmit: SubmitHandler<Product> = async (data) => {
+    setIsLoading(true)
     try {
       const response = await productService.createProduct({
         accessToken: accessToken || '',
@@ -121,9 +126,11 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
         })
       }
     }
+    setIsLoading(false)
   }
 
   const onUpdate: SubmitHandler<Product> = async (data) => {
+    setIsLoading(true)
     if (!product) return
     try {
       const response = await productService.updateProduct({
@@ -156,6 +163,7 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
         })
       }
     }
+    setIsLoading(false)
   }
 
   return (
@@ -385,11 +393,22 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
               <div className='flex flex-col items-end gap-2'>
                 <div className='flex gap-2 justify-end items-center'>
                   <Button
+                    disabled={isLoading}
                     variant='contained'
                     color='error'
                     startIcon={<CiCircleMinus />}
                     onClick={() => setOpenConfirmDelete(true)}
                   >
+                    {isLoading && (
+                      <CircularProgress
+                        size={20}
+                        className='absolute'
+                        sx={{
+                          color: 'black',
+                          opacity: 0.5
+                        }}
+                      />
+                    )}
                     Xóa
                   </Button>
                   <ConfirmModalDelete
@@ -405,7 +424,23 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                   >
                     Đóng
                   </Button>
-                  <Button variant='contained' color='success' startIcon={<LuRecycle />} type='submit'>
+                  <Button
+                    disabled={isLoading}
+                    variant='contained'
+                    color='success'
+                    startIcon={<LuRecycle />}
+                    type='submit'
+                  >
+                    {isLoading && (
+                      <CircularProgress
+                        size={20}
+                        className='absolute'
+                        sx={{
+                          color: 'black',
+                          opacity: 0.5
+                        }}
+                      />
+                    )}
                     Lưu
                   </Button>
                 </div>
@@ -423,7 +458,23 @@ const ProductDialog = ({ open, onClose, product }: ProductDialogProps) => {
                 >
                   Đóng
                 </Button>
-                <Button variant='contained' color='success' startIcon={<CiCirclePlus />} type='submit'>
+                <Button
+                  disabled={isLoading}
+                  variant='contained'
+                  color='success'
+                  startIcon={<CiCirclePlus />}
+                  type='submit'
+                >
+                  {isLoading && (
+                    <CircularProgress
+                      size={20}
+                      className='absolute'
+                      sx={{
+                        color: 'black',
+                        opacity: 0.5
+                      }}
+                    />
+                  )}
                   Thêm
                 </Button>
               </div>

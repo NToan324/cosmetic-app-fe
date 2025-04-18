@@ -2,6 +2,7 @@ import axios from '@/config/api'
 
 export interface Shift {
   _id: string
+  employee_name?: string
   employee_id: string
   opening_cash: number
   current_cash: number
@@ -12,12 +13,19 @@ export interface Shift {
   is_approved: boolean
   start_time: string
   end_time: string
+  note?: string
 }
 
 interface ShiftResponse {
   message: string
   status: number
   data: Shift
+}
+
+interface AllShiftResponse {
+  message: string
+  status: number
+  data: Shift[]
 }
 
 class ShiftService {
@@ -33,8 +41,18 @@ class ShiftService {
     )
     return data
   }
-  async getShiftById(accessToken: string) {
-    const { data } = await axios.get<ShiftResponse>('/shift/user', {
+
+  async getShiftOpenById(accessToken: string) {
+    const { data } = await axios.get<ShiftResponse>('/shift/open', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    return data
+  }
+
+  async getAllShiftsById(accessToken: string) {
+    const { data } = await axios.get<AllShiftResponse>('/shift/user', {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

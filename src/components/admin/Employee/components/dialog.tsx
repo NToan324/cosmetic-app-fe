@@ -15,7 +15,8 @@ import {
   FormControlLabel,
   Radio,
   FormLabel,
-  Collapse
+  Collapse,
+  CircularProgress
 } from '@mui/material'
 import { ExpandMore, ExpandLess } from '@mui/icons-material'
 import { MdOutlineCancel } from 'react-icons/md'
@@ -44,6 +45,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
   const [role, setRole] = useState<Array<string>>(employee ? employee.user.role : [Role.CONSULTANT])
   const [editHistory, setEditHistory] = useState<EmployeeEditHistory[]>([])
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     register,
@@ -86,6 +88,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
   }, [employee, open, accessToken])
 
   const handleAdd: SubmitHandler<EmployeeCreateData> = async (data: EmployeeCreateData) => {
+    setIsLoading(true)
     data.disable = disable
     data.role = role
     try {
@@ -109,6 +112,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
         setError('root', { message: 'An unknown error occurred' })
       }
     }
+    setIsLoading(false)
   }
 
   const handleOnClose = () => {
@@ -119,6 +123,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
   }
 
   const handleConfirmDelete = async () => {
+    setIsLoading(true)
     if (!employee) return
     await employeeService.deleteEmployee({
       accessToken,
@@ -128,6 +133,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
     queryClient.invalidateQueries({
       queryKey: ['employees']
     })
+    setIsLoading(false)
     setReload(!reload)
     onActionSuccess(`Đã xóa nhân viên ${employee.user.name} thành công`) // Gọi callback
     setOpenConfirmDelete(false)
@@ -136,6 +142,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
   }
 
   const handleUpdate: SubmitHandler<EmployeeCreateData> = async (data) => {
+    setIsLoading(true)
     if (!employee) return
     data.disable = disable
     data.role = role
@@ -159,6 +166,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
       const message = error instanceof Error ? error.message : 'Đã có lỗi xảy ra'
       setError('root', { message })
     }
+    setIsLoading(false)
   }
 
   return (
@@ -366,6 +374,7 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
               <div className='flex flex-col justify-end items-end w-full gap-2'>
                 <div className='flex justify-end gap-2'>
                   <Button
+                    disabled={isLoading}
                     variant='contained'
                     color='error'
                     startIcon={<CiCircleMinus />}
@@ -387,11 +396,22 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
                     Đóng
                   </Button>
                   <Button
+                    disabled={isLoading}
                     type='submit'
                     variant='contained'
                     sx={{ backgroundColor: '#4caf50' }}
                     startIcon={<LuRecycle />}
                   >
+                    {isLoading && (
+                      <CircularProgress
+                        size={20}
+                        className='absolute'
+                        sx={{
+                          color: 'black',
+                          opacity: 0.5
+                        }}
+                      />
+                    )}
                     Lưu
                   </Button>
                 </div>
@@ -413,7 +433,17 @@ const EmployeeDialog = ({ open, onClose, employee, accessToken, onActionSuccess 
                 >
                   Đóng
                 </Button>
-                <Button type='submit' variant='contained' startIcon={<CiCirclePlus />}>
+                <Button disabled={isLoading} type='submit' variant='contained' startIcon={<CiCirclePlus />}>
+                  {isLoading && (
+                    <CircularProgress
+                      size={20}
+                      className='absolute'
+                      sx={{
+                        color: 'black',
+                        opacity: 0.5
+                      }}
+                    />
+                  )}
                   Thêm
                 </Button>
               </div>

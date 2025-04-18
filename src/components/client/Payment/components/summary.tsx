@@ -145,8 +145,7 @@ const Summary = ({ orderedTempProducts }: SummaryProps) => {
           )}
 
           <p className='text-justify text-red-500 text-sm'>
-            Điểm tích lũy có thể được dùng để giảm giá đơn hàng (1.000 điểm = 1.000đ), nhưng chỉ tối đa 10% tổng giá trị
-            đơn hàng.
+            Điểm tích lũy có thể được dùng để giảm giá đơn hàng (1.000 điểm = 1.000đ)
           </p>
         </div>
       )}
@@ -156,6 +155,7 @@ const Summary = ({ orderedTempProducts }: SummaryProps) => {
         subTotal={subTotal}
         pointDiscount={pointDiscount}
         orderedTempProducts={orderedTempProducts}
+        haveCustomer={haveCustomer}
       />
     </div>
   )

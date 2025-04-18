@@ -9,7 +9,7 @@ interface CloseShiftDialogProps {
   isLoading: boolean
 }
 
-const CloseShiftDialog = ({ open, onClose, onSubmit, isLoading }: CloseShiftDialogProps) => {
+const CloseShiftDialog = ({ open, onClose, onSubmit, isLoading,  }: CloseShiftDialogProps) => {
   const [actualCash, setActualCash] = useState<number>(0)
   const [note, setNote] = useState<string>('')
 

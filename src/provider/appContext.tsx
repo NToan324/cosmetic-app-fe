@@ -14,6 +14,7 @@ interface AppContextType {
   brands: Array<Brand>
   setBrands: (brands: Array<Brand>) => void
   activeShift: boolean
+  error: string
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -27,5 +28,6 @@ export const AppContext = createContext<AppContextType>({
   setReload: () => {},
   brands: [],
   setBrands: () => {},
-  activeShift: false
+  activeShift: false,
+  error: ''
 })

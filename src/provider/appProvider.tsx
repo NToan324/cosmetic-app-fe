@@ -12,6 +12,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [brands, setBrands] = useState<Array<Brand>>([])
   const [reload, setReload] = useState<boolean>(false)
   const [activeShift, setActiveShift] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
   useEffect(() => {
     const getUser = async () => {
@@ -23,7 +24,11 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(data)
           }
         } catch (error) {
-          throw new Error(error instanceof Error ? error.message : 'Unknown error')
+          if (error instanceof Error) {
+            setError(error.message)
+          } else {
+            setError('Unknown error')
+          }
         }
       }
     }
@@ -34,7 +39,11 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
           setCategories(data)
         }
       } catch (error) {
-        throw new Error(error instanceof Error ? error.message : 'Unknown error')
+        if (error instanceof Error) {
+          setError(error.message)
+        } else {
+          setError('Unknown error')
+        }
       }
     }
     const getBrands = async () => {
@@ -44,21 +53,29 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
           setBrands(data)
         }
       } catch (error) {
-        throw new Error(error instanceof Error ? error.message : 'Unknown error')
+        if (error instanceof Error) {
+          setError(error.message)
+        } else {
+          setError('Unknown error')
+        }
       }
     }
     const getActiveShift = async () => {
       const accessToken = localStorage.getItem('accessToken')
       if (accessToken) {
         try {
-          const { data } = await shiftService.getShiftById(accessToken)
+          const { data } = await shiftService.getShiftOpenById(accessToken)
           if (data) {
             const isActive = !!data.start_time && !data.end_time
             setActiveShift(isActive)
           }
         } catch (error) {
           setActiveShift(false)
-          throw new Error(error instanceof Error ? error.message : 'Unknown error')
+          if (error instanceof Error) {
+            setError(error.message)
+          } else {
+            setError('Unknown error')
+          }
         }
       }
     }
@@ -80,7 +97,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setReload,
         brands,
         setBrands,
-        activeShift
+        activeShift,
+        error
       }}
     >
       {children}

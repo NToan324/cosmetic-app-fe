@@ -81,6 +81,15 @@ class OrderService {
     const response = await axios.get(`/order/${id}`)
     return response.data
   }
+
+  async searcOrderHistory(orderId: string) {
+    const response = await axios.get(`/order/search?${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    })
+    return response.data
+  }
 }
 const orderService = new OrderService()
 export default orderService

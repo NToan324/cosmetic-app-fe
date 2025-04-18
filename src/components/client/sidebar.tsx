@@ -10,7 +10,9 @@ import { AppContext } from '@/provider/appContext'
 import { IoIosArrowBack } from 'react-icons/io'
 import { VscDashboard } from 'react-icons/vsc'
 import DialogSignout from '@/components/ui/dialogSignout'
+import { TbTiltShift } from 'react-icons/tb'
 import { Role } from '@/consts'
+
 const SideBar = () => {
   const location = useLocation()
   const { isOpen, setIsOpen, user } = useContext(AppContext)
@@ -20,6 +22,7 @@ const SideBar = () => {
     { name: 'Tạo đơn hàng', icon: IoDocumentTextOutline, link: '/order' },
     { name: 'Lịch sử mua hàng', icon: HiOutlineArchiveBox, link: '/history' },
     { name: 'Tư vấn', icon: TbReportMedical, link: '/customer-consulting' },
+    { name: 'Ca làm', icon: TbTiltShift, link: '/shift' },
     { name: 'Tài khoản', icon: CgProfile, link: '/profile' },
     { name: 'Quản lý bán hàng', icon: VscDashboard, link: '/admin' }
   ]
@@ -53,6 +56,15 @@ const SideBar = () => {
           if (roleless && !user) {
             return null
           }
+          const allowedRoles = [Role.MANAGER, Role.CONSULTANT, Role.SALESTAFF]
+
+          if (
+            ((user && !user.role.some((role) => allowedRoles.includes(role as Role))) || !user) &&
+            item.link === '/shift'
+          ) {
+            return null
+          }
+
           return (
             <div key={index}>
               <NavLink
