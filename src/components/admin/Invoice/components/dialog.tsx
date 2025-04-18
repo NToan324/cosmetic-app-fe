@@ -1,220 +1,189 @@
-import React, { useState, useEffect } from 'react'
+import { styled } from '@mui/material/styles'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Select,
-  MenuItem,
-  Button,
-  Grid,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Button,
+  Box,
+  Typography
 } from '@mui/material'
-import { MdOutlineCancel } from 'react-icons/md'
-import { CiCircleMinus } from 'react-icons/ci'
-import { CiImport } from 'react-icons/ci'
-import { BiRecycle } from 'react-icons/bi'
-import { MdHistory } from 'react-icons/md'
+import { formatCurrency, formatDate } from '@/helpers'
 
-// Định nghĩa kiểu dữ liệu cho hóa đơn
-interface Invoice {
-  id: number
-  code: string
-  phone: string
-  total: number
-  payment: string
-  received: number
-  change: number
-  dateExport: Date
-}
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}))
 
-// Props cho dialog
-interface InvoiceDialogProps {
+interface DialogViewHistoryProps {
   open: boolean
   onClose: () => void
-  onSave: (invoice: Invoice) => void
-  invoice?: Invoice | null
+  customerName: string
+  phoneNumber: string
+  orderId: string
+  paymentMethod: string
+  orderDate: string
+  employeeName: string
+  products: {
+    productId: string
+    productName: string
+    quantity: number
+    price: number
+  }[]
+  total: number
+  pointDiscount: number
 }
 
-const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
+export default function DialogViewHistory({
   open,
   onClose,
-  // onSave,
-  invoice
-}) => {
-  const [formData, setFormData] = useState<Invoice>({
-    id: invoice ? invoice.id : 0,
-    code: invoice?.code || '',
-    phone: invoice?.phone || '',
-    total: invoice?.total || 0,
-    payment: invoice?.payment || 'cash',
-    received: invoice?.received || 0,
-    change: invoice?.change || 0,
-    dateExport: invoice?.dateExport || new Date()
-  })
-
-  useEffect(() => {
-    if (invoice) {
-      setFormData(invoice)
-    } else {
-      setFormData({
-        id: 0,
-        code: '',
-        phone: '',
-        total: 0,
-        payment: 'cash',
-        received: 0,
-        change: 0,
-        dateExport: new Date()
-      })
-    }
-  }, [invoice])
-
-  // Cập nhật dữ liệu nhập vào
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-    // Nếu là các trường số, chuyển đổi giá trị thành number
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'total' || name === 'received' || name === 'change' ? parseFloat(value) : value
-    }))
-  }
-
+  customerName,
+  phoneNumber,
+  orderId,
+  paymentMethod,
+  orderDate,
+  employeeName,
+  products,
+  total,
+  pointDiscount
+}: DialogViewHistoryProps) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
-      <DialogTitle sx={{ textAlign: 'center' }}>{invoice ? `Invoice: ${formData.code}` : 'Add Invoice'}</DialogTitle>
-      <div className='border-t border-gray-300 w-full'></div>
-      <DialogContent>
-        <Grid container spacing={2} className='max-w-full'>
-          {/* Phần thông tin hóa đơn (2/3 chiều rộng) */}
-          <Grid size={{ xs: 12, md: 12 }} rowSpacing={4}>
-            <TextField
-              fullWidth
-              margin='dense'
-              label='Phone Number'
-              name='phone'
-              value={formData.phone}
-              onChange={handleChange}
-            />
+    <BootstrapDialog onClose={onClose} aria-labelledby='customized-dialog-title' maxWidth='lg' open={open}>
+      <DialogTitle sx={{ m: 0, p: 2 }} id='customized-dialog-title'>
+        Order Details
+      </DialogTitle>
+      <IconButton
+        aria-label='close'
+        onClick={onClose}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.grey[500]
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
+      <DialogContent dividers>
+        <h1 className='text-primary font-bold text-2xl'>
+            ORR’ <span className='text-black'>COSMETIC</span>
+        </h1>
+        <Typography variant='h5' fontWeight='bold' mt={4}>
+          Cảm ơn bạn đã mua hàng!
+        </Typography>
 
-            <Select
-              fullWidth
-              margin='dense'
-              name='payment'
-              value={formData.payment}
-              onChange={(event) => setFormData((prev) => ({ ...prev, payment: event.target.value }))}
-            >
-              <MenuItem value='cash'>Cash</MenuItem>
-              <MenuItem value='card'>Card</MenuItem>
-            </Select>
+        {/* Store Info */}
+        <Box mt={4}>
+          <Typography fontWeight='bold'>Thông tin cửa hàng</Typography>
+          <Box display='flex' gap={8} mt={1}>
+            <Box>
+              <Typography color='text.secondary'>Địa chỉ</Typography>
+              <Typography>Quận 7 Hồ Chí Minh</Typography>
+            </Box>
+            <Box>
+              <Typography color='text.secondary'>Số điện thoại</Typography>
+              <Typography>0939000111</Typography>
+            </Box>
+          </Box>
+        </Box>
 
-            <TextField
-              fullWidth
-              margin='dense'
-              label='Total'
-              name='total'
-              type='number'
-              value={formData.total}
-              onChange={handleChange}
-            />
+        {/* Customer Info */}
+        <Box mt={4}>
+          <Typography fontWeight='bold'>Thông tin khách hàng</Typography>
+          <Box display='flex' gap={8} mt={1}>
+            <Box>
+              <Typography color='text.secondary'>Tên khách hàng</Typography>
+              <Typography>{customerName}</Typography>
+            </Box>
+            <Box>
+              <Typography color='text.secondary'>Số điện thoại</Typography>
+              <Typography>{phoneNumber}</Typography>
+            </Box>
+          </Box>
+        </Box>
 
-            <TextField
-              fullWidth
-              margin='dense'
-              label='Amount Received'
-              name='received'
-              type='number'
-              value={formData.received}
-              onChange={handleChange}
-            />
+        {/* Order Info */}
+        <Box mt={4}>
+          <Typography fontWeight='bold'>Thông tin hóa đơn</Typography>
+          <Box display='flex' flexWrap='wrap' gap={8} mt={1}>
+            <Box>
+              <Typography color='text.secondary'>Mã đơn hàng</Typography>
+              <Typography>{orderId}</Typography>
+            </Box>
+            <Box>
+              <Typography color='text.secondary'>Phương thức thanh toán</Typography>
+              <Typography>{paymentMethod === 'Cash' ? 'Tiền mặt' : 'VNPay'}</Typography>
+            </Box>
+            <Box>
+              <Typography color='text.secondary'>Ngày tạo đơn</Typography>
+              <Typography>{formatDate(orderDate)}</Typography>
+            </Box>
+            <Box>
+              <Typography color='text.secondary'>Tên nhân viên</Typography>
+              <Typography>{employeeName}</Typography>
+            </Box>
+          </Box>
+        </Box>
 
-            <TextField
-              fullWidth
-              margin='dense'
-              label='Change'
-              name='change'
-              type='number'
-              value={formData.change}
-              onChange={handleChange}
-              disabled
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <TableContainer component={Paper} className='my-4'>
-              <Table sx={{ minWidth: 650 }} aria-label='product table'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>#</TableCell>
-                    <TableCell>Product</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell>Total</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>1</TableCell>
-                    <TableCell>
-                      Kera
-                      <br />
-                      <TextField value='SP001' />
-                    </TableCell>
-                    <TableCell>
-                      300.000
-                      <br />
-                      <TextField value='3' />
-                    </TableCell>
-                    <TableCell>900.000</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell>-0</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell>900.000</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <p className='text-gray-400'>Data Exported: {formData.dateExport.toISOString().split('T')[0]}</p>
-          </Grid>
-        </Grid>
+        {/* Product Table */}
+        <Table sx={{ mt: 5, border: '1px solid black' }}>
+          <TableHead>
+            <TableRow>
+              {['Số thứ tự', 'Mã sản phẩm', 'Tên sản phẩm', 'Số lượng', 'Giá', 'Giảm giá', 'Tổng giá'].map((header, i) => (
+                <TableCell key={i} sx={{ border: '1px solid black' }}>{header}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {products.length > 0 ? (
+              products.map((product, index) => (
+                <TableRow key={index}>
+                  <TableCell sx={{ border: '1px solid black' }}>{index + 1}</TableCell>
+                  <TableCell sx={{ border: '1px solid black' }}>{product.productId}</TableCell>
+                  <TableCell sx={{ border: '1px solid black', maxWidth: '150px' }}>{product.productName}</TableCell>
+                  <TableCell sx={{ border: '1px solid black', textAlign: 'center' }}>{product.quantity}</TableCell>
+                  <TableCell sx={{ border: '1px solid black' }}>{formatCurrency(product.price)}</TableCell>
+                  <TableCell sx={{ border: '1px solid black' }}>0</TableCell>
+                  <TableCell sx={{ border: '1px solid black' }}>{formatCurrency(product.price * product.quantity)}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align='center'>
+                  No data available
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        {/* Discounts & Total */}
+        {pointDiscount > 0 && (
+          <Typography align='right' mt={4}>
+            Bạn được giảm {formatCurrency(pointDiscount)} từ điểm thành viên
+          </Typography>
+        )}
+        <Box display='flex' justifyContent='flex-end' alignItems='center' gap={2} mt={2}>
+          <Typography fontWeight='bold'>Tổng hóa đơn</Typography>
+          <Typography fontWeight='bold'>{formatCurrency(total)}</Typography>
+        </Box>
       </DialogContent>
-      <div className='border-t border-gray-300 w-full'></div>
-      <DialogActions className='flex !justify-between'>
-        <div className='flex gap-2'>
-          <Button variant='contained' className='!bg-gray-400' startIcon={<MdHistory />} onClick={onClose}>
-            Edit History
-          </Button>
-          <Button variant='contained' color='success' startIcon={<CiImport />} onClick={onClose}>
-            Download
-          </Button>
-        </div>
-        <div className='flex gap-2'>
-          <Button variant='contained' color='error' startIcon={<CiCircleMinus />} onClick={onClose}>
-            Disable
-          </Button>
-          <Button variant='contained' startIcon={<MdOutlineCancel />} onClick={onClose}>
-            Close
-          </Button>
-          <Button variant='contained' color='success' startIcon={<BiRecycle />} onClick={onClose}>
-            Save
-          </Button>
-        </div>
+      <DialogActions>
+        <Button onClick={onClose} sx={{ backgroundColor: '#ef5350', color: 'white' }}>
+          Đóng
+        </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   )
 }
-
-export default InvoiceDialog

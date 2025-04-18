@@ -22,7 +22,7 @@ import { useCustomer } from '@/hooks/useCustomer'
 
 const CustomerPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer>({} as Customer)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [page, setPage] = useState(1)
   const limit = 10
   const accessToken = localStorage.getItem('accessToken') || ''
@@ -33,7 +33,7 @@ const CustomerPage = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('')
 
   const openDialogForAdd = () => {
-    setSelectedCustomer({} as Customer)
+    setSelectedCustomer(null)
     setDialogOpen(true)
   }
 

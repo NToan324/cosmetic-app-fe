@@ -25,10 +25,11 @@ import ConfirmModalDelete from './dialogDelete'
 interface CustomerDialogProps {
   open: boolean
   onClose: () => void
-  customer: Customer
+  customer: Customer | null
   accessToken: string
   onActionSuccess: (message: string) => void
 }
+
 
 const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess }: CustomerDialogProps) => {
   const { reload, setReload } = useContext(AppContext)
@@ -44,9 +45,9 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
     reset
   } = useForm<CustomerCreateData>({
     defaultValues: {
-      name: customer?.name || '',
-      phone: customer?.phone || '',
-      note: customer?.note || '',
+      name: customer?.user?.name  || '',
+      phone: customer?.user?.phone || '',
+      note: customer?.note         || '',
       reason: ''
     }
   })
@@ -55,12 +56,13 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
   // Khi customer thay đổi hoặc dialog mở, reset lại giá trị của form.
   useEffect(() => {
     reset({
-      name: customer?.name || '',
-      phone: customer?.phone || '',
-      note: customer?.note || '',
-      reason: ''
+      name:    customer?.user?.name  || '',
+      phone:   customer?.user?.phone || '',
+      note:    customer?.note         || '',
+      reason:  ''
     })
   }, [customer, open, reset])
+  
 
   useEffect(() => {
     const fetchCustomerDetail = async () => {
@@ -153,10 +155,12 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
     onClose()
     reset()
   }
-
+  
   return (
     <Dialog open={open} maxWidth='md' fullWidth>
-      <DialogTitle sx={{ textAlign: 'center' }}>{customer ? customer.user.name : 'Thêm khách hàng'}</DialogTitle>
+      <DialogTitle sx={{ textAlign: 'center' }}>
+        {customer?.user?.name ?? 'Thêm khách hàng'}
+      </DialogTitle>
       <Box className='border-t border-gray-300 w-full' />
       <form
         onSubmit={handleSubmit((data) => {
@@ -210,10 +214,22 @@ const CustomerDialog = ({ open, onClose, customer, accessToken, onActionSuccess 
             {customer && (
               <>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant='body1'>Point: {customer.point}</Typography>
+                  <TextField
+                    label="Point"
+                    value={customer.point}
+                    fullWidth
+                    margin="dense"
+                    disabled
+                  />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant='body1'>Rank: {customer.rank}</Typography>
+                  <TextField
+                    label="Rank"
+                    value={customer.rank}
+                    fullWidth
+                    margin="dense"
+                    disabled
+                  />
                 </Grid>
               </>
             )}
