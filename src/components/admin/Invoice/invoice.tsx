@@ -1,4 +1,3 @@
-// History.tsx
 import { useState, ChangeEvent } from 'react'
 import {
   Table,
