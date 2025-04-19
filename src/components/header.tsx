@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import CloseShiftDialog from './client/shift/CloseShiftDialog'
 
 const Header = () => {
-  const { isOpen, setIsOpen, user, activeShift, reload, setReload } = useContext(AppContext)
+  const { isOpen, setIsOpen, user, activeShift, reload, setReload, shiftOpen } = useContext(AppContext)
   const [openDialog, setOpenDialog] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [accessToken, setAccessToken] = useState<string | null>(null)
@@ -40,6 +40,10 @@ const Header = () => {
   const handleCloseShift = async (actual_cash: number, note: string) => {
     if (user && user.role.includes(Role.SALESTAFF) && actual_cash <= 0) {
       toast.error('Vui lòng nhập số tiền thực tế')
+      return
+    }
+    if (user && user.role.includes(Role.SALESTAFF) && actual_cash < shiftOpen.opening_cash) {
+      toast.error('Số tiền thực tế phải lớn hơn hoặc bằng số tiền mở ca')
       return
     }
     setIsLoading(true)

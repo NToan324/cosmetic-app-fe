@@ -70,6 +70,7 @@ const VerifyCode = () => {
     const otp_code = otp.join('')
     if (!id) {
       setError('Verification failed. Please try again from the beginning.')
+      setIsLoading(false)
       return
     }
 
@@ -108,8 +109,8 @@ const VerifyCode = () => {
           <Avatar sx={{ backgroundColor: '#ff8108', width: 100, height: 100, mb: 4 }}>
             <CiLock style={{ fontSize: 46 }} />
           </Avatar>
-          <h1 className='text-2xl font-bold'>Easy Peasy</h1>
-          <p className='text-gray-600 mt-2 text-center'>Enter 6 characters to verify your account.</p>
+          <h1 className='text-2xl font-bold'>Xác thực</h1>
+          <p className='text-gray-600 mt-2 text-center'>Vui lòng nhập mã xác thực được gửi đến</p>
         </div>
 
         <div className='flex justify-center gap-2 mb-4'>

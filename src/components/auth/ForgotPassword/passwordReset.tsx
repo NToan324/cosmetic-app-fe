@@ -26,21 +26,28 @@ const PasswordReset = () => {
     setError('')
     if (!password || !confirmPassword) {
       setError('Please enter both password fields')
+      setIsLoading(false)
+
       return
     }
 
     if (id === undefined) {
       setError('Verification failed. Please try again from the beginning.')
+      setIsLoading(false)
+
       return
     }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters long')
+      setIsLoading(false)
+
       return
     }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match')
+      setIsLoading(false)
       return
     }
 

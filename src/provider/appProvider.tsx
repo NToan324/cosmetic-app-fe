@@ -3,7 +3,7 @@ import { AppContext } from '@/provider/appContext'
 import authService, { User } from '@/services/auth.service'
 import categoryService, { Category } from '@/services/category.service'
 import brandService, { Brand } from '@/services/brand.service'
-import shiftService from '@/services/shift.service'
+import shiftService, { Shift } from '@/services/shift.service'
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -13,6 +13,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [reload, setReload] = useState<boolean>(false)
   const [activeShift, setActiveShift] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
+  const [shiftOpen, setShiftOpen] = useState<Shift>({} as Shift)
 
   useEffect(() => {
     const getUser = async () => {
@@ -68,6 +69,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
           if (data) {
             const isActive = !!data.start_time && !data.end_time
             setActiveShift(isActive)
+            setShiftOpen(data)
           }
         } catch (error) {
           setActiveShift(false)
@@ -98,7 +100,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         brands,
         setBrands,
         activeShift,
-        error
+        error,
+        shiftOpen
       }}
     >
       {children}

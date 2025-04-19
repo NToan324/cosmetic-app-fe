@@ -15,6 +15,7 @@ import shiftService, { Shift } from '@/services/shift.service'
 import { formatDate } from '@/helpers'
 import { useContext } from 'react'
 import { AppContext } from '@/provider/appContext'
+
 const ShiftCard = ({ shift }: { shift: Shift }) => {
   const {
     employee_name,

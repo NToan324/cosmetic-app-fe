@@ -2,6 +2,7 @@ import { User } from '@/services/auth.service'
 import { Category } from '@/services/category.service'
 import { createContext } from 'react'
 import { Brand } from '@/services/brand.service'
+import { Shift } from '@/services/shift.service'
 interface AppContextType {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
@@ -15,6 +16,7 @@ interface AppContextType {
   setBrands: (brands: Array<Brand>) => void
   activeShift: boolean
   error: string
+  shiftOpen: Shift
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -29,5 +31,6 @@ export const AppContext = createContext<AppContextType>({
   brands: [],
   setBrands: () => {},
   activeShift: false,
-  error: ''
+  error: '',
+  shiftOpen: {} as Shift
 })

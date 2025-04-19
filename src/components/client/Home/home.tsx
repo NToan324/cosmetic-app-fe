@@ -25,7 +25,11 @@ const Home = () => {
   const products = data?.data.data
   const totalPages = data?.data.totalPages || 1
 
-  const promotionImages = ['src/assets/images/banner_1.png', 'src/assets/images/banner_2.png']
+  const promotionImages = [
+    'https://media.hcdn.vn/hsk/1732069393web.jpg',
+    'https://media.hcdn.vn/hsk/1744971167homejnj1804.jpg',
+    'https://media.hcdn.vn/hsk/1744778558homedove1604.jpg'
+  ]
 
   return (
     <div className='p-4'>

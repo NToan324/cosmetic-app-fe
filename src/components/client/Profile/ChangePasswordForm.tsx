@@ -14,7 +14,6 @@ const ChangePasswordForm = () => {
       alert('Mật khẩu mới không khớp')
       return
     }
-    console.log('Đổi mật khẩu:', data)
     // Gọi API đổi mật khẩu tại đây
   }
 

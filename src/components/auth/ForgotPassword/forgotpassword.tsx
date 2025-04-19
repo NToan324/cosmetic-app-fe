@@ -30,6 +30,7 @@ const ForgotPassword = () => {
           type: 'manual',
           message: 'Invalid phone number or email format'
         })
+        setIsLoading(false)
         return
       }
 
